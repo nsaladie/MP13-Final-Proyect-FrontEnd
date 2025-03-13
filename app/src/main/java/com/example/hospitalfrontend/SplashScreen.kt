@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 val Poppins = FontFamily(
-    Font(R.font.happy, FontWeight.Normal)
+    //Font(R.font.happy, FontWeight.Normal)
 )
 @Composable
 fun SplashScreen(onSplashFinished: () -> Unit) {

@@ -1,5 +1,6 @@
 package com.example.hospitalfrontend.network
 
+import RemoteApiMessageAuxiliary
 import android.net.Uri
 import android.graphics.*
 import android.util.Log
@@ -23,7 +24,8 @@ class RemoteViewModel : ViewModel() {
         mutableStateOf<RemoteApiMessageBoolean>(RemoteApiMessageBoolean.Loading)
     var remoteApiMessageUploadPhoto =
         mutableStateOf<RemoteApiMessageBoolean>(RemoteApiMessageBoolean.Loading)
-
+//Auxiliar login
+    var remoteApiMessageAuxiliary = mutableStateOf<RemoteApiMessageAuxiliary>(RemoteApiMessageAuxiliary.Loading)
     // Save in a list the image and the id of the nurse
     private var listNurseImage = mutableStateListOf<NurseProfileImageState>()
 
@@ -34,6 +36,8 @@ class RemoteViewModel : ViewModel() {
         remoteApiListMessage.value = RemoteApiMessageListNurse.Loading
         remoteApiMessageBoolean.value = RemoteApiMessageBoolean.Loading
         remoteApiMessageUploadPhoto.value = RemoteApiMessageBoolean.Loading
+        //Auxiliar
+        remoteApiMessageAuxiliary.value=RemoteApiMessageAuxiliary.Loading
     }
 
     // Retrofit instance with ApiService creation for network requests
@@ -91,6 +95,22 @@ class RemoteViewModel : ViewModel() {
             }
         }
     }
+    fun loginAuxiliary(auxiliaryId: Int) {
+        viewModelScope.launch {
+            remoteApiMessageAuxiliary.value = RemoteApiMessageAuxiliary.Loading // Show loading message
+            try {
+                val response = apiService.loginAuxiliary(LoginAuxiliary(auxiliaryId)) // Aquí se corrige
+                remoteApiMessageAuxiliary.value = RemoteApiMessageAuxiliary.Success(response) // Success response
+            } catch (e: Exception) {
+                Log.d("ERROR", e.toString())
+                remoteApiMessageAuxiliary.value = RemoteApiMessageAuxiliary.Error // Error response
+            }
+        }
+    }
+
+
+
+
 
     // Function to create a new nurse
     fun createNurse(nurse: NurseState) {
