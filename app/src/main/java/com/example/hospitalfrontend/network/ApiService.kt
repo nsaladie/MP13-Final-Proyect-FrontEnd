@@ -1,5 +1,6 @@
 package com.example.hospitalfrontend.network
 
+import com.example.hospitalfrontend.model.LoginAuxiliary
 import com.example.hospitalfrontend.model.LoginRequest
 import com.example.hospitalfrontend.model.NurseState
 import okhttp3.MultipartBody
@@ -23,6 +24,8 @@ interface ApiService {
 
     @POST("nurse/login")
     suspend fun loginNurse(@Body loginRequest: LoginRequest): NurseState
+    @POST("auxiliary/login")
+    suspend fun loginAuxiliary(@Body loginAuxiliary: LoginAuxiliary): Boolean
 
     @POST("nurse")
     suspend fun createNurse(@Body nurse: NurseState): NurseState

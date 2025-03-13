@@ -19,8 +19,9 @@ import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
 import com.example.hospitalfrontend.network.RemoteApiMessageListNurse
 import com.example.hospitalfrontend.network.RemoteViewModel
-import com.example.hospitalfrontend.ui.login.HospitalLoginScreen
+import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
 import com.example.hospitalfrontend.ui.nurses.view.*
+import com.example.hospitalfrontend.ui.nurses.viewmodels.AuxiliaryViewModel
 import com.example.hospitalfrontend.ui.nurses.viewmodels.NurseViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             HospitalFrontEndTheme {
                 MyAppHomePage(
-                    nurseViewModel = NurseViewModel(), remoteViewModel = RemoteViewModel()
+                    nurseViewModel = NurseViewModel(), remoteViewModel = RemoteViewModel(),auxiliaryViewModel = AuxiliaryViewModel()
                 )
             }
         }
@@ -44,14 +45,14 @@ class MainActivity : ComponentActivity() {
 fun HomePage() {
     HospitalFrontEndTheme {
         MyAppHomePage(
-            nurseViewModel = NurseViewModel(), remoteViewModel = RemoteViewModel()
+            nurseViewModel = NurseViewModel(), remoteViewModel = RemoteViewModel(), auxiliaryViewModel = AuxiliaryViewModel()
         )
     }
 }
 
 @Composable
 fun MyAppHomePage(
-    nurseViewModel: NurseViewModel, remoteViewModel: RemoteViewModel
+    nurseViewModel: NurseViewModel, remoteViewModel: RemoteViewModel, auxiliaryViewModel: AuxiliaryViewModel
 ) {
     val remoteApiMessageListNurse = remoteViewModel.remoteApiListMessage.value
     // Set up the NavController for navigation
@@ -59,7 +60,7 @@ fun MyAppHomePage(
 
     // Observe the login state as a StateFlow
     val loginState by nurseViewModel.loginState.collectAsState()
-
+    val loginStateAux by auxiliaryViewModel.loginState.collectAsState()
     // Determines the initial screen according to the authentication status
     val startDestination = if (loginState.isLogin) "home" else "login"
 
@@ -70,7 +71,13 @@ fun MyAppHomePage(
             }
         }
     }
-
+    LaunchedEffect(loginStateAux.isLogin) {
+        if (!loginState.isLogin) {
+            navController.navigate("login") {
+                popUpTo("home") { inclusive = true }
+            }
+        }
+    }
     NavHost(navController = navController, startDestination = startDestination) {
 
         composable("create") {
@@ -103,7 +110,6 @@ fun MyAppHomePage(
                 is RemoteApiMessageListNurse.Success -> {
                     nurseViewModel.loadNurses(remoteApiMessageListNurse.message)
                 }
-
                 is RemoteApiMessageListNurse.Error -> {
                     Log.d("List Error", "Error")
                     isError.value = true
@@ -123,9 +129,9 @@ fun MyAppHomePage(
             )
         }
         composable("login") {
-            HospitalLoginScreen(
+            LoginScreenAuxiliary(
                 navController = navController,
-                nurseViewModel = nurseViewModel,
+                auxiliaryViewModel = auxiliaryViewModel,
                 remoteViewModel = remoteViewModel
             )
         }
