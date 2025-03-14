@@ -1,4 +1,5 @@
 package com.example.hospitalfrontend.ui.login
+
 import android.util.Log
 import androidx.compose.foundation.background
 
@@ -36,20 +37,26 @@ import com.example.hospitalfrontend.ui.theme.Primary
 import com.example.hospitalfrontend.ui.theme.Secundary
 
 @Composable
-fun LoginScreenAuxiliary(navController: NavController, remoteViewModel:RemoteViewModel, auxiliaryViewModel: AuxiliaryViewModel) {
+fun LoginScreenAuxiliary(
+    navController: NavController,
+    remoteViewModel: RemoteViewModel,
+    auxiliaryViewModel: AuxiliaryViewModel
+) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            LoginScreenNurse(navController, remoteViewModel, auxiliaryViewModel )
+            LoginScreenNurse(navController, remoteViewModel, auxiliaryViewModel)
         }
     }
 }
 
 @Composable
 fun LoginScreenNurse(
-    navController: NavController, remoteViewModel: RemoteViewModel, auxiliaryViewModel: AuxiliaryViewModel
+    navController: NavController,
+    remoteViewModel: RemoteViewModel,
+    auxiliaryViewModel: AuxiliaryViewModel
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -68,7 +75,7 @@ fun LoginScreenNurse(
         )
         Spacer(modifier = Modifier.height(20.dp))
         Logo()
-        AuxiliaryForm(navController, remoteViewModel,auxiliaryViewModel )
+        AuxiliaryForm(navController, remoteViewModel, auxiliaryViewModel)
     }
 }
 
@@ -87,8 +94,11 @@ fun Logo() {
 
 @Composable
 fun AuxiliaryForm(
-    navController: NavController, remoteViewModel: RemoteViewModel, auxiliaryViewModel: AuxiliaryViewModel
+    navController: NavController,
+    remoteViewModel: RemoteViewModel,
+    auxiliaryViewModel: AuxiliaryViewModel
 ) {
+    var auxiliar = AuxiliaryState()
     //Create variables for the form
     val auxiliaryId = rememberSaveable { mutableStateOf("") }
     val messageApi = remoteViewModel.remoteApiMessageAuxiliary.value
@@ -110,10 +120,8 @@ fun AuxiliaryForm(
 
             val id = auxiliaryId.value.trim().toIntOrNull()
             if (id != null) {
-                Log.d("LoginDebug", "Botón de login presionado con ID: $id")
                 remoteViewModel.loginAuxiliary(id)
-            } else {
-                Log.e("LoginError", "El ID ingresado no es un número válido")
+                auxiliar.auxiliaryId = id
             }
         }
         // Mostrar el diálogo si es necesario
@@ -139,18 +147,21 @@ fun AuxiliaryForm(
                     val isSuccess = messageApi.message
                     if (isSuccess) {
                         remoteViewModel.clearApiMessage()
+                        auxiliaryViewModel.loginAuxiliary(auxiliar)
                         navController.navigate("home") {
                             popUpTo("login") { inclusive = true }
                         }
                     } else {
-                        dialogMessage = "Número incorrecto"
+                        dialogMessage = "Número incorrecte"
                         showDialog = true
                     }
                 }
+
                 is RemoteApiMessageAuxiliary.Error -> {
                     dialogMessage = "Error en la conexión"
                     showDialog = true
                 }
+
                 RemoteApiMessageAuxiliary.Loading -> Log.d("Loading", "Cargando...")
                 else -> {}
             }
@@ -191,8 +202,6 @@ fun SubmitButtonLogin(textId: String, inputValid: Boolean, onClick: () -> Unit) 
 }
 
 
-
-
 @Composable
 fun AuxiliaryNumberInput(
     auxiliaryId: MutableState<String>,
@@ -207,6 +216,7 @@ fun AuxiliaryNumberInput(
         textStyle = TextStyle(fontFamily = latoFont)
     )
 }
+
 //This function is for the layout of the texts fields.
 @Composable
 fun InputFieldAuxiliar(
