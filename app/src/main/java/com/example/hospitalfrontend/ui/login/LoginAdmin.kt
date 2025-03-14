@@ -203,9 +203,9 @@ fun UserForm(
                     // Call to the nurseViewModel to save the nurse in the database
                     nurseViewModel.loginNurse(messageApi.message)
                     remoteViewModel.clearApiMessage() // Change the message to Loading to avoid repeated messages when user is logout
-                    navController.navigate("home") {
+                    /*navController.navigate("home") {
                         popUpTo("login") { inclusive = true }
-                    }
+                    }*/
                 }
 
                 is RemoteApiMessageNurse.Error -> {
