@@ -1,5 +1,5 @@
 package com.example.hospitalfrontend.model
 
 data class AuxiliaryState (
-    val auxiliaryId: Int,
+    var auxiliaryId: Int = 0
 )
