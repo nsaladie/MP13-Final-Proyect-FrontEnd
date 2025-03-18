@@ -251,7 +251,7 @@ fun ButtonComponent(value: String, enabled: Boolean, onClick: () -> Unit) {
 fun CreateNursePage(
     navController: NavController,
     nurseViewModel: NurseViewModel,
-    remoteViewModel: RemoteViewModel
+    remoteViewModel: NurseRemoteViewModel
 ) {
     val messageApi = remoteViewModel.remoteApiMessage.value
     // State for controller of dialog visibility
@@ -401,7 +401,7 @@ fun CreateNursePage(
 fun CreateNursePagePreview() {
     val navController = rememberNavController()
     val nurseViewModel = NurseViewModel()
-    val remoteViewModel = RemoteViewModel()
+    val remoteViewModel = NurseRemoteViewModel()
 
     HospitalFrontEndTheme {
         CreateNursePage(navController, nurseViewModel, remoteViewModel)

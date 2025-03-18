@@ -24,8 +24,6 @@ interface ApiService {
 
     @POST("nurse/login")
     suspend fun loginNurse(@Body loginRequest: LoginRequest): NurseState
-    @POST("auxiliary/login")
-    suspend fun loginAuxiliary(@Body loginAuxiliary: LoginAuxiliary): Boolean
 
     @POST("nurse")
     suspend fun createNurse(@Body nurse: NurseState): NurseState
@@ -48,4 +46,11 @@ interface ApiService {
         @Path("id") id: Int,
         @Part file: MultipartBody.Part
     ): Response<ResponseBody>
+
+
+    //Auxiliary
+    @POST("auxiliary/login")
+    suspend fun loginAuxiliary(@Body loginAuxiliary: LoginAuxiliary): Boolean
+//Patient
+
 }

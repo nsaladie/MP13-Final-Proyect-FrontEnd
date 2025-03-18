@@ -60,7 +60,7 @@ import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.R.color.colorText
 import com.example.hospitalfrontend.model.LoginRequest
 import com.example.hospitalfrontend.network.RemoteApiMessageNurse
-import com.example.hospitalfrontend.network.RemoteViewModel
+import com.example.hospitalfrontend.network.NurseRemoteViewModel
 import com.example.hospitalfrontend.ui.nurses.viewmodels.NurseViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 import com.example.hospitalfrontend.ui.theme.Primary
@@ -68,7 +68,7 @@ import com.example.hospitalfrontend.ui.theme.Secundary
 
 @Composable
 fun HospitalLoginScreen(
-    nurseViewModel: NurseViewModel, navController: NavController, remoteViewModel: RemoteViewModel
+    nurseViewModel: NurseViewModel, navController: NavController, remoteViewModel: NurseRemoteViewModel
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -84,7 +84,7 @@ fun HospitalLoginScreen(
 
 @Composable
 fun LoginOrRegisterScreen(
-    navController: NavController, nurseViewModel: NurseViewModel, remoteViewModel: RemoteViewModel
+    navController: NavController, nurseViewModel: NurseViewModel, remoteViewModel: NurseRemoteViewModel
 ) {
 
     Column(
@@ -132,7 +132,7 @@ fun Image() {
 
 @Composable
 fun UserForm(
-    nurseViewModel: NurseViewModel, navController: NavController, remoteViewModel: RemoteViewModel
+    nurseViewModel: NurseViewModel, navController: NavController, remoteViewModel: NurseRemoteViewModel
 ) {
     val messageApi = remoteViewModel.remoteApiMessage.value
     // State for controller of dialog visibility
@@ -351,7 +351,7 @@ fun InputField(
 fun PreviewLogin() {
     val navController = rememberNavController()
     val nurseViewModel = NurseViewModel()
-    val remoteViewModel = RemoteViewModel()
+    val remoteViewModel = NurseRemoteViewModel()
 
     HospitalFrontEndTheme {
         HospitalLoginScreen(nurseViewModel, navController, remoteViewModel)

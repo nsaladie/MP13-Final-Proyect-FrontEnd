@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.protolite.well.known.types)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -81,4 +82,6 @@ dependencies {
     //Splash screen
     implementation(libs.androidx.navigation.compose.v277)
     implementation(libs.coil.compose.v222)
+    implementation(libs.material) // o la última versión
+
 }

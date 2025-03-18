@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.model.NurseState
-import com.example.hospitalfrontend.network.RemoteViewModel
+import com.example.hospitalfrontend.network.NurseRemoteViewModel
 import com.example.hospitalfrontend.ui.nurses.viewmodels.NurseViewModel
 import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter
@@ -29,7 +29,7 @@ fun ListNurseScreen(
     navController: NavController,
     nurseViewModel: NurseViewModel,
     isError: MutableState<Boolean>,
-    remoteViewModel: RemoteViewModel
+    remoteViewModel: NurseRemoteViewModel
 ) {
     val nurses by nurseViewModel.nurses.collectAsState()
     var isLoading by remember { mutableStateOf(true) }
@@ -92,7 +92,7 @@ fun ListNurseScreen(
 }
 
 @Composable
-fun NurseListItem(nurse: NurseState, remoteViewModel: RemoteViewModel) {
+fun NurseListItem(nurse: NurseState, remoteViewModel: NurseRemoteViewModel) {
     val age by remember(nurse.age) { // Calculate age only when nurse.age changes
         mutableIntStateOf(calculateAge(nurse.age))
     }
