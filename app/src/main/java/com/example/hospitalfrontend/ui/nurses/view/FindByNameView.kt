@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.hospitalfrontend.model.NurseState
 import com.example.hospitalfrontend.network.RemoteApiMessageNurse
-import com.example.hospitalfrontend.network.RemoteViewModel
+import com.example.hospitalfrontend.network.NurseRemoteViewModel
 
 
 @Preview
@@ -39,7 +39,7 @@ fun MySearchPreview() {
     HospitalFrontEndTheme {
         val navController = rememberNavController()
         val nurseViewModel = NurseViewModel()
-        val remoteViewModel = RemoteViewModel()
+        val remoteViewModel = NurseRemoteViewModel()
         FindScreen(
             navController,
             remoteViewModel,
@@ -68,7 +68,7 @@ fun TextField(labelValue: String, onValueChange: (String) -> Unit, textFieldValu
 }
 
 @Composable
-fun ListSearchNurse(nurse: NurseState, remoteViewModel: RemoteViewModel) {
+fun ListSearchNurse(nurse: NurseState, remoteViewModel: NurseRemoteViewModel) {
     val age by remember(nurse.age) { // Calculate age only when nurse.age changes
         mutableIntStateOf(calculateAge(nurse.age))
     }
@@ -120,7 +120,7 @@ fun ListSearchNurse(nurse: NurseState, remoteViewModel: RemoteViewModel) {
 
 @Composable
 fun FindScreen(
-    navController: NavController, remoteApiMessage: RemoteViewModel, nurseViewModel: NurseViewModel
+    navController: NavController, remoteApiMessage: NurseRemoteViewModel, nurseViewModel: NurseViewModel
 ) {
     val currentSearchName by nurseViewModel.currentSearchName.collectAsState()
     val message = remoteApiMessage.remoteApiMessage.value

@@ -81,7 +81,7 @@ import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.model.NurseState
 import com.example.hospitalfrontend.network.RemoteApiMessageBoolean
 import com.example.hospitalfrontend.network.RemoteApiMessageNurse
-import com.example.hospitalfrontend.network.RemoteViewModel
+import com.example.hospitalfrontend.network.NurseRemoteViewModel
 import com.example.hospitalfrontend.ui.nurses.viewmodels.NurseViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 import com.example.hospitalfrontend.ui.theme.Primary
@@ -91,7 +91,7 @@ import com.example.hospitalfrontend.ui.theme.Primary
 fun ProfileScreen(
     navController: NavController,
     nurseViewModel: NurseViewModel,
-    remoteViewModel: RemoteViewModel
+    remoteViewModel: NurseRemoteViewModel
 ) {
     val nurseState = nurseViewModel.nurseState.value
 
@@ -217,7 +217,7 @@ fun ProfileHeader(
     emailValue: MutableState<String>,
     passwordValue: MutableState<String>,
     specialityValue: MutableState<String>,
-    remoteViewModel: RemoteViewModel,
+    remoteViewModel: NurseRemoteViewModel,
 ) {
     val remoteApiMessage = remoteViewModel.remoteApiMessage.value
     var showSuccessDialog by rememberSaveable { mutableStateOf(false) }
@@ -306,7 +306,7 @@ fun ProfileImage(
     profileImageBitmap: Bitmap?,
     imagePickerLauncher: ManagedActivityResultLauncher<String, Uri?>,
     nurseState: NurseState?,
-    remoteViewModel: RemoteViewModel,
+    remoteViewModel: NurseRemoteViewModel,
 ) {
     val context = LocalContext.current
     val imageToShow = profileImageUri?.let { rememberAsyncImagePainter(it) }
@@ -389,7 +389,7 @@ fun ProfileForm(
 
 @Composable
 fun ProfileActions(
-    remoteViewModel: RemoteViewModel,
+    remoteViewModel: NurseRemoteViewModel,
     nurseViewModel: NurseViewModel,
     nurseState: NurseState?,
 ) {
@@ -607,7 +607,6 @@ fun SpecialityUpdateDropdown(
                 focusedLabelColor = Color.DarkGray,
             )
         )
-
         DropdownMenu(
             expanded = isDropdownExpanded,
             onDismissRequest = { isDropdownExpanded = false }) {
@@ -670,7 +669,7 @@ fun ProfilePreview() {
         ProfileScreen(
             navController,
             nurseViewModel = NurseViewModel(),
-            remoteViewModel = RemoteViewModel()
+            remoteViewModel = NurseRemoteViewModel()
         )
     }
 }

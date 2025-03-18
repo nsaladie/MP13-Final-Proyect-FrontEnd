@@ -15,7 +15,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import retrofit2.converter.gson.GsonConverterFactory
 
-class RemoteViewModel : ViewModel() {
+class NurseRemoteViewModel : ViewModel() {
     var remoteApiMessage = mutableStateOf<RemoteApiMessageNurse>(RemoteApiMessageNurse.Loading)
         private set
     var remoteApiListMessage =

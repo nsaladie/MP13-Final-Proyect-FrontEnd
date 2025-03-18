@@ -30,7 +30,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.R.color.colorText
 import com.example.hospitalfrontend.model.AuxiliaryState
-import com.example.hospitalfrontend.network.RemoteViewModel
+import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
+import com.example.hospitalfrontend.network.NurseRemoteViewModel
 import com.example.hospitalfrontend.ui.nurses.viewmodels.AuxiliaryViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 import com.example.hospitalfrontend.ui.theme.Primary
@@ -39,7 +40,7 @@ import com.example.hospitalfrontend.ui.theme.Secundary
 @Composable
 fun LoginScreenAuxiliary(
     navController: NavController,
-    remoteViewModel: RemoteViewModel,
+    auxiliaryRemoteViewModel: AuxiliaryRemoteViewModel,
     auxiliaryViewModel: AuxiliaryViewModel
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -47,7 +48,7 @@ fun LoginScreenAuxiliary(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            LoginScreenNurse(navController, remoteViewModel, auxiliaryViewModel)
+            LoginScreenNurse(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
         }
     }
 }
@@ -55,7 +56,7 @@ fun LoginScreenAuxiliary(
 @Composable
 fun LoginScreenNurse(
     navController: NavController,
-    remoteViewModel: RemoteViewModel,
+    auxiliaryRemoteViewModel: AuxiliaryRemoteViewModel,
     auxiliaryViewModel: AuxiliaryViewModel
 ) {
     Column(
@@ -75,7 +76,7 @@ fun LoginScreenNurse(
         )
         Spacer(modifier = Modifier.height(20.dp))
         Logo()
-        AuxiliaryForm(navController, remoteViewModel, auxiliaryViewModel)
+        AuxiliaryForm(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
     }
 }
 
@@ -95,13 +96,13 @@ fun Logo() {
 @Composable
 fun AuxiliaryForm(
     navController: NavController,
-    remoteViewModel: RemoteViewModel,
+    auxiliaryRemoteViewModel: AuxiliaryRemoteViewModel,
     auxiliaryViewModel: AuxiliaryViewModel
 ) {
     var auxiliar = AuxiliaryState()
     //Create variables for the form
     val auxiliaryId = rememberSaveable { mutableStateOf("") }
-    val messageApi = remoteViewModel.remoteApiMessageAuxiliary.value
+    val messageApi = auxiliaryRemoteViewModel.remoteApiMessageAuxiliary.value
     // State for controller of dialog visibility
     var showDialog by rememberSaveable { mutableStateOf(false) }
     var dialogMessage by rememberSaveable { mutableStateOf("") }
@@ -120,7 +121,7 @@ fun AuxiliaryForm(
 
             val id = auxiliaryId.value.trim().toIntOrNull()
             if (id != null) {
-                remoteViewModel.loginAuxiliary(id)
+                auxiliaryRemoteViewModel.loginAuxiliary(id)
                 auxiliar.auxiliaryId = id
             }
         }
@@ -146,7 +147,7 @@ fun AuxiliaryForm(
                 is RemoteApiMessageAuxiliary.Success -> {
                     val isSuccess = messageApi.message
                     if (isSuccess) {
-                        remoteViewModel.clearApiMessage()
+                        auxiliaryRemoteViewModel.clearApiMessage()
                         auxiliaryViewModel.loginAuxiliary(auxiliar)
                         navController.navigate("home") {
                             popUpTo("login") { inclusive = true }
@@ -252,10 +253,10 @@ fun InputFieldAuxiliar(
 @Composable
 fun PreviewLoginAuxiliar() {
     val navController = rememberNavController()
-    val remoteViewModel = RemoteViewModel()
+    val auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel()
     val auxiliaryViewModel = AuxiliaryViewModel()
     HospitalFrontEndTheme {
 
-        LoginScreenAuxiliary(navController, remoteViewModel, auxiliaryViewModel)
+        LoginScreenAuxiliary(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
     }
 }

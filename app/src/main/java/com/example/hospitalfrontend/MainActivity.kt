@@ -10,12 +10,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
-import com.example.hospitalfrontend.network.RemoteViewModel
+import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
+import com.example.hospitalfrontend.network.NurseRemoteViewModel
+import com.example.hospitalfrontend.network.PatientRemoteViewModel
 import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
 import com.example.hospitalfrontend.ui.nurses.view.DiagnosisAdmission
 import com.example.hospitalfrontend.ui.nurses.view.HomeScreen
 import com.example.hospitalfrontend.ui.nurses.view.ListCuresScreen
 import com.example.hospitalfrontend.ui.nurses.viewmodels.AuxiliaryViewModel
+import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 
 class MainActivity : ComponentActivity() {
@@ -26,7 +29,12 @@ class MainActivity : ComponentActivity() {
             HospitalFrontEndTheme {
                 MyAppHomePage(
                     auxiliaryViewModel = AuxiliaryViewModel(),
-                    remoteViewModel = RemoteViewModel()
+                    remoteViewModel = NurseRemoteViewModel(),
+                    auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel(),
+                    patientRemoteViewModel = PatientRemoteViewModel(),
+                    patientViewModel= PatientViewModel()
+
+
                 )
             }
         }
@@ -39,7 +47,10 @@ fun HomePage() {
     HospitalFrontEndTheme {
         MyAppHomePage(
             auxiliaryViewModel = AuxiliaryViewModel(),
-            remoteViewModel = RemoteViewModel()
+            remoteViewModel = NurseRemoteViewModel(),
+            auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel(),
+            patientRemoteViewModel = PatientRemoteViewModel(),
+            patientViewModel = PatientViewModel()
         )
     }
 }
@@ -47,7 +58,10 @@ fun HomePage() {
 @Composable
 fun MyAppHomePage(
     auxiliaryViewModel: AuxiliaryViewModel,
-    remoteViewModel: RemoteViewModel
+    remoteViewModel: NurseRemoteViewModel,
+    auxiliaryRemoteViewModel:AuxiliaryRemoteViewModel,
+    patientRemoteViewModel: PatientRemoteViewModel,
+    patientViewModel: PatientViewModel
 ) {
     val navController = rememberNavController()
 
@@ -71,7 +85,7 @@ fun MyAppHomePage(
             LoginScreenAuxiliary(
                 navController = navController,
                 auxiliaryViewModel = auxiliaryViewModel,
-                remoteViewModel = remoteViewModel
+                auxiliaryRemoteViewModel = auxiliaryRemoteViewModel
             )
         }
         composable("diagnosis") {
@@ -91,8 +105,8 @@ fun MyAppHomePage(
         composable("personalData") {
             PersonalData(
                 navController = navController,
-                auxiliaryViewModel = auxiliaryViewModel,
-                remoteViewModel = remoteViewModel
+                patientRemoteViewModel = patientRemoteViewModel,
+                patientViewModel = patientViewModel,
             )
         }
         composable("home") {
