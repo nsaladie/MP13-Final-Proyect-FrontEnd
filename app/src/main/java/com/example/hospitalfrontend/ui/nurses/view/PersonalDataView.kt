@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.AddIcCall
 import androidx.compose.material.icons.filled.AddLocation
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PermContactCalendar
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.*
@@ -53,7 +54,7 @@ fun PersonalData(
     ) {
         TopAppBar(
             { Text("") }, navigationIcon = {
-                IconButton(onClick = { navController.navigate("home") }) {
+                IconButton(onClick = { navController.navigate("menu") }) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Tornar a la pantalla home",
@@ -80,13 +81,12 @@ fun PersonalData(
         val nameValue = rememberSaveable { mutableStateOf(patientState?.name ?: "") }
         val surnameValue = rememberSaveable { mutableStateOf(patientState?.surname ?: "") }
         val addressValue = rememberSaveable { mutableStateOf(patientState?.address ?: "") }
-        val birthdayValue = rememberSaveable { mutableStateOf(patientState?.birthday ?: "") }
+        val birthdayValue = rememberSaveable { mutableStateOf(patientState?.dateBirth ?: "") }
         val languageValue = rememberSaveable { mutableStateOf(patientState?.language ?: "") }
-        val antecedentsMedics = rememberSaveable { mutableStateOf(patientState?.antecedentsMedics ?: "") }
-        val dataCaregiver = rememberSaveable { mutableStateOf(patientState?.dataCaregiver ?: "") }
-        val allergiesValue = rememberSaveable { mutableStateOf(patientState?.allergies ?: "") }
-
-        // ⬇️ Llamamos a `DataForm()` para mostrar los `TextFields`
+        val antecedentsMedics = rememberSaveable { mutableStateOf(patientState?.history ?: "") }
+        val caregiverName = rememberSaveable { mutableStateOf(patientState?.caragiverName ?: "") }
+        val caregiverNumber = rememberSaveable { mutableStateOf(patientState?.caragiverNumber ?: "") }
+        val allergiesValue = rememberSaveable { mutableStateOf(patientState?.allergy ?: "") }
         DataForm(
             nameValue = nameValue,
             surnameValue = surnameValue,
@@ -95,7 +95,8 @@ fun PersonalData(
             languageValue = languageValue,
             antecedentsMedics = antecedentsMedics,
             allergiesValue = allergiesValue,
-            dataCaregiver = dataCaregiver
+            caregiverName = caregiverName,
+            caregiverNumber = caregiverNumber
         )
     }
 }
@@ -110,7 +111,8 @@ fun DataForm(
     languageValue:MutableState<String>,
     antecedentsMedics:MutableState<String>,
     allergiesValue:MutableState<String>,
-    dataCaregiver:MutableState<String>
+    caregiverName:MutableState<String>,
+    caregiverNumber: MutableState<String>
 ) {
 
 
@@ -128,15 +130,14 @@ fun DataForm(
         TextField(labelValue = "Llengua", icon = Icons.Default.Person, textValue = languageValue)
         TextField(labelValue = "Antecedents mèdics", icon = Icons.Default.Assignment, textValue = antecedentsMedics)
         TextField(labelValue = "Al·lèrgies", icon = Icons.Default.Person, textValue = allergiesValue)
-        TextField(labelValue = "Dades del cuidador:Telèfon/nom", icon = Icons.Default.AddIcCall, textValue = dataCaregiver)
-        Spacer(modifier = Modifier.height(20.dp))
+        TextField(labelValue = "Dades del cuidador:nom", icon = Icons.Default.PermContactCalendar, textValue = caregiverName)
+        TextField(labelValue = "Dades del cuidador:teléfon", icon = Icons.Default.AddIcCall, textValue = caregiverNumber)
+        Spacer(modifier = Modifier.height(25.dp))
         // Botón para guardar datos
         SaveDataButton(textId = "Desar", inputValid = true) {
             // Acción para guardar los datos antes de navegar
         }
 
-
-        // Botón para volver al login
         Spacer(modifier = Modifier.height(20.dp))
     }
 }
