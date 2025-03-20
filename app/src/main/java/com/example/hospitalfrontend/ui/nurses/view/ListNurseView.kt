@@ -15,12 +15,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.*
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.model.NurseState
 import com.example.hospitalfrontend.network.NurseRemoteViewModel
+import com.example.hospitalfrontend.network.PatientRemoteViewModel
 import com.example.hospitalfrontend.ui.nurses.viewmodels.NurseViewModel
+import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
+import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter
 
@@ -151,5 +156,23 @@ fun calculateAge(birthDate: String): Int {
     } catch (e: Exception) {
         Log.e("CalculateAge", "Invalid birth date: $birthDate", e)
         0 // Default to 0 if there's an error
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Preview() {
+    val navController = rememberNavController()
+    val nurseViewModel = NurseViewModel() // Asegúrate de que se puede instanciar así
+    val isError = remember { mutableStateOf(false) } // Corrección
+    val nurseRemoteViewModel = NurseRemoteViewModel() // Asegúrate de que se puede instanciar así
+
+    HospitalFrontEndTheme {
+        ListNurseScreen(
+            navController = navController,
+            nurseViewModel = nurseViewModel,
+            isError = isError,
+            remoteViewModel = nurseRemoteViewModel
+        )
     }
 }

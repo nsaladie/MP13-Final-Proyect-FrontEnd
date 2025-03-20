@@ -3,6 +3,7 @@ package com.example.hospitalfrontend.network
 import com.example.hospitalfrontend.model.LoginAuxiliary
 import com.example.hospitalfrontend.model.LoginRequest
 import com.example.hospitalfrontend.model.NurseState
+import com.example.hospitalfrontend.model.RoomState
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -46,8 +47,9 @@ interface ApiService {
         @Path("id") id: Int,
         @Part file: MultipartBody.Part
     ): Response<ResponseBody>
-
-
+//Rooms
+@GET("room")
+suspend fun getAllRooms(): List<RoomState>
     //Auxiliary
     @POST("auxiliary/login")
     suspend fun loginAuxiliary(@Body loginAuxiliary: LoginAuxiliary): Boolean

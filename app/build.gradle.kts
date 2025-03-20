@@ -78,7 +78,6 @@ dependencies {
     // Allow to select images
     implementation (libs.accompanist.permissions)
     implementation (libs.androidx.activity.ktx.v131)
-
     //Splash screen
     implementation(libs.androidx.navigation.compose.v277)
     implementation(libs.coil.compose.v222)

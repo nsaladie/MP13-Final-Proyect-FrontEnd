@@ -122,7 +122,7 @@ fun AuxiliaryForm(
             val id = auxiliaryId.value.trim().toIntOrNull()
             if (id != null) {
                 auxiliaryRemoteViewModel.loginAuxiliary(id)
-                auxiliar.auxiliaryId = id
+                auxiliar.id = id
             }
         }
         // Mostrar el diálogo si es necesario
@@ -145,17 +145,9 @@ fun AuxiliaryForm(
         LaunchedEffect(messageApi) {
             when (messageApi) {
                 is RemoteApiMessageAuxiliary.Success -> {
-                    val isSuccess = messageApi.message
-                    if (isSuccess) {
                         auxiliaryRemoteViewModel.clearApiMessage()
                         auxiliaryViewModel.loginAuxiliary(auxiliar)
-                        navController.navigate("home") {
-                            popUpTo("login") { inclusive = true }
-                        }
-                    } else {
-                        dialogMessage = "Número incorrecte"
-                        showDialog = true
-                    }
+                        navController.navigate("home")
                 }
 
                 is RemoteApiMessageAuxiliary.Error -> {

@@ -10,13 +10,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
+import com.example.hospitalfrontend.model.RoomState
 import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
 import com.example.hospitalfrontend.network.NurseRemoteViewModel
 import com.example.hospitalfrontend.network.PatientRemoteViewModel
+import com.example.hospitalfrontend.network.RemoteApiMessageListRoom
 import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
 import com.example.hospitalfrontend.ui.nurses.view.DiagnosisAdmission
 import com.example.hospitalfrontend.ui.nurses.view.HomeScreen
 import com.example.hospitalfrontend.ui.nurses.view.ListCuresScreen
+import com.example.hospitalfrontend.ui.nurses.view.MenuScreen
 import com.example.hospitalfrontend.ui.nurses.viewmodels.AuxiliaryViewModel
 import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
@@ -63,6 +66,7 @@ fun MyAppHomePage(
     patientRemoteViewModel: PatientRemoteViewModel,
     patientViewModel: PatientViewModel
 ) {
+    val remoteApiMessageListRoom = patientRemoteViewModel.remoteApiListMessage.value
     val navController = rememberNavController()
 
     // Observar el estado de login de manera segura
@@ -110,7 +114,31 @@ fun MyAppHomePage(
             )
         }
         composable("home") {
-            HomeScreen(navController = navController)
+            val isError = remember { mutableStateOf(false) }
+            LaunchedEffect(Unit) {
+                patientRemoteViewModel.getAllRooms()
+            }
+            when (remoteApiMessageListRoom){
+                is RemoteApiMessageListRoom.Success ->{
+                    patientViewModel.loadRooms(remoteApiMessageListRoom.message)
+                }
+                is RemoteApiMessageListRoom.Error -> {
+                    Log.d("ListRoom", "Error")
+                }
+                is RemoteApiMessageListRoom.Loading -> {
+                    Log.d("List", "Loading List")
+                }
+            }
+            HomeScreen(
+                navController = navController,
+                //patientRemoteViewModel = patientRemoteViewModel,
+                patientViewModel = patientViewModel,
+                isError = isError,
+            )
+
+        }
+        composable("menu") {
+            MenuScreen(navController = navController)
         }
     }
 }

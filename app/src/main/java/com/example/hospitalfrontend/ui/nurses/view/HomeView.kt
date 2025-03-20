@@ -1,97 +1,121 @@
 package com.example.hospitalfrontend.ui.nurses.view
 
-
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
-import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
+import com.example.hospitalfrontend.model.RoomState
+import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun HomeScreen(
     navController: NavController,
+    patientViewModel: PatientViewModel,
+    isError: MutableState<Boolean>,
 ) {
-    val options = listOf(
-        "Dades personals del pacient",
-        "Motius/Diagnóstic d'ingrés",
-        "Llistat de cures"
-    )
-    val nunitoFont = FontFamily(Font(R.font.nunito_bold))
-    val latoFont = FontFamily(Font(R.font.lato_light))
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "MENÚ PACIENT",
-            style = TextStyle(
-                fontFamily = nunitoFont,
-                fontSize = 24.sp
-            ),
-            modifier = Modifier.padding(bottom = 20.dp)
+    val rooms by patientViewModel.rooms.collectAsState()
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(rooms) {
+        if (rooms.isNotEmpty()) {
+            isLoading = false
+        }
+    }
+    if (isError.value) {
+        AlertDialog(
+            onDismissRequest = { isError.value = false },
+            confirmButton = {
+                TextButton(onClick = { isError.value = false }) {
+                    Text("OK")
+                }
+            },
+            title = { Text(text = "Error: List Room", color = Color.Red) },
+            text = { Text(text = "Failing into fetching data of list rooms") }
         )
-        options.forEach { option ->
-            ButtonMenuHome(
-                onScreenSelected = { navController.navigate(option.lowercase()) },
-                textButton = option,
-                latoFont = latoFont,
-                navController = navController
-            )
+    }
+
+    val nunitoFont = FontFamily(Font(R.font.nunito_bold))
+
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(
+            text = "LLISTAT D'HABITACIONS",
+            style = TextStyle(fontFamily = nunitoFont, fontSize = 30.sp),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp)) // Espacio entre el título y la lista
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp)
+                ) {
+                    items(items = rooms) { room ->
+                        RoomListItem(room, navController)
+                    }
+                }
+            }
         }
     }
 }
 
-
 @Composable
-fun ButtonMenuHome(onScreenSelected: () -> Unit, textButton: String, latoFont: FontFamily, navController: NavController) {
-    val customGreen = Color(169, 199, 199)
-    val latoFont = FontFamily(Font(R.font.lato_light))
-    Button(
-        onClick = { navController.navigate("personalData") },
+fun RoomListItem(room: RoomState, navController: NavController) {
+    val latoFont = FontFamily(Font(R.font.lato_regular))
+
+    val cardColor = if (room.patient != null) Color(169, 199, 199) else Color(200, 200, 200)
+
+    Card(
         modifier = Modifier
-            .fillMaxWidth(0.85f)
-            .height(200.dp)
-            .padding(10.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = customGreen)
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .fillMaxWidth()
+            .clickable { navController.navigate("menu") },
+        colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
-        Text(
-            textButton,
-            fontSize = 18.sp,
-            color = Color.Black, // Color del texto en negro
-            fontFamily = latoFont, // Usamos la fuente Lato
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.CenterVertically)
+            ) {
+                Text(text = "Número d'habitació: ${room.roomNumber}",
+                    style = TextStyle(fontFamily = latoFont)
+                    )
+                if (room.patient != null) {
+                    Text(text = "Nom: ${room.patient.name} ${room.patient.surname}", style = TextStyle(fontFamily = latoFont))
+                    Text(text = "Data d'ingrés: ${room.patient.dateEntry}", style = TextStyle(fontFamily = latoFont))
+                } else {
+                    Text(text = "Habitació buida", color = Color.Red)
+                }
+            }
+        }
     }
 }
-
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    HospitalFrontEndTheme {
-        val navController = rememberNavController()
-        HomeScreen(
-            navController
-        )
-    }
-}
-
