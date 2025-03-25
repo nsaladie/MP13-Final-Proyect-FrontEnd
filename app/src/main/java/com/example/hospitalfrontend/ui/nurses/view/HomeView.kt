@@ -89,12 +89,15 @@ fun RoomListItem(room: RoomState, navController: NavController) {
     val latoFont = FontFamily(Font(R.font.lato_regular))
 
     val cardColor = if (room.patient != null) Color(169, 199, 199) else Color(200, 200, 200)
-
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .fillMaxWidth()
-            .clickable { navController.navigate("menu") },
+            .clickable {
+                room.patient?.let { patient ->
+                    navController.navigate("menu/${patient.historialNumber}")
+                }
+            },
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Row(
