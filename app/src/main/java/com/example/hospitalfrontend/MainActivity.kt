@@ -8,8 +8,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.hospitalfrontend.model.RoomState
 import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
 import com.example.hospitalfrontend.network.NurseRemoteViewModel
@@ -35,8 +37,7 @@ class MainActivity : ComponentActivity() {
                     remoteViewModel = NurseRemoteViewModel(),
                     auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel(),
                     patientRemoteViewModel = PatientRemoteViewModel(),
-                    patientViewModel= PatientViewModel()
-
+                    patientViewModel = PatientViewModel()
 
                 )
             }
@@ -62,7 +63,7 @@ fun HomePage() {
 fun MyAppHomePage(
     auxiliaryViewModel: AuxiliaryViewModel,
     remoteViewModel: NurseRemoteViewModel,
-    auxiliaryRemoteViewModel:AuxiliaryRemoteViewModel,
+    auxiliaryRemoteViewModel: AuxiliaryRemoteViewModel,
     patientRemoteViewModel: PatientRemoteViewModel,
     patientViewModel: PatientViewModel
 ) {
@@ -106,25 +107,20 @@ fun MyAppHomePage(
                 remoteViewModel = remoteViewModel
             )
         }
-        composable("personalData") {
-            PersonalData(
-                navController = navController,
-                patientRemoteViewModel = patientRemoteViewModel,
-                patientViewModel = patientViewModel,
-            )
-        }
         composable("home") {
             val isError = remember { mutableStateOf(false) }
             LaunchedEffect(Unit) {
                 patientRemoteViewModel.getAllRooms()
             }
-            when (remoteApiMessageListRoom){
-                is RemoteApiMessageListRoom.Success ->{
+            when (remoteApiMessageListRoom) {
+                is RemoteApiMessageListRoom.Success -> {
                     patientViewModel.loadRooms(remoteApiMessageListRoom.message)
                 }
+
                 is RemoteApiMessageListRoom.Error -> {
                     Log.d("ListRoom", "Error")
                 }
+
                 is RemoteApiMessageListRoom.Loading -> {
                     Log.d("List", "Loading List")
                 }
@@ -135,10 +131,28 @@ fun MyAppHomePage(
                 patientViewModel = patientViewModel,
                 isError = isError,
             )
+        }
 
+        composable(
+            "menu/{patientId}",
+            arguments = listOf(navArgument("patientId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getInt("patientId") ?: -1
+            MenuScreen(navController = navController, patientId = patientId)
         }
-        composable("menu") {
-            MenuScreen(navController = navController)
+
+        composable(
+            "personalData/{patientId}",
+            arguments = listOf(navArgument("patientId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getInt("patientId") ?: -1
+            PersonalData(
+                navController = navController,
+                patientRemoteViewModel = patientRemoteViewModel,
+                patientViewModel = patientViewModel,
+                patientId = patientId
+            )
         }
+
     }
 }
