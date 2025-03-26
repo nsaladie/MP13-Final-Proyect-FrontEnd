@@ -29,12 +29,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathSegment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.example.hospitalfrontend.model.PatientState
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuScreen(
     navController: NavController,
+    patientId: Int
 ) {
     val options = listOf(
         "Dades personals del pacient",
@@ -46,21 +47,25 @@ fun MenuScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp),
+            .padding(5.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TopAppBar(
-            { Text("") }, navigationIcon = {
-                IconButton(onClick = { navController.navigate("home") }) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Tornar a la pantalla home",
-                        tint = Color.Black
-                    )
-                }
-            },
-        )
+        Box(modifier = Modifier.fillMaxWidth()) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 5.dp)
+                    .align(Alignment.TopStart)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Back",
+                    tint = Color.Black,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
         Text(
             text = "MENÚ PACIENT",
             style = TextStyle(
@@ -74,7 +79,8 @@ fun MenuScreen(
                 onScreenSelected = { navController.navigate(option.lowercase()) },
                 textButton = option,
                 latoFont = latoFont,
-                navController = navController
+                navController = navController,
+                patientId = patientId
             )
         }
     }
@@ -82,10 +88,10 @@ fun MenuScreen(
 
 
 @Composable
-fun ButtonMenuHome(onScreenSelected: () -> Unit, textButton: String, latoFont: FontFamily, navController: NavController) {
+fun ButtonMenuHome(onScreenSelected: () -> Unit, textButton: String, latoFont: FontFamily, navController: NavController, patientId: Int) {
     val customGreen = Color(169, 199, 199)
     Button(
-        onClick = { navController.navigate("personalData") },
+        onClick = { navController.navigate("personalData/$patientId") },
         modifier = Modifier
             .fillMaxWidth(0.85f)
             .height(200.dp)
@@ -104,7 +110,7 @@ fun ButtonMenuHome(onScreenSelected: () -> Unit, textButton: String, latoFont: F
 }
 
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
     HospitalFrontEndTheme {
@@ -113,5 +119,5 @@ fun HomeScreenPreview() {
             navController
         )
     }
-}
+}*/
 

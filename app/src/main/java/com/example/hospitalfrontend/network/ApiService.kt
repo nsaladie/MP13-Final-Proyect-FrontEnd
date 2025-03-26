@@ -3,6 +3,7 @@ package com.example.hospitalfrontend.network
 import com.example.hospitalfrontend.model.LoginAuxiliary
 import com.example.hospitalfrontend.model.LoginRequest
 import com.example.hospitalfrontend.model.NurseState
+import com.example.hospitalfrontend.model.PatientState
 import com.example.hospitalfrontend.model.RoomState
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -54,5 +55,8 @@ suspend fun getAllRooms(): List<RoomState>
     @POST("auxiliary/login")
     suspend fun loginAuxiliary(@Body loginAuxiliary: LoginAuxiliary): Boolean
 //Patient
+@GET("patient/{id}")
+suspend fun getPatientById(@Path("id") id: Int): PatientState
+
 
 }
