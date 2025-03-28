@@ -18,6 +18,8 @@ class PatientRemoteViewModel : ViewModel() {
     var remoteApiMessage = mutableStateOf<RemoteApiMessagePatient>(RemoteApiMessagePatient.Loading)
     var remoteApiListMessage =
         mutableStateOf<RemoteApiMessageListRoom>(RemoteApiMessageListRoom.Loading)
+    var remoteApiListMessageCure =
+        mutableStateOf<RemoteApiMessageListCure>(RemoteApiMessageListCure.Loading)
 
     // Clear the API message
     fun clearApiMessage() {
@@ -41,6 +43,23 @@ class PatientRemoteViewModel : ViewModel() {
                     RemoteApiMessageListRoom.Success(response)
             } catch (e: Exception) {
                 remoteApiListMessage.value = RemoteApiMessageListRoom.Error // Error response
+            }
+        }
+    }
+
+    fun getAllCures(id: Int) {
+        viewModelScope.launch {
+            Log.d("Error Lo", "Entra en el metodp")
+            remoteApiListMessageCure.value = RemoteApiMessageListCure.Loading
+            try {
+                Log.d("Error Lo", "Entra en el try")
+                val response = apiService.getAllCures(id)
+                remoteApiListMessageCure.value =
+                    RemoteApiMessageListCure.Success(response)
+                Log.d("Error Lo", response.toString())
+            } catch (e: Exception) {
+                Log.d("Error", "error cura")
+                remoteApiListMessageCure.value = RemoteApiMessageListCure.Error // Error response
             }
         }
     }

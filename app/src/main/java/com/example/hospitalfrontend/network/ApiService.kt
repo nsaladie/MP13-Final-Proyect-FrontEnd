@@ -50,6 +50,10 @@ interface ApiService {
     @GET("patient/{id}")
     suspend fun getPatientById(@Path("id") id: Int): PatientState
 
+//Cures
+@GET("register/vitalSign/{id}")
+suspend fun getAllCures(@Path("id") id: Int): List<VitalSignState>
+
     // Diagnosis Details
     @GET("register/diagnosis/{id}")
     suspend fun getDiagnosis(@Path("id") id: Int): DiagnosisState
