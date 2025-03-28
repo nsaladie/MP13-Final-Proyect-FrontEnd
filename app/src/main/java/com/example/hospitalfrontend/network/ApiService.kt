@@ -1,21 +1,10 @@
 package com.example.hospitalfrontend.network
 
-import com.example.hospitalfrontend.model.LoginAuxiliary
-import com.example.hospitalfrontend.model.LoginRequest
-import com.example.hospitalfrontend.model.NurseState
-import com.example.hospitalfrontend.model.PatientState
-import com.example.hospitalfrontend.model.RoomState
+import com.example.hospitalfrontend.model.*
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Part
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface ApiService {
     @GET("nurse/{id}")
@@ -48,15 +37,20 @@ interface ApiService {
         @Path("id") id: Int,
         @Part file: MultipartBody.Part
     ): Response<ResponseBody>
-//Rooms
-@GET("room")
-suspend fun getAllRooms(): List<RoomState>
+
+    //Rooms
+    @GET("room")
+    suspend fun getAllRooms(): List<RoomState>
+
     //Auxiliary
     @POST("auxiliary/login")
     suspend fun loginAuxiliary(@Body loginAuxiliary: LoginAuxiliary): Boolean
-//Patient
-@GET("patient/{id}")
-suspend fun getPatientById(@Path("id") id: Int): PatientState
 
+    //Patient
+    @GET("patient/{id}")
+    suspend fun getPatientById(@Path("id") id: Int): PatientState
 
+    // Diagnosis Details
+    @GET("register/diagnosis/{id}")
+    suspend fun getDiagnosis(@Path("id") id: Int): DiagnosisState
 }

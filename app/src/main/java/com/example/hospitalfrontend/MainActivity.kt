@@ -10,20 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.hospitalfrontend.model.RoomState
-import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
-import com.example.hospitalfrontend.network.NurseRemoteViewModel
-import com.example.hospitalfrontend.network.PatientRemoteViewModel
-import com.example.hospitalfrontend.network.RemoteApiMessageListRoom
+import com.example.hospitalfrontend.network.*
 import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
-import com.example.hospitalfrontend.ui.nurses.view.DiagnosisAdmission
-import com.example.hospitalfrontend.ui.nurses.view.HomeScreen
-import com.example.hospitalfrontend.ui.nurses.view.ListCuresScreen
-import com.example.hospitalfrontend.ui.nurses.view.MenuScreen
-import com.example.hospitalfrontend.ui.nurses.viewmodels.AuxiliaryViewModel
-import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
+import com.example.hospitalfrontend.ui.nurses.view.*
+import com.example.hospitalfrontend.ui.nurses.viewmodels.*
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 
 class MainActivity : ComponentActivity() {
@@ -37,8 +28,9 @@ class MainActivity : ComponentActivity() {
                     remoteViewModel = NurseRemoteViewModel(),
                     auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel(),
                     patientRemoteViewModel = PatientRemoteViewModel(),
-                    patientViewModel = PatientViewModel()
-
+                    patientViewModel = PatientViewModel(),
+                    diagnosisViewModel = DiagnosisViewModel(),
+                    diagnosisRemoteViewModel = DiagnosisRemoteViewModel()
                 )
             }
         }
@@ -54,7 +46,9 @@ fun HomePage() {
             remoteViewModel = NurseRemoteViewModel(),
             auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel(),
             patientRemoteViewModel = PatientRemoteViewModel(),
-            patientViewModel = PatientViewModel()
+            patientViewModel = PatientViewModel(),
+            diagnosisViewModel = DiagnosisViewModel(),
+            diagnosisRemoteViewModel = DiagnosisRemoteViewModel()
         )
     }
 }
@@ -65,19 +59,20 @@ fun MyAppHomePage(
     remoteViewModel: NurseRemoteViewModel,
     auxiliaryRemoteViewModel: AuxiliaryRemoteViewModel,
     patientRemoteViewModel: PatientRemoteViewModel,
-    patientViewModel: PatientViewModel
+    patientViewModel: PatientViewModel,
+    diagnosisViewModel: DiagnosisViewModel,
+    diagnosisRemoteViewModel: DiagnosisRemoteViewModel
 ) {
     val remoteApiMessageListRoom = patientRemoteViewModel.remoteApiListMessage.value
     val navController = rememberNavController()
 
-    // Observar el estado de login de manera segura
+    // Get the state of login
     val loginState by auxiliaryViewModel.loginState.collectAsState()
 
-    // Determinar la pantalla inicial
+    // Determine the initial screen
     val startDestination = if (loginState.isLogin) "home" else "login"
 
     LaunchedEffect(loginState.isLogin) {
-        Log.d("LoginState", "Estado de login: ${loginState.isLogin}")
         if (!loginState.isLogin) {
             navController.navigate("login") {
                 popUpTo("home") { inclusive = true }
@@ -93,13 +88,20 @@ fun MyAppHomePage(
                 auxiliaryRemoteViewModel = auxiliaryRemoteViewModel
             )
         }
-        composable("diagnosis") {
-            DiagnosisAdmission(
+
+        composable(
+            "diagnosis/{patientId}",
+            arguments = listOf(navArgument("patientId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getInt("patientId") ?: -1
+            DiagnosisScreen(
                 navController = navController,
-                auxiliaryViewModel = auxiliaryViewModel,
-                remoteViewModel = remoteViewModel
+                diagnosisViewModel = diagnosisViewModel,
+                diagnosisRemoteViewModel = diagnosisRemoteViewModel,
+                patientId = patientId
             )
         }
+
         composable("listCures") {
             ListCuresScreen(
                 navController = navController,
@@ -107,6 +109,7 @@ fun MyAppHomePage(
                 remoteViewModel = remoteViewModel
             )
         }
+
         composable("home") {
             val isError = remember { mutableStateOf(false) }
             LaunchedEffect(Unit) {
