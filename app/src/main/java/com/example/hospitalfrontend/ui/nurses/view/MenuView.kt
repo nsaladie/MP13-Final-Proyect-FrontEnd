@@ -21,7 +21,7 @@ import androidx.navigation.NavController
 sealed class Screen(val route: String) {
     data class PersonalData(val patientId: Int) : Screen("personalData/$patientId")
     data class Diagnosis(val patientId: Int) : Screen("diagnosis/$patientId")
-    object ListRegister : Screen("listRegister")
+    data class ListRegister(val patientId: Int) : Screen("listRegister/$patientId")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,7 +35,7 @@ fun MenuScreen(
     val options = listOf(
         "Dades personals del pacient" to Screen.PersonalData(patientId).route,
         "Diagnòstic d'Ingrés" to Screen.Diagnosis(patientId).route,
-        "Llistat de cures" to Screen.ListRegister.route
+        "Llistat de cures" to Screen.ListRegister(patientId).route
     )
 
     Scaffold(

@@ -12,6 +12,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.example.hospitalfrontend.network.*
+import com.example.hospitalfrontend.network.RemoteApiMessageListCure
+import com.example.hospitalfrontend.model.RoomState
+import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
+import com.example.hospitalfrontend.network.NurseRemoteViewModel
+import com.example.hospitalfrontend.network.PatientRemoteViewModel
+import com.example.hospitalfrontend.network.RemoteApiMessageListRoom
 import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
 import com.example.hospitalfrontend.ui.nurses.view.*
 import com.example.hospitalfrontend.ui.nurses.viewmodels.*
@@ -64,6 +70,7 @@ fun MyAppHomePage(
     diagnosisRemoteViewModel: DiagnosisRemoteViewModel
 ) {
     val remoteApiMessageListRoom = patientRemoteViewModel.remoteApiListMessage.value
+    val remoteApiMessageListCure = patientRemoteViewModel.remoteApiListMessageCure.value
     val navController = rememberNavController()
 
     // Get the state of login
@@ -101,13 +108,38 @@ fun MyAppHomePage(
                 patientId = patientId
             )
         }
+        composable("listRegister/{patientId}") { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getString("patientId")?.toIntOrNull()
 
-        composable("listCures") {
-            ListCuresScreen(
-                navController = navController,
-                auxiliaryViewModel = auxiliaryViewModel,
-                remoteViewModel = remoteViewModel
-            )
+            val isError = remember { mutableStateOf(false) }
+            // Collect the state here
+            LaunchedEffect(patientId) {
+                if (patientId != null) {
+                    patientRemoteViewModel.getAllCures(patientId)
+                }
+            }
+
+            when (remoteApiMessageListCure) {
+                is RemoteApiMessageListCure.Success -> {
+                    patientViewModel.loadCures(remoteApiMessageListCure.message)
+                }
+                is RemoteApiMessageListCure.Error -> {
+                    Log.d("ListCures", "Error")
+                }
+                is RemoteApiMessageListCure.Loading -> {
+                    Log.d("ListCures", "Loading List")
+                }
+            }
+
+            if (patientId != null) {
+                ListCuresScreen(
+                    navController = navController,
+                    patientRemoteViewModel = patientRemoteViewModel,
+                    isError = isError,
+                    patientViewModel = patientViewModel,
+                    patientId = patientId
+                )
+            }
         }
 
         composable("home") {
