@@ -89,61 +89,66 @@ fun ListCuresScreen(
         containerColor = customPrimaryColor, topBar = {
             TopAppBar(
                 title = {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "LLISTAT DE CURES", style = TextStyle(
-                            fontSize = 30.sp,
-                            fontFamily = NunitoFontFamily,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            textAlign = TextAlign.Center
-                        ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
-                    )
-                }
-            }, navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "LLISTAT DE CURES", style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = NunitoFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                                textAlign = TextAlign.Center
+                            ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                        )
+                    }
+                }, navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
+                        )
+                    }
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
+                ), actions = {
                     Icon(
-                        Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
+                        Icons.Filled.MedicalServices,
+                        contentDescription = "Cures",
+                        tint = Color.Black,
+                        modifier = Modifier.padding(end = 16.dp)
                     )
-                }
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
-            ), actions = {
-                Icon(
-                    Icons.Filled.MedicalServices,
-                    contentDescription = "Cures",
-                    tint = Color.Black,
-                    modifier = Modifier.padding(end = 16.dp)
-                )
-            })
+                })
         }) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(customPrimaryColor)
+                .background(customPrimaryColor),
+            contentAlignment = Alignment.Center
+
         ) {
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = Color.White, modifier = Modifier.size(50.dp)
+                    )
+                }
+
+            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
-            ) {
-                if (isLoading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(customPrimaryColor),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = Color.White, modifier = Modifier.size(50.dp)
-                        )
-                    }
-                } else if (cures.isEmpty()) {
+                    .padding(16.dp),
+
+                ) {
+                if (cures.isEmpty()) {
                     Text(
                         "No hi ha cures disponibles",
                         color = Color.Gray,
@@ -197,7 +202,6 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (cure.id != null) {
-                // Título de la cura con posible alerta
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
