@@ -143,17 +143,23 @@ fun MyAppHomePage(
         }
 
         composable("home") {
-            val isError = remember { mutableStateOf(false) }
+            var isError = remember { mutableStateOf(false) }
             LaunchedEffect(Unit) {
                 patientRemoteViewModel.getAllRooms()
             }
             when (remoteApiMessageListRoom) {
                 is RemoteApiMessageListRoom.Success -> {
-                    patientViewModel.loadRooms(remoteApiMessageListRoom.message)
+                    if (remoteApiMessageListRoom.message.isEmpty()) {
+                        isError.value = true
+                        Log.d("List Error", "No hay datos en la base de datos")
+                    } else {
+                        patientViewModel.loadRooms(remoteApiMessageListRoom.message)
+                    }
                 }
 
                 is RemoteApiMessageListRoom.Error -> {
-                    Log.d("ListRoom", "Error")
+                    isError.value = true
+                    Log.d("List ERRor", "ERROR List")
                 }
 
                 is RemoteApiMessageListRoom.Loading -> {
