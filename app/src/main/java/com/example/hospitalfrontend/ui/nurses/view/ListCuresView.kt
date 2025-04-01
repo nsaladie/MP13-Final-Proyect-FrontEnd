@@ -148,7 +148,7 @@ fun ListCuresScreen(
                     .padding(16.dp),
 
                 ) {
-                if (cures.isEmpty()) {
+                if (!isLoading && cures.isEmpty()) {
                     Text(
                         "No hi ha cures disponibles",
                         color = Color.Gray,
