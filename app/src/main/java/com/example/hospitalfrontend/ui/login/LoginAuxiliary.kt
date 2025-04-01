@@ -145,9 +145,9 @@ fun AuxiliaryForm(
         LaunchedEffect(messageApi) {
             when (messageApi) {
                 is RemoteApiMessageAuxiliary.Success -> {
-                        auxiliaryRemoteViewModel.clearApiMessage()
-                        auxiliaryViewModel.loginAuxiliary(auxiliar)
-                        navController.navigate("home")
+                    auxiliaryRemoteViewModel.clearApiMessage()
+                    auxiliaryViewModel.loginAuxiliary(auxiliar)
+                    navController.navigate("home")
                 }
 
                 is RemoteApiMessageAuxiliary.Error -> {

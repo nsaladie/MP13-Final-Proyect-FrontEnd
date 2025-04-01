@@ -1,123 +1,125 @@
 package com.example.hospitalfrontend.ui.nurses.view
 
-
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.hospitalfrontend.R
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathSegment
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
-import com.example.hospitalfrontend.model.PatientState
-import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 
+sealed class Screen(val route: String) {
+    data class PersonalData(val patientId: Int) : Screen("personalData/$patientId")
+    data class Diagnosis(val patientId: Int) : Screen("diagnosis/$patientId")
+    data class ListRegister(val patientId: Int) : Screen("listRegister/$patientId")
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuScreen(
-    navController: NavController,
-    patientId: Int
+    navController: NavController, patientId: Int
 ) {
+    // Consistent color definition
+    val customPrimaryColor = Color(0xFFA9C7C7)
+
     val options = listOf(
-        "Dades personals del pacient",
-        "Motius/Diagnóstic d'ingrés",
-        "Llistat de cures"
+        "Dades personals del pacient" to Screen.PersonalData(patientId).route,
+        "Diagnòstic d'Ingrés" to Screen.Diagnosis(patientId).route,
+        "Llistat de cures" to Screen.ListRegister(patientId).route
     )
-    val nunitoFont = FontFamily(Font(R.font.nunito_bold))
-    val latoFont = FontFamily(Font(R.font.lato_light))
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(5.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 5.dp)
-                    .align(Alignment.TopStart)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Back",
-                    tint = Color.Black,
-                    modifier = Modifier.size(24.dp)
+
+    Scaffold(
+        containerColor = customPrimaryColor, topBar = {
+            TopAppBar(
+                title = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "MENÚ PACIENT", style = TextStyle(
+                            fontSize = 30.sp,
+                            fontFamily = NunitoFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    )
+                }
+            }, navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
+                    )
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = customPrimaryColor, navigationIconContentColor = Color.Black
+            )
+            )
+        }) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(customPrimaryColor)
+                .padding(paddingValues)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            options.forEach { (text, route) ->
+                ButtonMenuHome(
+                    onClick = { navController.navigate(route) }, textButton = text
                 )
             }
         }
-        Text(
-            text = "MENÚ PACIENT",
-            style = TextStyle(
-                fontFamily = nunitoFont,
-                fontSize = 30.sp
-            ),
-            modifier = Modifier.padding(bottom = 20.dp)
-        )
-        options.forEach { option ->
-            ButtonMenuHome(
-                onScreenSelected = { navController.navigate(option.lowercase()) },
-                textButton = option,
-                latoFont = latoFont,
-                navController = navController,
-                patientId = patientId
-            )
+    }
+}
+
+@Composable
+fun ButtonMenuHome(
+    onClick: () -> Unit, textButton: String
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(0.85f)
+            .padding(vertical = 10.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+        ) {
+            TextButton(
+                onClick = onClick, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = textButton, style = TextStyle(
+                        fontFamily = LatoFontFamily,
+                        fontSize = 20.sp,
+                        color = Color(0xFF2C3E50),
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
         }
     }
 }
-
-
-@Composable
-fun ButtonMenuHome(onScreenSelected: () -> Unit, textButton: String, latoFont: FontFamily, navController: NavController, patientId: Int) {
-    val customGreen = Color(169, 199, 199)
-    Button(
-        onClick = { navController.navigate("personalData/$patientId") },
-        modifier = Modifier
-            .fillMaxWidth(0.85f)
-            .height(200.dp)
-            .padding(10.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = customGreen)
-    ) {
-        Text(
-            textButton,
-            fontSize = 18.sp,
-            color = Color.Black, // Color del texto en negro
-            fontFamily = latoFont, // Usamos la fuente Lato
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-
-/*@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    HospitalFrontEndTheme {
-        val navController = rememberNavController()
-        MenuScreen(
-            navController
-        )
-    }
-}*/
-
