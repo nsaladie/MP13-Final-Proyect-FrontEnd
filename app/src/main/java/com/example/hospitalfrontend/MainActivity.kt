@@ -123,9 +123,11 @@ fun MyAppHomePage(
                 is RemoteApiMessageListCure.Success -> {
                     patientViewModel.loadCures(remoteApiMessageListCure.message)
                 }
+
                 is RemoteApiMessageListCure.Error -> {
                     Log.d("ListCures", "Error")
                 }
+
                 is RemoteApiMessageListCure.Loading -> {
                     Log.d("ListCures", "Loading List")
                 }
@@ -140,6 +142,14 @@ fun MyAppHomePage(
                     patientId = patientId
                 )
             }
+        }
+
+        composable(
+            "cureDetail/{vitalSignId}",
+            arguments = listOf(navArgument("vitalSignId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val vitalSignId = backStackEntry.arguments?.getInt("vitalSignId") ?: -1
+            CureDetailsScreen(navController, patientRemoteViewModel, vitalSignId)
         }
 
         composable("home") {

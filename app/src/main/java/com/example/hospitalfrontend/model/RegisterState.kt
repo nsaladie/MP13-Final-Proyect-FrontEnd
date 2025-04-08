@@ -7,10 +7,11 @@ data class RegisterState(
     val auxiliary: AuxiliaryState,
     val date: Date,
     val patient: PatientState,
-    val hygieneType: HygieneState,
-    val diet: DietState,
-    val drain: DrainState,
-    val mobilization: MobilizationState,
-    val vitalSign: VitalSignState
+    val hygieneType: HygieneState?,
+    val diet: DietState?,
+    val drain: DrainState?,
+    val mobilization: MobilizationState?,
+    val vitalSign: VitalSignState,
+    val observation: String?
 )
 

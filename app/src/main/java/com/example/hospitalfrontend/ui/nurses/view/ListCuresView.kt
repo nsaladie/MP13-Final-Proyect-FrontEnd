@@ -218,8 +218,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
 
                     TextButton(
                         onClick = {
-
-                            navController.navigate("cure_details/${cure.id}")
+                            navController.navigate("cureDetail/${cure.id}")
                         }, colors = ButtonDefaults.textButtonColors(
                             containerColor = Color.Transparent
                         )
@@ -247,7 +246,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
 
                 DetailItemWithIcon(
                     label = "Tensió Arterial",
-                    info = "${cure.systolicBloodPressure}mmHg/${cure.diastolicBloodPressure}mmHg",
+                    info = "${cure.systolicBloodPressure} mmHg/${cure.diastolicBloodPressure} mmHg",
                     icon = Icons.Filled.Favorite,
                     iconColor = getBloodPressureColor(
                         cure.systolicBloodPressure, cure.diastolicBloodPressure
@@ -260,7 +259,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
 
                 DetailItemWithIcon(
                     label = "Freqüència Respiratòria",
-                    info = cure.respiratoryRate.toString(),
+                    info = "${cure.respiratoryRate} bpm",
                     icon = Icons.Filled.MonitorHeart,
                     iconColor = getRespiratoryRateColor(cure.respiratoryRate),
                     infoColor = if (getRespiratoryRateColor(cure.respiratoryRate) == Color.Red) alertColor else defaultInfoColor
@@ -276,7 +275,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
 
                 DetailItemWithIcon(
                     label = "Temperatura",
-                    info = "${cure.temperature}ºC",
+                    info = "${cure.temperature} ºC",
                     icon = Icons.Filled.DeviceThermostat,
                     iconColor = getTemperatureColor(cure.temperature),
                     infoColor = if (getTemperatureColor(cure.temperature) == Color.Red) alertColor else defaultInfoColor
@@ -284,7 +283,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
 
                 DetailItemWithIcon(
                     label = "Saturació d'Oxigen",
-                    info = "${cure.oxygenSaturation}%",
+                    info = "${cure.oxygenSaturation} %",
                     icon = Icons.Filled.Air,
                     iconColor = getOxygenSaturationColor(cure.oxygenSaturation),
                     infoColor = if (getOxygenSaturationColor(cure.oxygenSaturation) == Color.Red) alertColor else defaultInfoColor

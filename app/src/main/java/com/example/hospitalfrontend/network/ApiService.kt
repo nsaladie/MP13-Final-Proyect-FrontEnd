@@ -34,8 +34,7 @@ interface ApiService {
     @Multipart
     @POST("nurse/photo/{id}")
     suspend fun uploadPhotoById(
-        @Path("id") id: Int,
-        @Part file: MultipartBody.Part
+        @Path("id") id: Int, @Part file: MultipartBody.Part
     ): Response<ResponseBody>
 
     //Rooms
@@ -50,11 +49,15 @@ interface ApiService {
     @GET("patient/{id}")
     suspend fun getPatientById(@Path("id") id: Int): PatientState
 
-//Cures
-@GET("register/vitalSign/{id}")
-suspend fun getAllCures(@Path("id") id: Int): List<VitalSignState>
+    //Cures
+    @GET("register/vitalSign/{id}")
+    suspend fun getAllCures(@Path("id") id: Int): List<VitalSignState>
 
     // Diagnosis Details
     @GET("register/diagnosis/{id}")
     suspend fun getDiagnosis(@Path("id") id: Int): DiagnosisState
+
+    // Cure Detail
+    @GET("register/{id}")
+    suspend fun getCureDetail(@Path("id") id: Int): RegisterState
 }
