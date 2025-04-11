@@ -112,12 +112,14 @@ fun ListCuresScreen(
                 }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
                 ), actions = {
-                    Icon(
-                        Icons.Filled.MedicalServices,
-                        contentDescription = "Cures",
-                        tint = Color.Black,
-                        modifier = Modifier.padding(end = 16.dp)
-                    )
+                    IconButton(onClick = { navController.navigate("createCure/${patientId}") }) {
+                        Icon(
+                            Icons.Filled.MedicalServices,
+                            contentDescription = "Cures",
+                            tint = Color.Black,
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+                    }
                 })
         }) { paddingValues ->
         Box(
@@ -181,7 +183,6 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
         ) == alertColor
     }
 
-    val isAlert = hasVitalSignAlert()
 
     Card(
         modifier = Modifier

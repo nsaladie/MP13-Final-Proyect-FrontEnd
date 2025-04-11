@@ -31,11 +31,9 @@ import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.R.color.colorText
 import com.example.hospitalfrontend.model.AuxiliaryState
 import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
-import com.example.hospitalfrontend.network.NurseRemoteViewModel
 import com.example.hospitalfrontend.ui.nurses.viewmodels.AuxiliaryViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 import com.example.hospitalfrontend.ui.theme.Primary
-import com.example.hospitalfrontend.ui.theme.Secundary
 
 @Composable
 fun LoginScreenAuxiliary(
@@ -48,35 +46,75 @@ fun LoginScreenAuxiliary(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            LoginScreenNurse(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
+            LoginScreenAux(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
         }
     }
 }
 
 @Composable
-fun LoginScreenNurse(
+fun LoginScreenAux(
     navController: NavController,
     auxiliaryRemoteViewModel: AuxiliaryRemoteViewModel,
     auxiliaryViewModel: AuxiliaryViewModel
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(169, 199, 199))
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
     ) {
-        val nunitoFont = FontFamily(Font(R.font.nunito_bold))
-        Text(
-            text = "Login",
-            modifier = Modifier.fillMaxWidth(),
-            style = TextStyle(
-                fontSize = 30.sp, fontWeight = FontWeight.Bold, fontFamily = nunitoFont
-            ),
-            color = colorResource(id = colorText),
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Logo()
-        AuxiliaryForm(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White, shape = RoundedCornerShape(20.dp))
+                .padding(24.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                val nunitoFont = FontFamily(Font(R.font.nunito_bold))
+
+                // Title
+                Text(
+                    text = "Login",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    style = TextStyle(
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = nunitoFont
+                    ),
+                    color = colorResource(id = colorText),
+                    textAlign = TextAlign.Center
+                )
+
+                // Logo
+                Box(
+                    modifier = Modifier
+                        .size(180.dp)
+                        .clip(RoundedCornerShape(15.dp))
+                        .background(Color.White.copy(alpha = 0.9f))
+                        .padding(8.dp)
+                ) {
+                    Logo()
+                }
+
+                // Form
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    AuxiliaryForm(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
+                }
+            }
+        }
     }
 }
 
@@ -146,7 +184,7 @@ fun AuxiliaryForm(
             when (messageApi) {
                 is RemoteApiMessageAuxiliary.Success -> {
                     auxiliaryRemoteViewModel.clearApiMessage()
-                    auxiliaryViewModel.loginAuxiliary(auxiliar)
+                    auxiliaryViewModel.loginAuxiliary(messageApi.message)
                     navController.navigate("home")
                 }
 
@@ -167,8 +205,8 @@ fun SubmitButtonLogin(textId: String, inputValid: Boolean, onClick: () -> Unit) 
     Button(
         onClick = onClick,
         modifier = Modifier
-            .fillMaxWidth(0.5f)
-            .height(48.dp),
+            .fillMaxWidth(0.7f)
+            .height(56.dp),
         enabled = inputValid,
         contentPadding = PaddingValues(),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -177,8 +215,13 @@ fun SubmitButtonLogin(textId: String, inputValid: Boolean, onClick: () -> Unit) 
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    brush = Brush.horizontalGradient(listOf(Secundary, Primary)),
-                    shape = RoundedCornerShape(20.dp)
+                    brush = Brush.horizontalGradient(
+                        listOf(
+                            Color(151, 199, 150),
+                            Color(151, 199, 150).copy(alpha = 0.8f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(28.dp)
                 ),
             contentAlignment = Alignment.Center
         ) {

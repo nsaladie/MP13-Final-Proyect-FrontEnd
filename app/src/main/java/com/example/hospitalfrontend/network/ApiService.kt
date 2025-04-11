@@ -43,7 +43,7 @@ interface ApiService {
 
     //Auxiliary
     @POST("auxiliary/login")
-    suspend fun loginAuxiliary(@Body loginAuxiliary: LoginAuxiliary): Boolean
+    suspend fun loginAuxiliary(@Body loginAuxiliary: LoginAuxiliary): AuxiliaryState
 
     //Patient
     @GET("patient/{id}")
@@ -57,7 +57,12 @@ interface ApiService {
     @GET("register/diagnosis/{id}")
     suspend fun getDiagnosis(@Path("id") id: Int): DiagnosisState
 
+
+    @POST("register")
+    suspend fun createCure(@Body registerState: RegisterState): Boolean
+
     // Cure Detail
     @GET("register/{id}")
     suspend fun getCureDetail(@Path("id") id: Int): RegisterState
+
 }

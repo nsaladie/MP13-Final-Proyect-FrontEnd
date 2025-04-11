@@ -40,6 +40,4 @@ class PatientViewModel : ViewModel(
     fun setPatientData(patient: PatientState) {
         _patientState.value = patient
     }
-
-
 }
