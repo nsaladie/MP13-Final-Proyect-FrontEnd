@@ -86,7 +86,11 @@ fun CreateCureScreen(
                 title = {
                     Text(
                         text = "NOVA CURA PER ${patientState.name}",
-                        style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
                     )
                 },
                 navigationIcon = {
@@ -178,7 +182,7 @@ fun CreateCureScreen(
                             id = 0,
                             date = null,
                             takeData = "Comida",
-                            dietType = emptySet(),
+                            dietTypes = emptySet(),
                             dietTypeTexture = DietTextureTypeState(),
                             independent = 0,
                             prosthesis = 0
@@ -196,7 +200,7 @@ fun CreateCureScreen(
                             decubitus = ""
                         ) else null,
                         vitalSign = vitalSign,
-                        //observation = if (observation.isNotBlank()) observation else null
+                        observation = if (observation.isNotBlank()) observation else null
                     )
                     patientRemoteViewModel.createCure(register)
                 }
@@ -208,12 +212,14 @@ fun CreateCureScreen(
                             showSuccessDialog = true
                             patientRemoteViewModel.clearApiMessage()
                         }
+
                         is RemoteApiMessageBoolean.Error -> {
                             Log.d("Error", "Error Save")
                             dialogMessage = "Failing to update data."
                             showErrorDialog = true
                             patientRemoteViewModel.clearApiMessage()
                         }
+
                         RemoteApiMessageBoolean.Loading -> Log.d("Loading Update", "Loading")
                     }
                 }
