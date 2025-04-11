@@ -11,7 +11,7 @@ data class RegisterState(
     val diet: DietState? = null,
     val drain: DrainState? = null,
     val mobilization: MobilizationState? = null,
-    val vitalSign: VitalSignState
-
+    val vitalSign: VitalSignState,
+    val observation: String?
 )
 

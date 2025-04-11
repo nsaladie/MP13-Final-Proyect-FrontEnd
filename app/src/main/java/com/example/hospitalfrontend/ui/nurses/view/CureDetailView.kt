@@ -167,12 +167,12 @@ fun SuccessScreen(
                     }
                 }
                 register.drain?.let { drain ->
-                    if (drain.output.isNotBlank() || drain.type.isNotBlank()) {
+                    if (!drain.output.isNullOrBlank() || !drain.type.isNullOrBlank()) {
                         DrainCard(drain)
                     }
                 }
                 register.hygieneType?.let { hygiene ->
-                    if (hygiene.description.isNotBlank()) {
+                    if (!hygiene.description.isNullOrBlank()) {
                         HygieneCard(hygiene)
                     }
                 }
@@ -182,7 +182,7 @@ fun SuccessScreen(
                     }
                 }
                 register.observation?.let { observation ->
-                    if (observation.isNotBlank()) {
+                    if (!observation.isNullOrBlank()) {
                         ObservationCard(observation)
                     }
                 }
@@ -193,13 +193,13 @@ fun SuccessScreen(
 
 // Function to check if MobilizationState has data
 private fun hasData(mobilization: MobilizationState): Boolean {
-    return mobilization.sedestation.toString().isNotBlank() || mobilization.walkingAssis.toString()
-        .isNotBlank() || mobilization.decubitus.isNotBlank() || mobilization.assisDesc.isNotBlank()
+    return !mobilization.sedestation.toString().isNullOrBlank() || !mobilization.walkingAssis.toString()
+        .isNullOrBlank() || !mobilization.decubitus.isNullOrBlank() || !mobilization.assisDesc.isNullOrBlank()
 }
 
 // Function to check if DietState has data
 private fun hasData(diet: DietState): Boolean {
-    return diet.takeData.isNotBlank() || diet.dietTypeTexture != null || !diet.dietTypes.isNullOrEmpty()
+    return !diet.takeData.isNullOrBlank() || diet.dietTypeTexture != null || !diet.dietTypes.isNullOrEmpty()
 }
 
 @Composable
@@ -207,7 +207,7 @@ fun BasicInfoCard(data: RegisterState) {
     CardContent(title = "${data.patient.name} ${data.patient.surname}") {
         DetailItemWithIcon(
             label = "Data",
-            info = data.date.formatDate("dd/MM/yyyy HH:mm"),
+            info = data.date!!.formatDate("dd/MM/yyyy HH:mm"),
             icon = Icons.Filled.CalendarMonth,
             iconColor = Color(0xFF505050)
         )
@@ -302,7 +302,7 @@ fun DietCard(diet: DietState) {
     CardContent(title = "Dieta") {
         DetailItemWithIcon(
             label = "Data per a la dieta",
-            info = diet.date.formatDate("dd/MM/yyyy"),
+            info = diet.date!!.formatDate("dd/MM/yyyy"),
             icon = Icons.Filled.CalendarToday
         )
         DetailItemWithIcon(
