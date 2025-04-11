@@ -4,45 +4,55 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.hospitalfrontend.model.DietState
+import com.example.hospitalfrontend.model.DrainState
+import com.example.hospitalfrontend.model.HygieneState
+import com.example.hospitalfrontend.model.MobilizationState
 import com.example.hospitalfrontend.model.PatientState
+import com.example.hospitalfrontend.model.RegisterState
+import com.example.hospitalfrontend.model.VitalSignState
 import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import com.example.hospitalfrontend.model.AuxiliaryState as AuxiliaryState
 
 
 class PatientRemoteViewModel : ViewModel() {
     var remoteApiMessage = mutableStateOf<RemoteApiMessagePatient>(RemoteApiMessagePatient.Loading)
-    var remoteApiListMessage =
+    var remoteApiListMessageRoom =
         mutableStateOf<RemoteApiMessageListRoom>(RemoteApiMessageListRoom.Loading)
     var remoteApiListMessageCure =
         mutableStateOf<RemoteApiMessageListCure>(RemoteApiMessageListCure.Loading)
+    var remoteApiMessageBoolean =
+        mutableStateOf<RemoteApiMessageBoolean>(RemoteApiMessageBoolean.Loading)
 
     // Clear the API message
     fun clearApiMessage() {
         remoteApiMessage.value = RemoteApiMessagePatient.Loading
-        remoteApiListMessage.value = RemoteApiMessageListRoom.Loading
+        remoteApiListMessageRoom.value = RemoteApiMessageListRoom.Loading
+        remoteApiMessageBoolean.value = RemoteApiMessageBoolean.Loading
     }
 
+    val gson = GsonBuilder()
+        .setDateFormat("yyyy-MM-dd")
+        .create()
+
     // Retrofit instance with ApiService creation for network requests
-    private val apiService: ApiService = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:8080/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    private val apiService: ApiService = Retrofit.Builder().baseUrl("http://10.0.2.2:8080/")
+        .addConverterFactory(GsonConverterFactory.create(gson)).build()
         .create(ApiService::class.java)
+
 
     fun getAllRooms() {
         viewModelScope.launch {
-            remoteApiListMessage.value = RemoteApiMessageListRoom.Loading
+            remoteApiListMessageRoom.value = RemoteApiMessageListRoom.Loading
             try {
                 val response = apiService.getAllRooms()
-                remoteApiListMessage.value =
-                    RemoteApiMessageListRoom.Success(response)
+                remoteApiListMessageRoom.value = RemoteApiMessageListRoom.Success(response)
             } catch (e: Exception) {
-                remoteApiListMessage.value = RemoteApiMessageListRoom.Error // Error response
+                remoteApiListMessageRoom.value = RemoteApiMessageListRoom.Error // Error response
             }
         }
     }
@@ -52,10 +62,8 @@ class PatientRemoteViewModel : ViewModel() {
             Log.d("Error Lo", "Entra en el metodp")
             remoteApiListMessageCure.value = RemoteApiMessageListCure.Loading
             try {
-                Log.d("Error Lo", "Entra en el try")
                 val response = apiService.getAllCures(id)
-                remoteApiListMessageCure.value =
-                    RemoteApiMessageListCure.Success(response)
+                remoteApiListMessageCure.value = RemoteApiMessageListCure.Success(response)
                 Log.d("Error Lo", response.toString())
             } catch (e: Exception) {
                 Log.d("Error", "error cura")
@@ -76,5 +84,21 @@ class PatientRemoteViewModel : ViewModel() {
             }
         }
     }
+
+    fun createCure(registerState: RegisterState) {
+        Log.d("Error test", registerState.toString())
+        viewModelScope.launch {
+            remoteApiMessageBoolean.value = RemoteApiMessageBoolean.Loading
+            try {
+                val response = apiService.createCure(registerState)
+                remoteApiMessageBoolean.value = RemoteApiMessageBoolean.Success(response)
+                Log.d("Error create Su", response.toString())
+            } catch (e: Exception) {
+                Log.d("Error create", e.toString())
+                remoteApiMessageBoolean.value = RemoteApiMessageBoolean.Error
+            }
+        }
+    }
+
 
 }
