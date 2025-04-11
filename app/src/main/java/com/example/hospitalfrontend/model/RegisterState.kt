@@ -12,5 +12,6 @@ data class RegisterState(
     val drain: DrainState? = null,
     val mobilization: MobilizationState? = null,
     val vitalSign: VitalSignState
+
 )
 

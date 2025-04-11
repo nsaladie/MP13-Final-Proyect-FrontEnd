@@ -28,6 +28,9 @@ class PatientRemoteViewModel : ViewModel() {
     var remoteApiMessageBoolean =
         mutableStateOf<RemoteApiMessageBoolean>(RemoteApiMessageBoolean.Loading)
 
+    var remoteApiCureDetail =
+        mutableStateOf<RemoteApiMessageCureDetail>(RemoteApiMessageCureDetail.Loading)
+
     // Clear the API message
     fun clearApiMessage() {
         remoteApiMessage.value = RemoteApiMessagePatient.Loading
@@ -43,6 +46,7 @@ class PatientRemoteViewModel : ViewModel() {
     private val apiService: ApiService = Retrofit.Builder().baseUrl("http://10.0.2.2:8080/")
         .addConverterFactory(GsonConverterFactory.create(gson)).build()
         .create(ApiService::class.java)
+        .addConverterFactory(GsonConverterFactory.create()).build().create(ApiService::class.java)
 
 
     fun getAllRooms() {
@@ -59,14 +63,12 @@ class PatientRemoteViewModel : ViewModel() {
 
     fun getAllCures(id: Int) {
         viewModelScope.launch {
-            Log.d("Error Lo", "Entra en el metodp")
             remoteApiListMessageCure.value = RemoteApiMessageListCure.Loading
             try {
                 val response = apiService.getAllCures(id)
                 remoteApiListMessageCure.value = RemoteApiMessageListCure.Success(response)
-                Log.d("Error Lo", response.toString())
             } catch (e: Exception) {
-                Log.d("Error", "error cura")
+                Log.d("Error list cures", "Error ${e.toString()}")
                 remoteApiListMessageCure.value = RemoteApiMessageListCure.Error // Error response
             }
         }
@@ -80,6 +82,7 @@ class PatientRemoteViewModel : ViewModel() {
                 remoteApiMessage.value = RemoteApiMessagePatient.Success(response)
                 patientViewModel.setPatientData(response)
             } catch (e: Exception) {
+                Log.d("Error info patient", e.toString())
                 remoteApiMessage.value = RemoteApiMessagePatient.Error
             }
         }
@@ -100,5 +103,17 @@ class PatientRemoteViewModel : ViewModel() {
         }
     }
 
+    fun getCureDetail(cureId: Int) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getCureDetail(cureId)
+                remoteApiCureDetail.value = RemoteApiMessageCureDetail.Success(response)
+                Log.d("Error", response.toString())
+            } catch (e: Exception) {
+                Log.d("Error cure detail", e.toString())
+                remoteApiCureDetail.value = RemoteApiMessageCureDetail.Error
+            }
+        }
+    }
 
 }

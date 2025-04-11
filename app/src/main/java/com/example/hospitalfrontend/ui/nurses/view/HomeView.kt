@@ -52,7 +52,12 @@ fun HomeScreen(
         AlertDialog(
             onDismissRequest = { isError.value = false },
             confirmButton = {
-                TextButton(onClick = { isError.value = false }) {
+                TextButton(onClick = {
+                    isError.value = false
+                    navController.navigate("login") {
+                        popUpTo("home") { inclusive = true } // Opcional: elimina "home" de la pila
+                    }
+                }) {
                     Text("OK")
                 }
             },

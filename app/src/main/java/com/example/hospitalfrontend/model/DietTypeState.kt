@@ -4,3 +4,4 @@ data class DietTypeState(
     val id: Int,
     val description: String,
 )
+
