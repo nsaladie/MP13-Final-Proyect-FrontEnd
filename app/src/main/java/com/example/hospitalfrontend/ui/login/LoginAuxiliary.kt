@@ -149,8 +149,12 @@ fun AuxiliaryForm(
         //trims() to remove the white space and .isNotEmpty for that isn't empty
         auxiliaryId.value.trim().isNotEmpty()
     }
+    // Statefor a validation button login
+    var validButton by rememberSaveable { mutableStateOf(false) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        AuxiliaryNumberInput(auxiliaryId = auxiliaryId)
+        AuxiliaryNumberInput(auxiliaryId = auxiliaryId, onValidationChanged = { valid ->
+            validButton = valid
+        })
         Spacer(modifier = Modifier.height(20.dp))
         // Aquí deberías agregar ToggleLoginRegisterText(navController) si está definida
         Spacer(modifier = Modifier.height(50.dp))
@@ -241,7 +245,8 @@ fun SubmitButtonLogin(textId: String, inputValid: Boolean, onClick: () -> Unit) 
 @Composable
 fun AuxiliaryNumberInput(
     auxiliaryId: MutableState<String>,
-    labelId: String = "Número"
+    labelId: String = "Número",
+    onValidationChanged: (Boolean) -> Unit
 ) {
     val latoFont = FontFamily(Font(R.font.lato_light_italic))
 
@@ -249,38 +254,62 @@ fun AuxiliaryNumberInput(
         valueState = auxiliaryId,
         labelId = labelId,
         keyboardType = KeyboardType.Number,
-        textStyle = TextStyle(fontFamily = latoFont)
+        textStyle = TextStyle(fontFamily = latoFont),
+        onValidationChanged = onValidationChanged
+
     )
 }
 
-//This function is for the layout of the texts fields.
 @Composable
 fun InputFieldAuxiliar(
     valueState: MutableState<String>,
     labelId: String,
     isSingleLine: Boolean = true,
     keyboardType: KeyboardType,
-    textStyle: TextStyle = TextStyle()
+    textStyle: TextStyle = TextStyle(),
+    onValidationChanged: (Boolean) -> Unit
 ) {
-    OutlinedTextField(
-        value = valueState.value,
-        onValueChange = { valueState.value = it },
-        label = { Text(text = labelId) },
-        singleLine = isSingleLine,
-        modifier = Modifier
-            .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
-            .fillMaxWidth(),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            focusedIndicatorColor = Primary,
-            cursorColor = Primary,
-            focusedLabelColor = Primary,
-        ),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType
-        ),
-        textStyle = textStyle
-    )
+    var showError by remember { mutableStateOf(false) }
+
+    Column {
+        OutlinedTextField(
+            value = valueState.value,
+            onValueChange = { newValue ->
+                // Validamos que solo sean números
+                if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
+                    valueState.value = newValue
+                    showError = false
+                    onValidationChanged(true)
+                } else {
+                    showError = true
+                    onValidationChanged(false)
+                }
+            },
+            label = { Text(text = labelId) },
+            singleLine = isSingleLine,
+            modifier = Modifier
+                .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
+                .fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = Primary,
+                cursorColor = Primary,
+                focusedLabelColor = Primary,
+            ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = keyboardType
+            ),
+            textStyle = textStyle
+        )
+        if (showError) {
+            Text(
+                text = "Please enter your ID number",
+                color = Color.Red,
+                style = TextStyle(fontSize = 12.sp),
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
+    }
 }
 
 
