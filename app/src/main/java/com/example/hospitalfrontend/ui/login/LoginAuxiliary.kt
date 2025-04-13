@@ -79,7 +79,7 @@ fun LoginScreenAux(
 
                 // Title
                 Text(
-                    text = "Login",
+                    text = "INCIAR SESSIÓ",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp),
@@ -154,7 +154,7 @@ fun AuxiliaryForm(
         Spacer(modifier = Modifier.height(20.dp))
         // Aquí deberías agregar ToggleLoginRegisterText(navController) si está definida
         Spacer(modifier = Modifier.height(50.dp))
-        SubmitButtonLogin(textId = "Login", inputValid = isValid)
+        SubmitButtonLogin(textId = "Accedir", inputValid = isValid)
         {
 
             val id = auxiliaryId.value.trim().toIntOrNull()
@@ -241,7 +241,7 @@ fun SubmitButtonLogin(textId: String, inputValid: Boolean, onClick: () -> Unit) 
 @Composable
 fun AuxiliaryNumberInput(
     auxiliaryId: MutableState<String>,
-    labelId: String = "Number"
+    labelId: String = "Número"
 ) {
     val latoFont = FontFamily(Font(R.font.lato_light_italic))
 
