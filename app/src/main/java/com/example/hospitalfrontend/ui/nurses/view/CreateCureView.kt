@@ -78,7 +78,15 @@ fun CreateCureScreen(
     var respiratoryRate by rememberSaveable { mutableStateOf("") }
     var pulse by rememberSaveable { mutableStateOf("") }
     var temperature by rememberSaveable { mutableStateOf("") }
+    var urineVolume by rememberSaveable { mutableStateOf("") }
+    var bowelMovements by rememberSaveable { mutableStateOf("") }
+    var serumTherapy by rememberSaveable { mutableStateOf("") }
     var oxygenSaturation by rememberSaveable { mutableStateOf("") }
+
+    var sedestation by rememberSaveable { mutableStateOf("") }
+    var walkingAssis by rememberSaveable { mutableStateOf("") }
+    var changes by rememberSaveable { mutableStateOf("") }
+    var decubitus by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -126,7 +134,13 @@ fun CreateCureScreen(
                     temperature = temperature,
                     onTemperatureChange = { temperature = it },
                     oxygenSaturation = oxygenSaturation,
-                    onOxygenSaturationChange = { oxygenSaturation = it }
+                    onOxygenSaturationChange = { oxygenSaturation = it },
+                    urineVolume = urineVolume,
+                    onUrineVolumeChange = { urineVolume = it },
+                    bowelMovements = bowelMovements,
+                    onBowelMovementsChange = { bowelMovements = it },
+                    serumTherapy = serumTherapy,
+                    onSerumTherapyChange = { serumTherapy = it }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -147,7 +161,11 @@ fun CreateCureScreen(
                 )
 
                 DietaSection()
-                MobilitzacionsSection()
+                MobilitzacionsSection(
+                    icon = Icons.Filled.AssistWalker,
+                    value = mobilization,
+                    onValueChange = { mobilization = it }
+                )
 
                 ExpandableTextField(
                     label = "Observacions",
@@ -171,7 +189,11 @@ fun CreateCureScreen(
                         pulse = pulse.toDoubleOrNull() ?: 0.0,
                         temperature = temperature.toDoubleOrNull() ?: 0.0,
                         oxygenSaturation = oxygenSaturation.toDoubleOrNull() ?: 0.0,
-                    )
+                        urineVolume = urineVolume.toDoubleOrNull() ?: 0.0,
+                        bowelMovements = bowelMovements.toDoubleOrNull() ?: 0.0,
+                        serumTherapy = serumTherapy.toDoubleOrNull() ?: 0.0,
+
+                        )
                     val register = RegisterState(
                         id = 0,
                         date = null,
@@ -191,15 +213,25 @@ fun CreateCureScreen(
                             id = 0, output = "output",
                             type = drain
                         ) else null,
-                        mobilization = if (mobilization.isNotBlank()) MobilizationState(
-                            id = 0,
-                            sedestation = 0,
-                            walkingAssis = 0,
-                            assisDesc = mobilization,
-                            changes = "",
-                            decubitus = ""
-                        ) else null,
-                        vitalSign = vitalSign,
+                        mobilization = if (mobilization.isNotBlank()) {
+                            val parts = mobilization
+                                .split(";")
+                                .mapNotNull {
+                                    val split = it.split("=")
+                                    if (split.size == 2) split[0] to split[1] else null
+                                }.toMap()
+
+                            MobilizationState(
+                                id = 0,
+                                sedestation = parts["sedestation"]?.toIntOrNull() ?: 0,
+                                walkingAssis = if (parts["walkingAssis"] == "Amb ajuda") 1 else 0,
+                                assisDesc = parts["assisDesc"] ?: "",
+                                changes = parts["changes"] ?: "",
+                                decubitus = parts["decubitus"] ?: ""
+                            )
+                        } else null,
+
+                                vitalSign = vitalSign,
                         observation = if (observation.isNotBlank()) observation else null
                     )
                     patientRemoteViewModel.createCure(register)
@@ -241,7 +273,13 @@ fun VitalSignsCard(
     temperature: String,
     onTemperatureChange: (String) -> Unit,
     oxygenSaturation: String,
-    onOxygenSaturationChange: (String) -> Unit
+    onOxygenSaturationChange: (String) -> Unit,
+    urineVolume: String,
+    onUrineVolumeChange: (String) -> Unit,
+    bowelMovements: String,
+    onBowelMovementsChange: (String) -> Unit,
+    serumTherapy: String,
+    onSerumTherapyChange: (String) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -316,6 +354,27 @@ fun VitalSignsCard(
                 placeholder = "%",
                 value = oxygenSaturation,
                 onValueChange = onOxygenSaturationChange
+            )
+            VitalSignTextField(
+                label = "Volum d'orina",
+                icon = Icons.Filled.Air,
+                placeholder = "mL",
+                value = urineVolume,
+                onValueChange = onUrineVolumeChange
+            )
+            VitalSignTextField(
+                label = "Moviments intestinals",
+                icon = Icons.Filled.Air,
+                placeholder = "mL",
+                value = bowelMovements,
+                onValueChange = onBowelMovementsChange
+            )
+            VitalSignTextField(
+                label = "Terapia amb sèrum",
+                icon = Icons.Filled.Air,
+                placeholder = "mL",
+                value = serumTherapy,
+                onValueChange = onSerumTherapyChange
             )
         }
     }
@@ -631,18 +690,33 @@ fun HygieneSelection(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MobilitzacionsSection() {
+fun MobilitzacionsSection(
+    icon: ImageVector,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
     var isExpanded by remember { mutableStateOf(false) }
-    var sedestacio by remember { mutableStateOf("") }
-    var deambulacio by remember { mutableStateOf("Sense ajuda") }
-    var tipusAjuda by remember { mutableStateOf("") }
-    var canvisPosturals by remember { mutableStateOf("") }
-    var decubito by remember { mutableStateOf("") }
+    var sedestation by remember { mutableStateOf("") }
+    var walkingAssis by remember { mutableStateOf("Sense ajuda") }
+    var assisDesc by remember { mutableStateOf("") }
+    var changes by remember { mutableStateOf("") }
+    var decubitus by remember { mutableStateOf("") }
 
     val tipusAjudaOptions = listOf("Bastó", "Caminador", "Ajuda Física")
     val decubitoOptions = listOf("Supí", "Lateral E", "Lateral D")
+
+    // 👇 Esta función construye un resumen del estado actual
+    fun updateMobilizationValue() {
+        val newValue = listOf(
+            "sedestation=$sedestation",
+            "walkingAssis=$walkingAssis",
+            "assisDesc=$assisDesc",
+            "changes=$changes",
+            "decubitus=$decubitus"
+        ).joinToString(";")
+        onValueChange(newValue)
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -670,8 +744,8 @@ fun MobilitzacionsSection() {
                 style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)
             )
             OutlinedTextField(
-                value = sedestacio,
-                onValueChange = { sedestacio = it },
+                value = sedestation,
+                onValueChange = { sedestation = it },
                 label = { Text("Tolerància") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -688,12 +762,18 @@ fun MobilitzacionsSection() {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { deambulacio = "Sense ajuda"; tipusAjuda = "" }
+                        .clickable {
+                            walkingAssis = "Sense ajuda"; assisDesc = ""; updateMobilizationValue()
+                        }
                         .padding(8.dp)
                 ) {
                     RadioButton(
-                        selected = (deambulacio == "Sense ajuda"),
-                        onClick = { deambulacio = "Sense ajuda"; tipusAjuda = "" }
+                        selected = (walkingAssis == "Sense ajuda"),
+                        onClick = {
+                            walkingAssis = "Sense ajuda"
+                            assisDesc = ""
+                            updateMobilizationValue()
+                        }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "Sense ajuda", fontSize = 16.sp)
@@ -703,19 +783,23 @@ fun MobilitzacionsSection() {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { deambulacio = "Amb ajuda" }
+                        .clickable {
+                            walkingAssis = "Amb ajuda"
+                            updateMobilizationValue()
+                        }
                         .padding(8.dp)
                 ) {
                     RadioButton(
-                        selected = (deambulacio == "Amb ajuda"),
-                        onClick = { deambulacio = "Amb ajuda" }
+                        selected = (walkingAssis == "Amb ajuda"),
+                        onClick = { walkingAssis = "Amb ajuda"
+                            updateMobilizationValue()}
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "Amb ajuda", fontSize = 16.sp)
                 }
             }
 
-            if (deambulacio == "Amb ajuda") {
+            if (walkingAssis == "Amb ajuda") {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Tipus d'ajuda",
@@ -726,12 +810,16 @@ fun MobilitzacionsSection() {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { tipusAjuda = option }
+                            .clickable {
+                                assisDesc = option
+                                updateMobilizationValue()
+                            }
                             .padding(8.dp)
                     ) {
                         RadioButton(
-                            selected = (tipusAjuda == option),
-                            onClick = { tipusAjuda = option }
+                            selected = (assisDesc == option),
+                            onClick = { assisDesc = option
+                                updateMobilizationValue()}
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(text = option, fontSize = 16.sp)
@@ -746,9 +834,12 @@ fun MobilitzacionsSection() {
                 style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)
             )
             OutlinedTextField(
-                value = canvisPosturals,
-                onValueChange = { input ->
-                    if (input.all { it.isDigit() }) canvisPosturals = input
+                value = changes,
+                onValueChange = {
+                    if (it.all { c -> c.isDigit() }) {
+                        changes = it
+                        updateMobilizationValue()
+                    }
                 },
                 label = { Text("Quants canvis han hagut?") },
                 modifier = Modifier.fillMaxWidth(),
@@ -767,15 +858,21 @@ fun MobilitzacionsSection() {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { decubito = option }
+                        .clickable {
+                            decubitus = option
+                            updateMobilizationValue()
+                        }
                         .padding(8.dp)
                 ) {
                     RadioButton(
-                        selected = (decubito == option),
-                        onClick = { decubito = option }
+                        selected = (decubitus == option),
+                        onClick = {
+                            decubitus = option
+                            updateMobilizationValue()
+                        }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = option, fontSize = 16.sp)
+                    Text(option, fontSize = 16.sp)
                 }
             }
         }
