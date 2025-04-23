@@ -277,7 +277,7 @@ fun VitalSignCard(vitalSign: VitalSignState, alertColor: Color, defaultInfoColor
 fun MobilizationCard(mobilization: MobilizationState) {
     CardContent(title = "Mobilització") {
         DetailItemWithIcon(
-            label = "Sedació",
+            label = "Sedestació",
             info = "Nivel de tolerància: ${mobilization.sedestation}",
             icon = Icons.Filled.Vaccines
         )
