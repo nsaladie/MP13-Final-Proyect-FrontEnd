@@ -6,6 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -162,27 +163,31 @@ fun SuccessScreen(
 
                 // Only show cards if they have data
                 register.diet?.let { diet ->
-                    if (hasData(diet)) {
+                    if (hasDietData(diet)) {
                         DietCard(diet)
                     }
                 }
+
                 register.drain?.let { drain ->
-                    if (!drain.output.isNullOrBlank() || !drain.type.isNullOrBlank()) {
+                    if (hasDrainData(drain)) {
                         DrainCard(drain)
                     }
                 }
+
                 register.hygieneType?.let { hygiene ->
-                    if (!hygiene.description.isNullOrBlank()) {
+                    if (hasHygieneData(hygiene)) {
                         HygieneCard(hygiene)
                     }
                 }
+
                 register.mobilization?.let { mobilization ->
-                    if (hasData(mobilization)) {
+                    if (hasMobilizationData(mobilization)) {
                         MobilizationCard(mobilization)
                     }
                 }
+
                 register.observation?.let { observation ->
-                    if (!observation.isNullOrBlank()) {
+                    if (observation.isNotEmpty()) {
                         ObservationCard(observation)
                     }
                 }
@@ -192,14 +197,34 @@ fun SuccessScreen(
 }
 
 // Function to check if MobilizationState has data
-private fun hasData(mobilization: MobilizationState): Boolean {
-    return !mobilization.sedestation.toString().isNullOrBlank() || !mobilization.walkingAssis.toString()
-        .isNullOrBlank() || !mobilization.decubitus.isNullOrBlank() || !mobilization.assisDesc.isNullOrBlank()
+private fun hasMobilizationData(mobilization: MobilizationState): Boolean {
+    val hasSedestation = mobilization.sedestation.toString().isNotEmpty()
+    val hasWalkingAssis = mobilization.walkingAssis.toString().isNotEmpty()
+    val hasDecubitus = mobilization.decubitus.isNotEmpty()
+
+    return hasSedestation || hasWalkingAssis || hasDecubitus
 }
 
 // Function to check if DietState has data
-private fun hasData(diet: DietState): Boolean {
-    return !diet.takeData.isNullOrBlank() || diet.dietTypeTexture != null || !diet.dietTypes.isNullOrEmpty()
+private fun hasDietData(diet: DietState): Boolean {
+    val hasTakeData = diet.takeData.isNotEmpty()
+    val hasDietTypeTexture = diet.dietTypeTexture != null
+    val hasDietTypes = diet.dietTypes?.isNotEmpty() == true
+
+    return hasTakeData || hasDietTypeTexture || hasDietTypes
+}
+
+// Function to check if DrainState has data
+private fun hasDrainData(drain: DrainState): Boolean {
+    val hasOutput = drain.output.isNotEmpty()
+    val hasType = drain.type.isNotEmpty()
+
+    return hasOutput || hasType
+}
+
+// Function to check if HygieneState has data
+private fun hasHygieneData(hygiene: HygieneState): Boolean {
+    return hygiene.description.isNotEmpty()
 }
 
 @Composable
@@ -207,7 +232,7 @@ fun BasicInfoCard(data: RegisterState) {
     CardContent(title = "${data.patient.name} ${data.patient.surname}") {
         DetailItemWithIcon(
             label = "Data",
-            info = data.date!!.formatDate("dd/MM/yyyy HH:mm"),
+            info = data.date?.formatDate("dd/MM/yyyy HH:mm") ?: "",
             icon = Icons.Filled.CalendarMonth,
             iconColor = Color(0xFF505050)
         )
@@ -270,6 +295,21 @@ fun VitalSignCard(vitalSign: VitalSignState, alertColor: Color, defaultInfoColor
                 getOxygenSaturationColor(vitalSign.oxygenSaturation), alertColor, defaultInfoColor
             )
         )
+        DetailItemWithIcon(
+            label = "Volum d'Orina", info = "${vitalSign.urineVolume} ml", icon = Icons.Filled.Air
+        )
+
+        DetailItemWithIcon(
+            label = "Moviments intestinals",
+            info = "${vitalSign.bowelMovements} ml",
+            icon = Icons.Filled.Air
+        )
+
+        DetailItemWithIcon(
+            label = "Terapia amb sèrum",
+            info = "${vitalSign.serumTherapy} ml",
+            icon = Icons.Filled.Air
+        )
     }
 }
 
@@ -281,14 +321,19 @@ fun MobilizationCard(mobilization: MobilizationState) {
             info = "Nivel de tolerància: ${mobilization.sedestation}",
             icon = Icons.Filled.Vaccines
         )
+
         DetailItemWithIcon(
             label = "Deambulació",
             info = mobilization.walkingAssis.toWalkingAssisText(),
             icon = Icons.Filled.AssistWalker
         )
-        if (mobilization.walkingAssis.toString().isNotBlank()) DetailItemWithIcon(
-            label = "Tipus", info = mobilization.assisDesc, icon = Icons.Filled.Notes
-        )
+
+        if (mobilization.walkingAssis == 1) {
+            DetailItemWithIcon(
+                label = "Tipus", info = mobilization.assisDesc, icon = Icons.Filled.Description
+            )
+        }
+
         DetailItemWithIcon(
             label = "Canvis posturals",
             info = mobilization.decubitus,
@@ -300,11 +345,14 @@ fun MobilizationCard(mobilization: MobilizationState) {
 @Composable
 fun DietCard(diet: DietState) {
     CardContent(title = "Dieta") {
-        DetailItemWithIcon(
-            label = "Data per a la dieta",
-            info = diet.date!!.formatDate("dd/MM/yyyy"),
-            icon = Icons.Filled.CalendarToday
-        )
+        diet.date?.let {
+            DetailItemWithIcon(
+                label = "Data per a la dieta",
+                info = it.formatDate("dd/MM/yyyy"),
+                icon = Icons.Filled.CalendarToday
+            )
+        }
+
         DetailItemWithIcon(
             label = "Horari de la dieta", info = diet.takeData, icon = Icons.Filled.Dining
         )
@@ -328,8 +376,9 @@ fun DietCard(diet: DietState) {
         DetailItemWithIcon(
             label = "Necessita ajuda",
             info = diet.independent.toIndependentText(),
-            icon = Icons.Filled.Help
+            icon = Icons.AutoMirrored.Filled.Help
         )
+
         DetailItemWithIcon(
             label = "Portador de protesis",
             info = diet.prosthesis.toProsthesisText(),
@@ -351,7 +400,7 @@ fun HygieneCard(hygiene: HygieneState) {
 fun ObservationCard(observation: String) {
     CardContent(title = "Observacions") {
         DetailItemWithIcon(
-            label = "Observacions del torn", info = observation, icon = Icons.Filled.Notes
+            label = "Observacions del torn", info = observation, icon = Icons.Filled.Description
         )
     }
 }
@@ -362,6 +411,7 @@ fun DrainCard(drain: DrainState) {
         DetailItemWithIcon(
             label = "Quantitat", info = drain.output, icon = Icons.Filled.Output
         )
+
         DetailItemWithIcon(
             label = "Tipus", info = drain.type, icon = Icons.Filled.FilterList
         )
@@ -402,7 +452,7 @@ fun CardContent(title: String, content: @Composable () -> Unit) {
 }
 
 fun Date.formatDate(pattern: String): String {
-    val outputFormat = SimpleDateFormat(pattern, Locale.ENGLISH)
+    val outputFormat = SimpleDateFormat(pattern, Locale.getDefault())
     return outputFormat.format(this)
 }
 
