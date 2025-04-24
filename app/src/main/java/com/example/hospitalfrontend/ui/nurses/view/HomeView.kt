@@ -55,7 +55,7 @@ fun HomeScreen(
                 TextButton(onClick = {
                     isError.value = false
                     navController.navigate("login") {
-                        popUpTo("home") { inclusive = true } // Opcional: elimina "home" de la pila
+                        popUpTo("home") { inclusive = true }
                     }
                 }) {
                     Text("OK")
