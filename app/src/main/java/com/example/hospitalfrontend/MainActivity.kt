@@ -56,7 +56,7 @@ fun HomePage() {
             patientViewModel = PatientViewModel(),
             diagnosisViewModel = DiagnosisViewModel(),
             diagnosisRemoteViewModel = DiagnosisRemoteViewModel(),
-            patientState = PatientState(),
+            patientState = PatientState()
         )
     }
 }
@@ -69,7 +69,7 @@ fun MyAppHomePage(
     patientViewModel: PatientViewModel,
     diagnosisViewModel: DiagnosisViewModel,
     diagnosisRemoteViewModel: DiagnosisRemoteViewModel,
-    patientState: PatientState,
+    patientState: PatientState
 ) {
     val remoteApiMessageListRoom = patientRemoteViewModel.remoteApiListMessageRoom.value
     val remoteApiMessageListCure = patientRemoteViewModel.remoteApiListMessageCure.value
@@ -112,8 +112,7 @@ fun MyAppHomePage(
         }
         composable("listRegister/{patientId}") { backStackEntry ->
             val patientId = backStackEntry.arguments?.getString("patientId")?.toIntOrNull()
-
-            val isError = remember { mutableStateOf(false) }
+            
             // Collect the state here
             LaunchedEffect(patientId) {
                 if (patientId != null) {
@@ -139,7 +138,6 @@ fun MyAppHomePage(
                 ListCuresScreen(
                     navController = navController,
                     patientRemoteViewModel = patientRemoteViewModel,
-                    isError = isError,
                     patientViewModel = patientViewModel,
                     patientId = patientId
                 )
@@ -190,7 +188,11 @@ fun MyAppHomePage(
             arguments = listOf(navArgument("patientId") { type = NavType.IntType })
         ) { backStackEntry ->
             val patientId = backStackEntry.arguments?.getInt("patientId") ?: -1
-            MenuScreen(navController = navController, patientId = patientId)
+            MenuScreen(
+                navController = navController,
+                patientId = patientId,
+                patientViewModel = patientViewModel
+            )
         }
 
         composable(
