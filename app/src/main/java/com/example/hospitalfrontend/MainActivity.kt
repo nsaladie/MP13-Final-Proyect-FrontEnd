@@ -13,6 +13,7 @@ import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.example.hospitalfrontend.model.AuxiliaryState
 import com.example.hospitalfrontend.model.PatientState
+import com.example.hospitalfrontend.model.RegisterState
 import com.example.hospitalfrontend.network.*
 import com.example.hospitalfrontend.network.RemoteApiMessageListCure
 import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
@@ -32,13 +33,11 @@ class MainActivity : ComponentActivity() {
             HospitalFrontEndTheme {
                 MyAppHomePage(
                     auxiliaryViewModel = AuxiliaryViewModel(),
-                    remoteViewModel = NurseRemoteViewModel(),
                     auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel(),
                     patientRemoteViewModel = PatientRemoteViewModel(),
                     patientViewModel = PatientViewModel(),
                     diagnosisViewModel = DiagnosisViewModel(),
                     diagnosisRemoteViewModel = DiagnosisRemoteViewModel(),
-                    auxiliaryState = AuxiliaryState(),
                     patientState = PatientState()
                 )
             }
@@ -52,14 +51,12 @@ fun HomePage() {
     HospitalFrontEndTheme {
         MyAppHomePage(
             auxiliaryViewModel = AuxiliaryViewModel(),
-            remoteViewModel = NurseRemoteViewModel(),
             auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel(),
             patientRemoteViewModel = PatientRemoteViewModel(),
             patientViewModel = PatientViewModel(),
             diagnosisViewModel = DiagnosisViewModel(),
             diagnosisRemoteViewModel = DiagnosisRemoteViewModel(),
-            auxiliaryState = AuxiliaryState(),
-            patientState = PatientState()
+            patientState = PatientState(),
         )
     }
 }
@@ -67,14 +64,12 @@ fun HomePage() {
 @Composable
 fun MyAppHomePage(
     auxiliaryViewModel: AuxiliaryViewModel,
-    remoteViewModel: NurseRemoteViewModel,
     auxiliaryRemoteViewModel: AuxiliaryRemoteViewModel,
     patientRemoteViewModel: PatientRemoteViewModel,
     patientViewModel: PatientViewModel,
     diagnosisViewModel: DiagnosisViewModel,
     diagnosisRemoteViewModel: DiagnosisRemoteViewModel,
-    auxiliaryState: AuxiliaryState,
-    patientState: PatientState
+    patientState: PatientState,
 ) {
     val remoteApiMessageListRoom = patientRemoteViewModel.remoteApiListMessageRoom.value
     val remoteApiMessageListCure = patientRemoteViewModel.remoteApiListMessageCure.value

@@ -4,19 +4,12 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hospitalfrontend.model.DietState
-import com.example.hospitalfrontend.model.DrainState
-import com.example.hospitalfrontend.model.HygieneState
-import com.example.hospitalfrontend.model.MobilizationState
-import com.example.hospitalfrontend.model.PatientState
 import com.example.hospitalfrontend.model.RegisterState
-import com.example.hospitalfrontend.model.VitalSignState
 import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import com.example.hospitalfrontend.model.AuxiliaryState as AuxiliaryState
 
 
 class PatientRemoteViewModel : ViewModel() {
@@ -53,7 +46,9 @@ class PatientRemoteViewModel : ViewModel() {
             try {
                 val response = apiService.getAllRooms()
                 remoteApiListMessageRoom.value = RemoteApiMessageListRoom.Success(response)
+                Log.d("Error Hab", response.toString())
             } catch (e: Exception) {
+                Log.d("Error Hab Fail", e.toString())
                 remoteApiListMessageRoom.value = RemoteApiMessageListRoom.Error // Error response
             }
         }
