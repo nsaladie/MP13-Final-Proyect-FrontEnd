@@ -11,9 +11,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
+import com.example.hospitalfrontend.model.AuxiliaryState
+import com.example.hospitalfrontend.model.PatientState
 import com.example.hospitalfrontend.network.*
 import com.example.hospitalfrontend.network.RemoteApiMessageListCure
-import com.example.hospitalfrontend.model.RoomState
 import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
 import com.example.hospitalfrontend.network.NurseRemoteViewModel
 import com.example.hospitalfrontend.network.PatientRemoteViewModel
@@ -31,12 +32,12 @@ class MainActivity : ComponentActivity() {
             HospitalFrontEndTheme {
                 MyAppHomePage(
                     auxiliaryViewModel = AuxiliaryViewModel(),
-                    remoteViewModel = NurseRemoteViewModel(),
                     auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel(),
                     patientRemoteViewModel = PatientRemoteViewModel(),
                     patientViewModel = PatientViewModel(),
                     diagnosisViewModel = DiagnosisViewModel(),
-                    diagnosisRemoteViewModel = DiagnosisRemoteViewModel()
+                    diagnosisRemoteViewModel = DiagnosisRemoteViewModel(),
+                    patientState = PatientState()
                 )
             }
         }
@@ -49,12 +50,12 @@ fun HomePage() {
     HospitalFrontEndTheme {
         MyAppHomePage(
             auxiliaryViewModel = AuxiliaryViewModel(),
-            remoteViewModel = NurseRemoteViewModel(),
             auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel(),
             patientRemoteViewModel = PatientRemoteViewModel(),
             patientViewModel = PatientViewModel(),
             diagnosisViewModel = DiagnosisViewModel(),
-            diagnosisRemoteViewModel = DiagnosisRemoteViewModel()
+            diagnosisRemoteViewModel = DiagnosisRemoteViewModel(),
+            patientState = PatientState()
         )
     }
 }
@@ -62,14 +63,14 @@ fun HomePage() {
 @Composable
 fun MyAppHomePage(
     auxiliaryViewModel: AuxiliaryViewModel,
-    remoteViewModel: NurseRemoteViewModel,
     auxiliaryRemoteViewModel: AuxiliaryRemoteViewModel,
     patientRemoteViewModel: PatientRemoteViewModel,
     patientViewModel: PatientViewModel,
     diagnosisViewModel: DiagnosisViewModel,
-    diagnosisRemoteViewModel: DiagnosisRemoteViewModel
+    diagnosisRemoteViewModel: DiagnosisRemoteViewModel,
+    patientState: PatientState
 ) {
-    val remoteApiMessageListRoom = patientRemoteViewModel.remoteApiListMessage.value
+    val remoteApiMessageListRoom = patientRemoteViewModel.remoteApiListMessageRoom.value
     val remoteApiMessageListCure = patientRemoteViewModel.remoteApiListMessageCure.value
     val navController = rememberNavController()
 
@@ -110,8 +111,7 @@ fun MyAppHomePage(
         }
         composable("listRegister/{patientId}") { backStackEntry ->
             val patientId = backStackEntry.arguments?.getString("patientId")?.toIntOrNull()
-
-            val isError = remember { mutableStateOf(false) }
+            
             // Collect the state here
             LaunchedEffect(patientId) {
                 if (patientId != null) {
@@ -137,7 +137,6 @@ fun MyAppHomePage(
                 ListCuresScreen(
                     navController = navController,
                     patientRemoteViewModel = patientRemoteViewModel,
-                    isError = isError,
                     patientViewModel = patientViewModel,
                     patientId = patientId
                 )
@@ -178,7 +177,6 @@ fun MyAppHomePage(
             }
             HomeScreen(
                 navController = navController,
-                //patientRemoteViewModel = patientRemoteViewModel,
                 patientViewModel = patientViewModel,
                 isError = isError,
             )
@@ -189,7 +187,11 @@ fun MyAppHomePage(
             arguments = listOf(navArgument("patientId") { type = NavType.IntType })
         ) { backStackEntry ->
             val patientId = backStackEntry.arguments?.getInt("patientId") ?: -1
-            MenuScreen(navController = navController, patientId = patientId)
+            MenuScreen(
+                navController = navController,
+                patientId = patientId,
+                patientViewModel = patientViewModel
+            )
         }
 
         composable(
@@ -202,6 +204,21 @@ fun MyAppHomePage(
                 patientRemoteViewModel = patientRemoteViewModel,
                 patientViewModel = patientViewModel,
                 patientId = patientId
+            )
+        }
+        composable(
+            "createCure/{patientId}",
+            arguments = listOf(navArgument("patientId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getInt("patientId") ?: -1
+
+            CreateCureScreen(
+                navController = navController,
+                patientRemoteViewModel = patientRemoteViewModel,
+                patientViewModel = patientViewModel,
+                patientId = patientId,
+                auxiliaryViewModel = auxiliaryViewModel,
+                patientState = patientState
             )
         }
 

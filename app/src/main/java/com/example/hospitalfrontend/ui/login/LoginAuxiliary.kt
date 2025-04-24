@@ -31,11 +31,9 @@ import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.R.color.colorText
 import com.example.hospitalfrontend.model.AuxiliaryState
 import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
-import com.example.hospitalfrontend.network.NurseRemoteViewModel
 import com.example.hospitalfrontend.ui.nurses.viewmodels.AuxiliaryViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 import com.example.hospitalfrontend.ui.theme.Primary
-import com.example.hospitalfrontend.ui.theme.Secundary
 
 @Composable
 fun LoginScreenAuxiliary(
@@ -48,35 +46,75 @@ fun LoginScreenAuxiliary(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            LoginScreenNurse(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
+            LoginScreenAux(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
         }
     }
 }
 
 @Composable
-fun LoginScreenNurse(
+fun LoginScreenAux(
     navController: NavController,
     auxiliaryRemoteViewModel: AuxiliaryRemoteViewModel,
     auxiliaryViewModel: AuxiliaryViewModel
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(169, 199, 199))
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
     ) {
-        val nunitoFont = FontFamily(Font(R.font.nunito_bold))
-        Text(
-            text = "Login",
-            modifier = Modifier.fillMaxWidth(),
-            style = TextStyle(
-                fontSize = 30.sp, fontWeight = FontWeight.Bold, fontFamily = nunitoFont
-            ),
-            color = colorResource(id = colorText),
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Logo()
-        AuxiliaryForm(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White, shape = RoundedCornerShape(20.dp))
+                .padding(24.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                val nunitoFont = FontFamily(Font(R.font.nunito_bold))
+
+                // Title
+                Text(
+                    text = "INCIAR SESSIÓ",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    style = TextStyle(
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = nunitoFont
+                    ),
+                    color = colorResource(id = colorText),
+                    textAlign = TextAlign.Center
+                )
+
+                // Logo
+                Box(
+                    modifier = Modifier
+                        .size(180.dp)
+                        .clip(RoundedCornerShape(15.dp))
+                        .background(Color.White.copy(alpha = 0.9f))
+                        .padding(8.dp)
+                ) {
+                    Logo()
+                }
+
+                // Form
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    AuxiliaryForm(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
+                }
+            }
+        }
     }
 }
 
@@ -111,12 +149,16 @@ fun AuxiliaryForm(
         //trims() to remove the white space and .isNotEmpty for that isn't empty
         auxiliaryId.value.trim().isNotEmpty()
     }
+    // Statefor a validation button login
+    var validButton by rememberSaveable { mutableStateOf(false) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        AuxiliaryNumberInput(auxiliaryId = auxiliaryId)
+        AuxiliaryNumberInput(auxiliaryId = auxiliaryId, onValidationChanged = { valid ->
+            validButton = valid
+        })
         Spacer(modifier = Modifier.height(20.dp))
         // Aquí deberías agregar ToggleLoginRegisterText(navController) si está definida
         Spacer(modifier = Modifier.height(50.dp))
-        SubmitButtonLogin(textId = "Login", inputValid = isValid)
+        SubmitButtonLogin(textId = "Accedir", inputValid = isValid)
         {
 
             val id = auxiliaryId.value.trim().toIntOrNull()
@@ -146,7 +188,7 @@ fun AuxiliaryForm(
             when (messageApi) {
                 is RemoteApiMessageAuxiliary.Success -> {
                     auxiliaryRemoteViewModel.clearApiMessage()
-                    auxiliaryViewModel.loginAuxiliary(auxiliar)
+                    auxiliaryViewModel.loginAuxiliary(messageApi.message)
                     navController.navigate("home")
                 }
 
@@ -167,8 +209,8 @@ fun SubmitButtonLogin(textId: String, inputValid: Boolean, onClick: () -> Unit) 
     Button(
         onClick = onClick,
         modifier = Modifier
-            .fillMaxWidth(0.5f)
-            .height(48.dp),
+            .fillMaxWidth(0.7f)
+            .height(56.dp),
         enabled = inputValid,
         contentPadding = PaddingValues(),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -177,8 +219,13 @@ fun SubmitButtonLogin(textId: String, inputValid: Boolean, onClick: () -> Unit) 
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    brush = Brush.horizontalGradient(listOf(Secundary, Primary)),
-                    shape = RoundedCornerShape(20.dp)
+                    brush = Brush.horizontalGradient(
+                        listOf(
+                            Color(151, 199, 150),
+                            Color(151, 199, 150).copy(alpha = 0.8f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(28.dp)
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -198,7 +245,8 @@ fun SubmitButtonLogin(textId: String, inputValid: Boolean, onClick: () -> Unit) 
 @Composable
 fun AuxiliaryNumberInput(
     auxiliaryId: MutableState<String>,
-    labelId: String = "Number"
+    labelId: String = "Número",
+    onValidationChanged: (Boolean) -> Unit
 ) {
     val latoFont = FontFamily(Font(R.font.lato_light_italic))
 
@@ -206,38 +254,62 @@ fun AuxiliaryNumberInput(
         valueState = auxiliaryId,
         labelId = labelId,
         keyboardType = KeyboardType.Number,
-        textStyle = TextStyle(fontFamily = latoFont)
+        textStyle = TextStyle(fontFamily = latoFont),
+        onValidationChanged = onValidationChanged
+
     )
 }
 
-//This function is for the layout of the texts fields.
 @Composable
 fun InputFieldAuxiliar(
     valueState: MutableState<String>,
     labelId: String,
     isSingleLine: Boolean = true,
     keyboardType: KeyboardType,
-    textStyle: TextStyle = TextStyle()
+    textStyle: TextStyle = TextStyle(),
+    onValidationChanged: (Boolean) -> Unit
 ) {
-    OutlinedTextField(
-        value = valueState.value,
-        onValueChange = { valueState.value = it },
-        label = { Text(text = labelId) },
-        singleLine = isSingleLine,
-        modifier = Modifier
-            .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
-            .fillMaxWidth(),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            focusedIndicatorColor = Primary,
-            cursorColor = Primary,
-            focusedLabelColor = Primary,
-        ),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType
-        ),
-        textStyle = textStyle
-    )
+    var showError by remember { mutableStateOf(false) }
+
+    Column {
+        OutlinedTextField(
+            value = valueState.value,
+            onValueChange = { newValue ->
+                // Validamos que solo sean números
+                if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
+                    valueState.value = newValue
+                    showError = false
+                    onValidationChanged(true)
+                } else {
+                    showError = true
+                    onValidationChanged(false)
+                }
+            },
+            label = { Text(text = labelId) },
+            singleLine = isSingleLine,
+            modifier = Modifier
+                .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
+                .fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = Primary,
+                cursorColor = Primary,
+                focusedLabelColor = Primary,
+            ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = keyboardType
+            ),
+            textStyle = textStyle
+        )
+        if (showError) {
+            Text(
+                text = "Please enter your ID number",
+                color = Color.Red,
+                style = TextStyle(fontSize = 12.sp),
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
+    }
 }
 
 

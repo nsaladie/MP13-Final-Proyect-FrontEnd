@@ -31,6 +31,10 @@ class AuxiliaryViewModel : ViewModel() {
         return _loginState.value.isLogin
     }
 
+    fun getAuxiliaryState(): AuxiliaryState? {
+        return _auxiliaryState.value
+    }
+
     // Disconnect Nurse User
     fun disconnectAuxiliary() {
         setLoginState(false)
@@ -39,13 +43,9 @@ class AuxiliaryViewModel : ViewModel() {
     }
 
     // If the data is on data base save the data of response in a variable
-    fun loginAuxiliary(auxiliary: AuxiliaryState?) {
+    fun loginAuxiliary(auxiliary: AuxiliaryState) {
         setLoginState(true)
-        if (auxiliary != null) {
-            _auxiliaryState.value = auxiliary
-        } else {
-            _auxiliaryState.value = null
-        }
+        _auxiliaryState.value = auxiliary
     }
 
 
