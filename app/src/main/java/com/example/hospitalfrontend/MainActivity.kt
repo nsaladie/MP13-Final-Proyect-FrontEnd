@@ -13,6 +13,7 @@ import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.example.hospitalfrontend.model.AuxiliaryState
 import com.example.hospitalfrontend.model.PatientState
+import com.example.hospitalfrontend.model.RegisterState
 import com.example.hospitalfrontend.network.*
 import com.example.hospitalfrontend.network.RemoteApiMessageListCure
 import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel

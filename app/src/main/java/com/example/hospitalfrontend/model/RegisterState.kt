@@ -3,7 +3,7 @@ package com.example.hospitalfrontend.model
 import java.util.Date
 
 data class RegisterState(
-    val id: Int,
+    val id: Int=0,
     val auxiliary: AuxiliaryState,
     val date: Date? = null,
     val patient: PatientState,

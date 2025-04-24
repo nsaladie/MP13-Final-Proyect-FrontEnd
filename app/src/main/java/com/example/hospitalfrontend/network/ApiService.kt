@@ -39,7 +39,7 @@ interface ApiService {
 
     //Rooms
     @GET("room")
-    suspend fun getAllRooms(): List<RoomState>
+    suspend fun getAllRooms(): List<RoomWithObservation>
 
     //Auxiliary
     @POST("auxiliary/login")

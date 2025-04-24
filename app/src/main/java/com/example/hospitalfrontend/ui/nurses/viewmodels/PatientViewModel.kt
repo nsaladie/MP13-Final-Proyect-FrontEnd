@@ -5,12 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.example.hospitalfrontend.model.AuxiliaryState
 import com.example.hospitalfrontend.model.NurseState
 import com.example.hospitalfrontend.model.PatientState
+import com.example.hospitalfrontend.model.RegisterState
 import com.example.hospitalfrontend.model.RoomState
+import com.example.hospitalfrontend.model.RoomWithObservation
 import com.example.hospitalfrontend.model.VitalSignState
 import com.example.hospitalfrontend.network.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 class PatientViewModel : ViewModel(
@@ -20,9 +23,11 @@ class PatientViewModel : ViewModel(
     val patientState: StateFlow<PatientState?> get() = _patientState.asStateFlow()
 
     // Variable for a list of rooms
-    private val _rooms = MutableStateFlow<List<RoomState>>(listOf())
-    val rooms: MutableStateFlow<List<RoomState>> = _rooms
-
+    private val _rooms = MutableStateFlow<List<RoomWithObservation>>(listOf())
+    val rooms: MutableStateFlow<List<RoomWithObservation>> = _rooms
+    // Si no tienes un StateFlow de registros en tu ViewModel, podrías añadir:
+    private val _registers = MutableStateFlow<List<RegisterState>>(emptyList())
+    val registers: StateFlow<List<RegisterState>> = _registers
     // Variable for a list of cures
     private val _cures = MutableStateFlow<List<VitalSignState>>(listOf())
     val cures: MutableStateFlow<List<VitalSignState>> = _cures
@@ -33,11 +38,13 @@ class PatientViewModel : ViewModel(
     }
 
     // Load the list of the Nurse
-    fun loadRooms(room: List<RoomState>) {
+    fun loadRooms(room: List<RoomWithObservation>) {
         _rooms.value = room
     }
 
     fun setPatientData(patient: PatientState) {
         _patientState.value = patient
     }
+
+
 }

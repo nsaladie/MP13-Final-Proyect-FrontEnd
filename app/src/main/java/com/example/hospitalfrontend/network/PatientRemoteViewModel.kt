@@ -51,7 +51,9 @@ class PatientRemoteViewModel : ViewModel() {
             try {
                 val response = apiService.getAllRooms()
                 remoteApiListMessageRoom.value = RemoteApiMessageListRoom.Success(response)
+                Log.d("Error Hab", response.toString())
             } catch (e: Exception) {
+                Log.d("Error Hab Fail", e.toString())
                 remoteApiListMessageRoom.value = RemoteApiMessageListRoom.Error // Error response
             }
         }
