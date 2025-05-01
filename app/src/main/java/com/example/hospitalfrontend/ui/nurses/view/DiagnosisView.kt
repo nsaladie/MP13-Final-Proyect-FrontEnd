@@ -27,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.model.DiagnosisState
 import com.example.hospitalfrontend.network.DiagnosisRemoteViewModel
+import com.example.hospitalfrontend.network.RemoteApiMessageDiagnosis
 import com.example.hospitalfrontend.ui.nurses.viewmodels.DiagnosisViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 
@@ -48,85 +49,158 @@ fun DiagnosisScreen(
 ) {
 
     val customPrimaryColor = Color(0xFFA9C7C7)
-
+    var isLoading by remember { mutableStateOf(true) }
     var diagnosisState by remember { mutableStateOf<DiagnosisState?>(null) }
+    val diagnosisScreenError = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        diagnosisRemoteViewModel.clearApiMessage()
+        diagnosisScreenError.value = false
+    }
+
 
     LaunchedEffect(patientId) {
         diagnosisRemoteViewModel.getDiagnosisById(patientId, diagnosisViewModel)
     }
 
+    val apiMessageState = diagnosisRemoteViewModel.remoteApiMessageDiagnosis.value
+    LaunchedEffect(apiMessageState) {
+        when (apiMessageState) {
+            is RemoteApiMessageDiagnosis.Success -> {
+                isLoading = false
+                diagnosisScreenError.value = false
+            }
+
+            is RemoteApiMessageDiagnosis.NotFound -> {
+                isLoading = false
+                diagnosisScreenError.value = false
+            }
+
+            is RemoteApiMessageDiagnosis.Error -> {
+                isLoading = false
+                diagnosisScreenError.value = true
+            }
+
+            is RemoteApiMessageDiagnosis.Loading -> {
+                isLoading = true
+            }
+        }
+    }
     LaunchedEffect(diagnosisViewModel.diagnosisDetail) {
         diagnosisViewModel.diagnosisDetail.collect { newState ->
             diagnosisState = newState
         }
     }
 
-    if (diagnosisState == null) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(customPrimaryColor),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                color = Color.White, modifier = Modifier.size(50.dp)
-            )
-        }
-        return
-    }
 
     Scaffold(
         containerColor = customPrimaryColor, topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "DIAGNÒSTIC", style = TextStyle(
-                                fontSize = 30.sp,
-                                fontFamily = NunitoFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center
-                            ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
-                        )
-                    }
-                }, navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
-                        )
-                    }
-                }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
-                ), actions = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "DIAGNÒSTIC", style = TextStyle(
+                            fontSize = 30.sp,
+                            fontFamily = NunitoFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    )
+                }
+            }, navigationIcon = {
+                IconButton(onClick = {
+                    diagnosisRemoteViewModel.clearApiMessage()
+                    navController.popBackStack()
+                }) {
+                    Icon(
+                        Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
+                    )
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
+            ), actions = {
+                IconButton(onClick = {
+                    diagnosisRemoteViewModel.clearApiMessage()
+                    navController.navigate("createDiagnosis/$patientId")
+                }) {
                     Icon(
                         Icons.Filled.LocalHospital,
                         contentDescription = "Diagnòstic",
                         tint = Color.Black,
                         modifier = Modifier.padding(end = 16.dp)
                     )
-                })
+                }
+            })
         }) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(customPrimaryColor)
+                .background(customPrimaryColor),
+            contentAlignment = Alignment.Center
+
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
-            ) {
-                DiagnosisDetailsCard(diagnosisState)
+            when {
+                isLoading -> {
+                    CircularProgressIndicator(
+                        color = Color.White, modifier = Modifier.size(50.dp)
+                    )
+                }
+
+                diagnosisState == null -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.NoteAlt,
+                            contentDescription = "No hi ha diagnòstic",
+                            tint = Color.White,
+                            modifier = Modifier.size(80.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "No hi ha cap diagnòstic disponible", style = TextStyle(
+                                fontSize = 22.sp,
+                                fontFamily = NunitoFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Pots crear-ne un amb el botó a la part superior dreta",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontFamily = LatoFontFamily,
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            )
+                        )
+                    }
+                }
+
+                else -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .verticalScroll(rememberScrollState())
+                            .padding(16.dp)
+                    ) {
+                        DiagnosisDetailsCard(diagnosisState)
+                    }
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun DiagnosisDetailsCard(diagnosisState: DiagnosisState?) {
@@ -161,18 +235,7 @@ fun DiagnosisDetailsCard(diagnosisState: DiagnosisState?) {
             }
 
             diagnosisState?.oxygenLevel?.let {
-                DetailItemWithIcon(
-                    label = "Oxigen",
-                    info = it.toString(),
-                    icon = Icons.Filled.Air,
-                    iconColor = customIconColor,
-                )
-                DetailItemWithIcon(
-                    label = "Tipus",
-                    info = diagnosisState.oxygenLevelDescription,
-                    icon = Icons.Filled.Science,
-                    iconColor = customIconColor,
-                )
+                OxygenSection(diagnosisState, customPrimaryColor)
             }
 
             diagnosisState?.diapers?.let { diaper ->
@@ -201,7 +264,7 @@ fun DiagnosisDetailsCard(diagnosisState: DiagnosisState?) {
                 DetailItemWithIcon(
                     label = "Nasogàstrica",
                     info = it,
-                    icon = Icons.Filled.Medication,
+                    icon = Icons.Filled.HealthAndSafety,
                     iconColor = customIconColor,
                 )
             }
@@ -261,6 +324,55 @@ fun DiapersSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
                     iconColor = Color(0xFF505050),
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun OxygenSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(primaryColor.copy(alpha = 0.1f))
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "Oxigen", style = TextStyle(
+                fontFamily = NunitoFontFamily,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF2C3E50)
+            )
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = when {
+                    diagnosisState?.oxygenLevel != null && diagnosisState.oxygenLevel > 0 -> "Requereix"
+                    else -> "No requereix"
+                }, color = when {
+                    diagnosisState?.oxygenLevel != null && diagnosisState.oxygenLevel > 0 -> Color(
+                        0xFF1EA01E
+                    )
+
+                    else -> Color(0xFFE74C3C)
+                }, fontSize = 18.sp, fontFamily = LatoFontFamily
+            )
+        }
+
+        if (diagnosisState?.oxygenLevel != null && diagnosisState.oxygenLevel > 0) {
+            DetailItemWithIcon(
+                label = "Tipus",
+                info = diagnosisState.oxygenLevelDescription,
+                icon = Icons.Filled.Science,
+                iconColor = Color(0xFF505050),
+            )
         }
     }
 }

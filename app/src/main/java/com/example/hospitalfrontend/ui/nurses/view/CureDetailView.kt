@@ -159,7 +159,7 @@ fun SuccessScreen(
                     .padding(16.dp)
             ) {
                 BasicInfoCard(register)
-                VitalSignCard(register.vitalSign, alertColor, defaultInfoColor)
+                register.vitalSign?.let { VitalSignCard(it, alertColor, defaultInfoColor) }
 
                 // Only show cards if they have data
                 register.diet?.let { diet ->

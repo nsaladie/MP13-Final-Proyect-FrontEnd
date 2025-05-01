@@ -8,7 +8,7 @@ class DiagnosisViewModel : ViewModel() {
     private val _diagnosisDetail = MutableStateFlow<DiagnosisState?>(null)
     val diagnosisDetail: StateFlow<DiagnosisState?> get() = _diagnosisDetail.asStateFlow()
 
-    fun setDiagnosisDetail(diagnosis: DiagnosisState) {
+    fun setDiagnosisDetail(diagnosis: DiagnosisState?) {
         _diagnosisDetail.value = diagnosis
     }
 }
