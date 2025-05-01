@@ -73,7 +73,7 @@ fun MenuScreen(
                 title = {
                     Text(
                         text = "MENÚ PACIENT", style = TextStyle(
-                            fontSize = 26.sp,
+                            fontSize = 30.sp,
                             fontFamily = NunitoFontFamily,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,

@@ -7,18 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AddIcCall
-import androidx.compose.material.icons.filled.AddLocation
-import androidx.compose.material.icons.filled.Assignment
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.PermContactCalendar
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ReportProblem
-import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.Today
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,9 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -174,7 +161,7 @@ fun PersonalData(
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 // Patient Information Section
-                                SectionHeader(text = "Informació del Pacient", latoFont, )
+                                SectionHeader(text = "Informació del Pacient", latoFont)
 
                                 EnhancedTextField(
                                     labelValue = "Nom",
@@ -326,12 +313,12 @@ fun EnhancedTextField(
             )
         },
         colors = TextFieldDefaults.colors(
-            focusedContainerColor =  Color(250, 250, 250),
+            focusedContainerColor = Color(250, 250, 250),
             unfocusedContainerColor = Color(250, 250, 250),
             focusedIndicatorColor = Color(151, 199, 150),
             unfocusedIndicatorColor = Color.LightGray,
-            cursorColor =  Color(151, 199, 150),
-            focusedLabelColor =  Color(151, 199, 150),
+            cursorColor = Color(151, 199, 150),
+            focusedLabelColor = Color(151, 199, 150),
         ),
         textStyle = TextStyle(
             fontFamily = fontFamily,
@@ -367,16 +354,16 @@ fun EnhancedMultilineField(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint =  Color.Black,
+                tint = Color.Black,
                 modifier = Modifier.size(22.dp)
             )
         },
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color(250, 250, 250),
             unfocusedContainerColor = Color(250, 250, 250),
-            focusedIndicatorColor =Color(151, 199, 150),
+            focusedIndicatorColor = Color(151, 199, 150),
             unfocusedIndicatorColor = Color.LightGray,
-            cursorColor =  Color(151, 199, 150),
+            cursorColor = Color(151, 199, 150),
             focusedLabelColor = Color(151, 199, 150),
         ),
         textStyle = TextStyle(
@@ -413,17 +400,17 @@ fun EnhancedBirthdayField(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint =  Color.Black,
+                tint = Color.Black,
                 modifier = Modifier.size(22.dp)
             )
         },
         colors = TextFieldDefaults.colors(
-            focusedContainerColor =  Color(250, 250, 250),
-            unfocusedContainerColor =  Color(250, 250, 250),
-            focusedIndicatorColor =Color(151, 199, 150),
+            focusedContainerColor = Color(250, 250, 250),
+            unfocusedContainerColor = Color(250, 250, 250),
+            focusedIndicatorColor = Color(151, 199, 150),
             unfocusedIndicatorColor = Color.LightGray,
-            cursorColor =Color(151, 199, 150),
-            focusedLabelColor =  Color(151, 199, 150),
+            cursorColor = Color(151, 199, 150),
+            focusedLabelColor = Color(151, 199, 150),
         ),
         textStyle = TextStyle(
             fontFamily = fontFamily,
@@ -484,6 +471,3 @@ fun EnhancedSaveButton(
         }
     }
 }
-
-
-
