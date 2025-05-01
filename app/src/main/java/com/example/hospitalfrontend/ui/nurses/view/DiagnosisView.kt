@@ -97,42 +97,44 @@ fun DiagnosisScreen(
         containerColor = customPrimaryColor, topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "DIAGNÒSTIC", style = TextStyle(
-                                fontSize = 30.sp,
-                                fontFamily = NunitoFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center
-                            ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
-                        )
-                    }
-                }, navigationIcon = {
-                    IconButton(onClick = {
-                        diagnosisRemoteViewModel.clearApiMessage()
-                        navController.popBackStack() }) {
-                        Icon(
-                            Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
-                        )
-                    }
-                }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
-                ), actions = {
-                    IconButton(onClick = {
-                        diagnosisRemoteViewModel.clearApiMessage()
-                        navController.navigate("createDiagnosis/$patientId")}) {
-                        Icon(
-                            Icons.Filled.LocalHospital,
-                            contentDescription = "Diagnòstic",
-                            tint = Color.Black,
-                            modifier = Modifier.padding(end = 16.dp)
-                        )
-                    }
-                })
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "DIAGNÒSTIC", style = TextStyle(
+                            fontSize = 30.sp,
+                            fontFamily = NunitoFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    )
+                }
+            }, navigationIcon = {
+                IconButton(onClick = {
+                    diagnosisRemoteViewModel.clearApiMessage()
+                    navController.popBackStack()
+                }) {
+                    Icon(
+                        Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
+                    )
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
+            ), actions = {
+                IconButton(onClick = {
+                    diagnosisRemoteViewModel.clearApiMessage()
+                    navController.navigate("createDiagnosis/$patientId")
+                }) {
+                    Icon(
+                        Icons.Filled.LocalHospital,
+                        contentDescription = "Diagnòstic",
+                        tint = Color.Black,
+                        modifier = Modifier.padding(end = 16.dp)
+                    )
+                }
+            })
         }) { paddingValues ->
         Box(
             modifier = Modifier
@@ -147,6 +149,7 @@ fun DiagnosisScreen(
                         color = Color.White, modifier = Modifier.size(50.dp)
                     )
                 }
+
                 diagnosisState == null -> {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -161,8 +164,7 @@ fun DiagnosisScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "No hi ha cap diagnòstic disponible",
-                            style = TextStyle(
+                            text = "No hi ha cap diagnòstic disponible", style = TextStyle(
                                 fontSize = 22.sp,
                                 fontFamily = NunitoFontFamily,
                                 fontWeight = FontWeight.Bold,
@@ -182,6 +184,7 @@ fun DiagnosisScreen(
                         )
                     }
                 }
+
                 else -> {
                     Column(
                         modifier = Modifier
@@ -350,17 +353,20 @@ fun OxygenSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = when{
-                    diagnosisState?.oxygenLevel != null -> "Requereix"
-                    else -> "No"
+                text = when {
+                    diagnosisState?.oxygenLevel != null && diagnosisState.oxygenLevel > 0 -> "Requereix"
+                    else -> "No requereix"
                 }, color = when {
-                    diagnosisState?.oxygenLevel != null -> Color(0xFF1EA01E)
+                    diagnosisState?.oxygenLevel != null && diagnosisState.oxygenLevel > 0 -> Color(
+                        0xFF1EA01E
+                    )
+
                     else -> Color(0xFFE74C3C)
                 }, fontSize = 18.sp, fontFamily = LatoFontFamily
             )
         }
 
-        diagnosisState?.oxygenLevel?.let {
+        if (diagnosisState?.oxygenLevel != null && diagnosisState.oxygenLevel > 0) {
             DetailItemWithIcon(
                 label = "Tipus",
                 info = diagnosisState.oxygenLevelDescription,
