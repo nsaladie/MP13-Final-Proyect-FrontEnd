@@ -109,6 +109,22 @@ fun MyAppHomePage(
                 patientId = patientId
             )
         }
+        composable(
+            "createDiagnosis/{patientId}",
+            arguments = listOf(navArgument("patientId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getInt("patientId") ?: -1
+            val isError = remember { mutableStateOf(false) }
+
+            CreateDiagnosisScreen(
+                navController = navController,
+                diagnosisViewModel = diagnosisViewModel,
+                diagnosisRemoteViewModel = diagnosisRemoteViewModel,
+                patientId = patientId,
+                isError = isError,
+                auxiliaryViewModel = auxiliaryViewModel
+            )
+        }
         composable("listRegister/{patientId}") { backStackEntry ->
             val patientId = backStackEntry.arguments?.getString("patientId")?.toIntOrNull()
             

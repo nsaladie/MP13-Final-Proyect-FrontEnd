@@ -65,4 +65,9 @@ interface ApiService {
     @GET("register/{id}")
     suspend fun getCureDetail(@Path("id") id: Int): RegisterState
 
+    // Create Diagnosis
+    @POST("register/diagnosis")
+    suspend fun createDiagnosis(@Body request: DiagnosisRequest): Boolean
+
+
 }
