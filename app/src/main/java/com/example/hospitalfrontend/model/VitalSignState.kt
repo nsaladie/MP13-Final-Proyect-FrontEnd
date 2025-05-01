@@ -8,7 +8,7 @@ data class VitalSignState(
     val pulse: Double = 0.0,
     val temperature: Double = 0.0,
     val oxygenSaturation: Double = 0.0,
-    val urineVolume: Double = 0.0,
-    val bowelMovements: Double = 0.0,
-    val serumTherapy: Double = 0.0
+    val urineVolume: Double? = null,
+    val bowelMovements: Double? = null,
+    val serumTherapy: Double? = null
 )
