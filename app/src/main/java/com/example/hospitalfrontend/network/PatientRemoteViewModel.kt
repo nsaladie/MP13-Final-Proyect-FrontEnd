@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.hospitalfrontend.model.DietTypeState
 import com.example.hospitalfrontend.model.RegisterState
 import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
 import com.google.gson.GsonBuilder
@@ -51,9 +52,8 @@ class PatientRemoteViewModel : ViewModel() {
             try {
                 val response = apiService.getAllRooms()
                 remoteApiListMessageRoom.value = RemoteApiMessageListRoom.Success(response)
-                Log.d("Error Hab", response.toString())
             } catch (e: Exception) {
-                Log.d("Error Hab Fail", e.toString())
+                Log.d("Error list room", e.toString())
                 remoteApiListMessageRoom.value = RemoteApiMessageListRoom.Error // Error response
             }
         }
@@ -87,13 +87,11 @@ class PatientRemoteViewModel : ViewModel() {
     }
 
     fun createCure(registerState: RegisterState) {
-        Log.d("Error test", registerState.toString())
         viewModelScope.launch {
             remoteApiMessageBoolean.value = RemoteApiMessageBoolean.Loading
             try {
                 val response = apiService.createCure(registerState)
                 remoteApiMessageBoolean.value = RemoteApiMessageBoolean.Success(response)
-                Log.d("Error create Su", response.toString())
             } catch (e: Exception) {
                 Log.d("Error create", e.toString())
                 remoteApiMessageBoolean.value = RemoteApiMessageBoolean.Error
@@ -106,7 +104,6 @@ class PatientRemoteViewModel : ViewModel() {
             try {
                 val response = apiServiceHour.getCureDetail(cureId)
                 remoteApiCureDetail.value = RemoteApiMessageCureDetail.Success(response)
-                Log.d("Error", response.toString())
             } catch (e: Exception) {
                 Log.d("Error cure detail", e.toString())
                 remoteApiCureDetail.value = RemoteApiMessageCureDetail.Error

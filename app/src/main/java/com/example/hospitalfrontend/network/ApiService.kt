@@ -57,7 +57,7 @@ interface ApiService {
     @GET("register/diagnosis/{id}")
     suspend fun getDiagnosis(@Path("id") id: Int): DiagnosisState
 
-
+    // Create new Cure
     @POST("register")
     suspend fun createCure(@Body registerState: RegisterState): Boolean
 
@@ -69,5 +69,11 @@ interface ApiService {
     @POST("register/diagnosis")
     suspend fun createDiagnosis(@Body request: DiagnosisRequest): Boolean
 
+    // List of DietType
+    @GET("diet/type")
+    suspend fun getAllDietType(): List<DietTypeState>
 
+    // List of DietTexture
+    @GET("diet/texture")
+    suspend fun getAllDietTexture(): List<DietTextureTypeState>
 }

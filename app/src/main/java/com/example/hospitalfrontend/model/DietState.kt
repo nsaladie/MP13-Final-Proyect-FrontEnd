@@ -5,10 +5,9 @@ import java.util.Date
 data class DietState(
     val id: Int = 0,
     val date: Date? = null,
-    val takeData: String,
-    val dietTypes: Set<DietTypeState>? = null,
+    val takeData: String? = null,
+    val dietTypes: Set<DietTypeState> = emptySet(),
     val dietTypeTexture: DietTextureTypeState? = null,
-    val independent: Int = 0,
-    val prosthesis: Int = 0
+    val independent: Int? = null,
+    val prosthesis: Int? = null
 )
-

@@ -1,10 +1,10 @@
 package com.example.hospitalfrontend.model
 
-data class MobilizationState (
-    val id:Int =0,
-    val sedestation:Int=0,
-    val walkingAssis:Int=0,
-    val assisDesc:String="",
-    val changes:String="",
-    val decubitus:String=""
+data class MobilizationState(
+    val id: Int = 0,
+    val sedestation: Int? = null,
+    val walkingAssis: Int? = null,
+    val assisDesc: String? = null,
+    val changes: String = "",
+    val decubitus: String = ""
 )

@@ -11,15 +11,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
-import com.example.hospitalfrontend.model.AuxiliaryState
 import com.example.hospitalfrontend.model.PatientState
-import com.example.hospitalfrontend.model.RegisterState
 import com.example.hospitalfrontend.network.*
-import com.example.hospitalfrontend.network.RemoteApiMessageListCure
-import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
-import com.example.hospitalfrontend.network.NurseRemoteViewModel
-import com.example.hospitalfrontend.network.PatientRemoteViewModel
-import com.example.hospitalfrontend.network.RemoteApiMessageListRoom
 import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
 import com.example.hospitalfrontend.ui.nurses.view.*
 import com.example.hospitalfrontend.ui.nurses.viewmodels.*
@@ -72,7 +65,6 @@ fun MyAppHomePage(
     patientState: PatientState
 ) {
     val remoteApiMessageListRoom = patientRemoteViewModel.remoteApiListMessageRoom.value
-    val remoteApiMessageListCure = patientRemoteViewModel.remoteApiListMessageCure.value
     val navController = rememberNavController()
 
     // Get the state of login
@@ -110,6 +102,7 @@ fun MyAppHomePage(
                 patientId = patientId
             )
         }
+
         composable(
             "createDiagnosis/{patientId}",
             arguments = listOf(navArgument("patientId") { type = NavType.IntType })
@@ -126,29 +119,9 @@ fun MyAppHomePage(
                 auxiliaryViewModel = auxiliaryViewModel
             )
         }
+
         composable("listRegister/{patientId}") { backStackEntry ->
             val patientId = backStackEntry.arguments?.getString("patientId")?.toIntOrNull()
-            
-            // Collect the state here
-            LaunchedEffect(patientId) {
-                if (patientId != null) {
-                    patientRemoteViewModel.getAllCures(patientId)
-                }
-            }
-
-            when (remoteApiMessageListCure) {
-                is RemoteApiMessageListCure.Success -> {
-                    patientViewModel.loadCures(remoteApiMessageListCure.message)
-                }
-
-                is RemoteApiMessageListCure.Error -> {
-                    Log.d("ListCures", "Error")
-                }
-
-                is RemoteApiMessageListCure.Loading -> {
-                    Log.d("ListCures", "Loading List")
-                }
-            }
 
             if (patientId != null) {
                 ListCuresScreen(
@@ -177,7 +150,6 @@ fun MyAppHomePage(
                 is RemoteApiMessageListRoom.Success -> {
                     if (remoteApiMessageListRoom.message.isEmpty()) {
                         isError.value = true
-                        Log.d("List Error", "No hay datos en la base de datos")
                     } else {
                         patientViewModel.loadRooms(remoteApiMessageListRoom.message)
                     }
@@ -185,11 +157,10 @@ fun MyAppHomePage(
 
                 is RemoteApiMessageListRoom.Error -> {
                     isError.value = true
-                    Log.d("List ERRor", "ERROR List")
+                    Log.d("Error List", "Error loading list of rooms")
                 }
 
                 is RemoteApiMessageListRoom.Loading -> {
-                    Log.d("List", "Loading List")
                 }
             }
             HomeScreen(
@@ -223,6 +194,7 @@ fun MyAppHomePage(
                 patientId = patientId
             )
         }
+        
         composable(
             "createCure/{patientId}",
             arguments = listOf(navArgument("patientId") { type = NavType.IntType })
@@ -232,10 +204,8 @@ fun MyAppHomePage(
             CreateCureScreen(
                 navController = navController,
                 patientRemoteViewModel = patientRemoteViewModel,
-                patientViewModel = patientViewModel,
                 patientId = patientId,
                 auxiliaryViewModel = auxiliaryViewModel,
-                patientState = patientState
             )
         }
 
