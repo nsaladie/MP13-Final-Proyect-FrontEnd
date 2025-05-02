@@ -26,7 +26,7 @@ fun Int.toIndependentText(): String {
  * Specific conversion for prosthesis field in Diet
  */
 fun Int.toProsthesisText(): String {
-    return this.toDescriptiveText("Portador", "No")
+    return this.toDescriptiveText("Sí", "No")
 }
 
 /**

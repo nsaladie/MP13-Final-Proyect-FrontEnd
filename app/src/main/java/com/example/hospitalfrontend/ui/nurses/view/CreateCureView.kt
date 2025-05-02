@@ -1,48 +1,48 @@
 package com.example.hospitalfrontend.ui.nurses.view
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.animation.*
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.*
+import androidx.compose.ui.draw.*
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.*
+import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.model.*
-import com.example.hospitalfrontend.network.PatientRemoteViewModel
-import com.example.hospitalfrontend.network.RemoteApiMessageBoolean
-import com.example.hospitalfrontend.ui.nurses.view.HospitalTheme.latoLightFont
-import com.example.hospitalfrontend.ui.nurses.viewmodels.AuxiliaryViewModel
-import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
+import com.example.hospitalfrontend.network.*
+import com.example.hospitalfrontend.ui.nurses.viewmodels.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 object HospitalTheme {
-    val Primary = Color(0xFF2C78E4)
+    val Primary = Color(0xFF505050)
     val Background = Color(0xFFA9C7C7)
+    val BackgroundMuted = Color(0xFF7F8C8D)
     val Surface = Color.White
     val TextPrimary = Color(0xFF2C3E50)
+    val TextSecondary = Color(0xFF546E7A)
     val Error = Color(0xFFE53935)
-    val latoLightFont = FontFamily(Font(R.font.lato_light))
+    val Success = Color(0xFF43A047)
+    val IconColor = Color(0xFF3498DB)
+    val ColumColor = Color(0xFFA9C7C7)
+    val SaveColor = Color(151, 199, 150)
+    val latoBoldFont = FontFamily(Font(R.font.lato_regular))
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,210 +50,381 @@ object HospitalTheme {
 fun CreateCureScreen(
     navController: NavController,
     patientRemoteViewModel: PatientRemoteViewModel,
-    patientViewModel: PatientViewModel,
     patientId: Int,
     auxiliaryViewModel: AuxiliaryViewModel,
-    patientState: PatientState
+    dietRemoteViewModel: DietRemoteViewModel = viewModel()
 ) {
     val auxiliary = auxiliaryViewModel.getAuxiliaryState()
+    val patient = PatientState(historialNumber = patientId)
 
-    LaunchedEffect(Unit) {
-        patientRemoteViewModel.getPatientById(patientId, patientViewModel)
-    }
-
-    val patient by patientViewModel.patientState.collectAsState()
-
+    // Form state management
     var observation by remember { mutableStateOf("") }
-    var hygieneType by remember { mutableStateOf("") }
-    var diet by remember { mutableStateOf("") }
-    var drain by remember { mutableStateOf("") }
-    var mobilization by remember { mutableStateOf("") }
+    var dietState by remember { mutableStateOf(DietState()) }
+    var vitalSignState by remember { mutableStateOf(VitalSignState()) }
+    var mobilizationState by remember { mutableStateOf(MobilizationState()) }
+    var hygieneState by remember { mutableStateOf(HygieneState()) }
+    var drainState by remember { mutableStateOf(DrainState()) }
 
-    val remoteApiMessage = patientRemoteViewModel.remoteApiMessageBoolean.value
+    // Dialog state
     var showSuccessDialog by rememberSaveable { mutableStateOf(false) }
     var showErrorDialog by rememberSaveable { mutableStateOf(false) }
     var dialogMessage by rememberSaveable { mutableStateOf("") }
-    var systolic by rememberSaveable { mutableStateOf("") }
-    var diastolic by rememberSaveable { mutableStateOf("") }
-    var respiratoryRate by rememberSaveable { mutableStateOf("") }
-    var pulse by rememberSaveable { mutableStateOf("") }
-    var temperature by rememberSaveable { mutableStateOf("") }
-    var urineVolume by rememberSaveable { mutableStateOf("") }
-    var bowelMovements by rememberSaveable { mutableStateOf("") }
-    var serumTherapy by rememberSaveable { mutableStateOf("") }
-    var oxygenSaturation by rememberSaveable { mutableStateOf("") }
 
-    var sedestation by rememberSaveable { mutableStateOf("") }
-    var walkingAssis by rememberSaveable { mutableStateOf("") }
-    var changes by rememberSaveable { mutableStateOf("") }
-    var decubitus by rememberSaveable { mutableStateOf("") }
+    val remoteApiMessage = patientRemoteViewModel.remoteApiMessageBoolean.value
+
+    val isFormValid = remember(
+        vitalSignState, dietState, hygieneState, mobilizationState, drainState
+    ) {
+        val vitalSignsValid = with(vitalSignState) {
+            systolicBloodPressure > 0 && diastolicBloodPressure > 0 &&
+                    respiratoryRate > 0 && pulse > 0 &&
+                    temperature > 0 && oxygenSaturation > 0
+        }
+
+        // Check if any diet field is filled
+        val isDietStarted = with(dietState) {
+            date != null || takeData != null || dietTypes.isNotEmpty() ||
+                    dietTypeTexture != null || independent != null || prosthesis != null
+        }
+
+        // If diet started, check all mandatory fields
+        val dietValid = if (isDietStarted) {
+            with(dietState) {
+                date != null && takeData != null && dietTypes.isNotEmpty() &&
+                        dietTypeTexture != null && independent != null && prosthesis != null
+            }
+        } else true
+
+        // Check if any hygiene field is filled
+        val isHygieneStarted = hygieneState.description.isNotBlank()
+        val hygieneValid = if (isHygieneStarted) {
+            hygieneState.description.isNotBlank()
+        } else true
+
+        // Check if any drain field is filled
+        val isDrainStarted = with(drainState) {
+            output.isNotBlank() || type.isNotBlank()
+        }
+        val drainValid = if (isDrainStarted) {
+            with(drainState) {
+                output.isNotBlank() && type.isNotBlank()
+            }
+        } else true
+
+        // Check if any mobilization field is filled
+        val isMobilizationStarted = with(mobilizationState) {
+            sedestation != null || walkingAssis != null ||
+                    assisDesc != null || changes.isNotBlank() || decubitus.isNotBlank()
+        }
+        val mobilizationValid = if (isMobilizationStarted) {
+            with(mobilizationState) {
+                sedestation != null && walkingAssis != null &&
+                        (walkingAssis != 1 || assisDesc != null) &&
+                        changes.isNotBlank() && decubitus.isNotBlank()
+            }
+        } else true
+
+        vitalSignsValid && dietValid && hygieneValid && drainValid && mobilizationValid
+    }
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "NOVA CURA PER ${patientState.name}",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.Close, contentDescription = "Close", tint = Color.Black)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = HospitalTheme.Surface)
-            )
-        },
-        containerColor = HospitalTheme.Background
+            HospitalTopAppBar(
+                title = "CREAR NOVA CURA", onCloseClick = { navController.popBackStack() })
+        }, bottomBar = {
+            HospitalBottomBar(
+                text = "Desar canvis",
+                isEnabled = isFormValid,
+                fontFamily = HospitalTheme.latoBoldFont
+            ) {
+                val register = RegisterState(
+                    id = 0,
+                    date = null,
+                    auxiliary = auxiliary!!,
+                    patient = patient,
+                    hygieneType = hygieneState.takeIf { it.description.isNotBlank() },
+                    diet = dietState.takeIf {
+                        it.date != null || it.takeData != null || it.dietTypes.isNotEmpty() ||
+                                it.dietTypeTexture != null || it.independent != null || it.prosthesis != null
+                    },
+                    drain = drainState.takeIf { it.output.isNotBlank() || it.type.isNotBlank() },
+                    mobilization = mobilizationState.takeIf {
+                        it.sedestation != null || it.walkingAssis != null ||
+                                it.assisDesc != null || it.changes.isNotBlank() || it.decubitus.isNotBlank()
+                    },
+                    vitalSign = vitalSignState,
+                    observation = observation.takeIf { it.isNotBlank() }
+                )
+                patientRemoteViewModel.createCure(register)
+            }
+        }, containerColor = HospitalTheme.Background
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
+                    .padding(bottom = 16.dp)
             ) {
-                VitalSignsCard(
-                    systolic = systolic,
-                    onSystolicChange = { systolic = it },
-                    diastolic = diastolic,
-                    onDiastolicChange = { diastolic = it },
-                    respiratoryRate = respiratoryRate,
-                    onRespiratoryRateChange = { respiratoryRate = it },
-                    pulse = pulse,
-                    onPulseChange = { pulse = it },
-                    temperature = temperature,
-                    onTemperatureChange = { temperature = it },
-                    oxygenSaturation = oxygenSaturation,
-                    onOxygenSaturationChange = { oxygenSaturation = it },
-                    urineVolume = urineVolume,
-                    onUrineVolumeChange = { urineVolume = it },
-                    bowelMovements = bowelMovements,
-                    onBowelMovementsChange = { bowelMovements = it },
-                    serumTherapy = serumTherapy,
-                    onSerumTherapyChange = { serumTherapy = it }
-                )
+                VitalSignsCard(onVitalSignStateChange = { vitalSignState = it })
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Spacer(modifier = Modifier.height(24.dp))
-
-                ExpandableTextField(
-                    label = "Drenatges (tipus y débit)",
-                    icon = Icons.Filled.MedicalServices,
-                    value = drain,
-                    onValueChange = { drain = it }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                HygieneSelection(
-                    icon = Icons.Filled.Sanitizer,
-                    value = hygieneType,
-                    onValueChange = { hygieneType = it }
-                )
-
-                DietaSection()
-                MobilitzacionsSection(
-                    icon = Icons.Filled.AssistWalker,
-                    value = mobilization,
-                    onValueChange = { mobilization = it }
-                )
-
-                ExpandableTextField(
-                    label = "Observacions",
-                    icon = Icons.Filled.ContentPasteGo,
-                    value = observation,
-                    onValueChange = { observation = it }
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                EnhancedSaveButton(
-                    text = "Desar canvis",
-                    isEnabled = systolic.isNotBlank() && diastolic.isNotBlank(),
-                    fontFamily = latoLightFont
-                ) {
-                    val vitalSign = VitalSignState(
-                        id = 0,
-                        systolicBloodPressure = systolic.toDoubleOrNull() ?: 0.0,
-                        diastolicBloodPressure = diastolic.toDoubleOrNull() ?: 0.0,
-                        respiratoryRate = respiratoryRate.toDoubleOrNull() ?: 0.0,
-                        pulse = pulse.toDoubleOrNull() ?: 0.0,
-                        temperature = temperature.toDoubleOrNull() ?: 0.0,
-                        oxygenSaturation = oxygenSaturation.toDoubleOrNull() ?: 0.0,
-                        urineVolume = urineVolume.toDoubleOrNull() ?: 0.0,
-                        bowelMovements = bowelMovements.toDoubleOrNull() ?: 0.0,
-                        serumTherapy = serumTherapy.toDoubleOrNull() ?: 0.0,
-
-                        )
-                    val register = RegisterState(
-                        id = 0,
-                        date = null,
-                        auxiliary = auxiliary!!,
-                        patient = patient!!,
-                        hygieneType = if (hygieneType.isNotBlank()) HygieneState(description = hygieneType) else null,
-                        diet = if (diet.isNotBlank()) DietState(
-                            id = 0,
-                            date = null,
-                            takeData = "Comida",
-                            dietTypes = emptySet(),
-                            dietTypeTexture = DietTextureTypeState(),
-                            independent = 0,
-                            prosthesis = 0
-                        ) else null,
-                        drain = if (drain.isNotBlank()) DrainState(
-                            id = 0, output = "output",
-                            type = drain
-                        ) else null,
-                        mobilization = if (mobilization.isNotBlank()) {
-                            val parts = mobilization
-                                .split(";")
-                                .mapNotNull {
-                                    val split = it.split("=")
-                                    if (split.size == 2) split[0] to split[1] else null
-                                }.toMap()
-
-                            MobilizationState(
-                                id = 0,
-                                sedestation = parts["sedestation"]?.toIntOrNull() ?: 0,
-                                walkingAssis = if (parts["walkingAssis"] == "Amb ajuda") 1 else 0,
-                                assisDesc = parts["assisDesc"] ?: "",
-                                changes = parts["changes"] ?: "",
-                                decubitus = parts["decubitus"] ?: ""
-                            )
-                        } else null,
-
-                                vitalSign = vitalSign,
-                        observation = if (observation.isNotBlank()) observation else null
+                FormSection(title = "Dieta", icon = Icons.Outlined.Restaurant) {
+                    DietSection(
+                        dietState = dietState,
+                        onDietStateChange = { dietState = it },
+                        dietRemoteViewModel = dietRemoteViewModel
                     )
-                    patientRemoteViewModel.createCure(register)
                 }
 
-                LaunchedEffect(remoteApiMessage) {
-                    when (remoteApiMessage) {
-                        is RemoteApiMessageBoolean.Success -> {
-                            dialogMessage = "Data updated successfully."
-                            showSuccessDialog = true
-                            patientRemoteViewModel.clearApiMessage()
-                        }
+                FormSection(title = "Drenatges", icon = Icons.Outlined.MedicalServices) {
+                    DrainSection(onDrainStateChange = { drainState = it })
+                }
 
-                        is RemoteApiMessageBoolean.Error -> {
-                            Log.d("Error", "Error Save")
-                            dialogMessage = "Failing to update data."
-                            showErrorDialog = true
-                            patientRemoteViewModel.clearApiMessage()
-                        }
+                FormSection(title = "Higiene", icon = Icons.Outlined.CleanHands) {
+                    HygieneSelection(onHygieneStateChange = { hygieneState = it })
+                }
 
-                        RemoteApiMessageBoolean.Loading -> Log.d("Loading Update", "Loading")
+                FormSection(title = "Mobilitzacions", icon = Icons.Outlined.AccessibilityNew) {
+                    MobilizationSection(onMobilizationStateChange = { mobilizationState = it })
+                }
+
+                FormSection(title = "Observacions", icon = Icons.Outlined.ContentPasteGo) {
+                    ObservationsField(
+                        value = observation, onValueChange = { observation = it })
+                }
+
+                Spacer(modifier = Modifier.height(80.dp))
+            }
+        }
+
+        LaunchedEffect(remoteApiMessage) {
+            when (remoteApiMessage) {
+                is RemoteApiMessageBoolean.Success -> {
+                    dialogMessage = "Nova cura creada correctament"
+                    showSuccessDialog = true
+                    patientRemoteViewModel.clearApiMessage()
+                }
+
+                is RemoteApiMessageBoolean.Error -> {
+                    dialogMessage =
+                        "Hi ha hagut una error en la creació de la nova cura, si us plau intenta-ho de nou"
+                    showErrorDialog = true
+                    patientRemoteViewModel.clearApiMessage()
+                }
+
+                RemoteApiMessageBoolean.Loading -> {
+
+                }
+            }
+        }
+
+        // Dialog management
+        if (showSuccessDialog) {
+            HospitalAlertDialog(
+                onDismissRequest = { showSuccessDialog = false },
+                title = "Èxit",
+                text = dialogMessage,
+                confirmButton = {
+                    Button(onClick = {
+                        showSuccessDialog = false
+                        navController.popBackStack()
+                    }) {
+                        Text("Acceptar")
                     }
+                })
+        }
+
+        if (showErrorDialog) {
+            HospitalAlertDialog(
+                onDismissRequest = { showErrorDialog = false },
+                title = "Error",
+                text = dialogMessage,
+                confirmButton = {
+                    Button(onClick = { showErrorDialog = false }) {
+                        Text("Acceptar")
+                    }
+                })
+        }
+    }
+}
+
+@Composable
+fun FormSection(title: String, icon: ImageVector, content: @Composable () -> Unit) {
+    ExpandableCard(title = title, icon = icon) { content() }
+    Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
+fun ObservationsField(value: String, onValueChange: (String) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .imePadding()
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .heightIn(min = 120.dp, max = 300.dp),
+            textStyle = TextStyle(
+                fontFamily = LatoFontFamily, fontSize = 18.sp, color = HospitalTheme.TextPrimary
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = HospitalTheme.Primary,
+                unfocusedBorderColor = HospitalTheme.TextSecondary.copy(alpha = 0.5f),
+                focusedLabelColor = HospitalTheme.Primary,
+                cursorColor = HospitalTheme.Primary
+            ),
+            shape = RoundedCornerShape(12.dp),
+            minLines = 3,
+            maxLines = 10
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HospitalTopAppBar(title: String, onCloseClick: () -> Unit) {
+    TopAppBar(
+        title = {
+            Text(
+                text = title, style = TextStyle(
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = NunitoFontFamily,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center
+                ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+            )
+        }, navigationIcon = {
+            IconButton(onClick = onCloseClick) {
+                Icon(Icons.Filled.Close, contentDescription = "Close", tint = Color.Black)
+            }
+        }, colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = HospitalTheme.Background
+        ), modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+    )
+}
+
+@Composable
+fun HospitalBottomBar(
+    text: String, isEnabled: Boolean, fontFamily: FontFamily, onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(HospitalTheme.Background)
+            .padding(16.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        EnhancedSaveButton(
+            text = text, isEnabled = isEnabled, fontFamily = fontFamily, onClick = onClick
+        )
+    }
+}
+
+@Composable
+fun HospitalAlertDialog(
+    onDismissRequest: () -> Unit, title: String, text: String, confirmButton: @Composable () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text(title) },
+        text = { Text(text) },
+        confirmButton = confirmButton,
+        containerColor = HospitalTheme.Surface
+    )
+}
+
+@Composable
+fun ExpandableCard(title: String, icon: ImageVector, content: @Composable () -> Unit) {
+    var isExpanded by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = HospitalTheme.Primary.copy(alpha = 0.1f)
+            ),
+        colors = CardDefaults.cardColors(containerColor = HospitalTheme.Surface),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isExpanded = !isExpanded }
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Icon container
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(HospitalTheme.IconColor.copy(alpha = 0.1f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = title,
+                            tint = Color.Black,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = title, style = TextStyle(
+                            fontSize = 20.sp,
+                            fontFamily = NunitoFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = HospitalTheme.TextPrimary
+                        )
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(if (isExpanded) HospitalTheme.Primary.copy(0.1f) else Color.Transparent),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                        contentDescription = if (isExpanded) "Collapse" else "Expand",
+                        tint = HospitalTheme.Primary
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(bottom = 16.dp)
+                ) {
+                    content()
                 }
             }
         }
@@ -261,26 +432,29 @@ fun CreateCureScreen(
 }
 
 @Composable
-fun VitalSignsCard(
-    systolic: String,
-    onSystolicChange: (String) -> Unit,
-    diastolic: String,
-    onDiastolicChange: (String) -> Unit,
-    respiratoryRate: String,
-    onRespiratoryRateChange: (String) -> Unit,
-    pulse: String,
-    onPulseChange: (String) -> Unit,
-    temperature: String,
-    onTemperatureChange: (String) -> Unit,
-    oxygenSaturation: String,
-    onOxygenSaturationChange: (String) -> Unit,
-    urineVolume: String,
-    onUrineVolumeChange: (String) -> Unit,
-    bowelMovements: String,
-    onBowelMovementsChange: (String) -> Unit,
-    serumTherapy: String,
-    onSerumTherapyChange: (String) -> Unit
-) {
+fun VitalSignsCard(onVitalSignStateChange: (VitalSignState) -> Unit) {
+    // Form state
+    var systolic by rememberSaveable { mutableStateOf("") }
+    var diastolic by rememberSaveable { mutableStateOf("") }
+    var respiratoryRate by rememberSaveable { mutableStateOf("") }
+    var pulse by rememberSaveable { mutableStateOf("") }
+    var temperature by rememberSaveable { mutableStateOf("") }
+    var oxygenSaturation by rememberSaveable { mutableStateOf("") }
+    var urineVolume by rememberSaveable { mutableStateOf("") }
+    var bowelMovements by rememberSaveable { mutableStateOf("") }
+    var serumTherapy by rememberSaveable { mutableStateOf("") }
+
+    // Reusable decimal validation function
+    val validateDecimal: (String, String) -> String = { newValue, currentValue ->
+        val processed = newValue.replace(',', '.')
+        if (processed.isEmpty() || processed.matches(Regex("^\\d*\\.?\\d{0,2}$"))) {
+            processed
+        } else {
+            // Return previous value if invalid
+            currentValue
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -297,161 +471,199 @@ fun VitalSignsCard(
                 .padding(24.dp)
                 .fillMaxWidth()
         ) {
-            SectionTitle("Constants Vitals")
-            Spacer(modifier = Modifier.height(16.dp))
+            VitalSignsHeader(title = "Constants Vitals", icon = Icons.Outlined.MonitorHeart)
 
-            VitalSignsGroup(title = "Tensió Arterial", icon = Icons.Filled.Favorite) {
-                VitalTextField(
-                    label = "Sistólica",
-                    placeholder = "mmHg",
-                    value = systolic,
-                    onValueChange = onSystolicChange
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(HospitalTheme.ColumColor.copy(alpha = 0.3f))
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Tensió Arterial *", style = TextStyle(
+                        fontSize = 20.sp,
+                        fontFamily = NunitoFontFamily,
+                        fontWeight = FontWeight.Medium,
+                        color = HospitalTheme.TextPrimary
+                    ), modifier = Modifier.padding(bottom = 12.dp)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                VitalTextField(
-                    label = "Diastólica",
-                    placeholder = "mmHg",
-                    value = diastolic,
-                    onValueChange = onDiastolicChange
-                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    VitalSignNumberField(
+                        value = systolic,
+                        onValueChange = { systolic = validateDecimal(it, systolic) },
+                        label = "Sistólica",
+                        placeholder = "mmHg",
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    VitalSignNumberField(
+                        value = diastolic,
+                        onValueChange = { diastolic = validateDecimal(it, diastolic) },
+                        label = "Diastólica",
+                        placeholder = "mmHg",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            VitalSignTextField(
-                label = "Freqüència Respiratòria",
-                icon = Icons.Filled.MonitorHeart,
-                placeholder = "x'",
+            VitalSignMeasurementField(
+                label = "Freqüència Respiratòria *",
                 value = respiratoryRate,
-                onValueChange = onRespiratoryRateChange
+                onValueChange = { respiratoryRate = validateDecimal(it, respiratoryRate) },
+                unit = "x'"
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            VitalSignTextField(
-                label = "Pols",
-                icon = Icons.Filled.Monitor,
-                placeholder = "x'",
+            VitalSignMeasurementField(
+                label = "Pols *",
                 value = pulse,
-                onValueChange = onPulseChange
+                onValueChange = { pulse = validateDecimal(it, pulse) },
+                unit = "x'"
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            VitalSignTextField(
-                label = "Temperatura",
-                icon = Icons.Filled.DeviceThermostat,
-                placeholder = "°C",
+            VitalSignMeasurementField(
+                label = "Temperatura *",
                 value = temperature,
-                onValueChange = onTemperatureChange
+                onValueChange = { temperature = validateDecimal(it, temperature) },
+                unit = "°C"
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            VitalSignTextField(
-                label = "Saturació d'Oxigen",
-                icon = Icons.Filled.Air,
-                placeholder = "%",
+            VitalSignMeasurementField(
+                label = "Saturació O₂ *",
                 value = oxygenSaturation,
-                onValueChange = onOxygenSaturationChange
+                onValueChange = { oxygenSaturation = validateDecimal(it, oxygenSaturation) },
+                unit = "%"
             )
-            VitalSignTextField(
-                label = "Volum d'orina",
-                icon = Icons.Filled.Air,
-                placeholder = "mL",
-                value = urineVolume,
-                onValueChange = onUrineVolumeChange
-            )
-            VitalSignTextField(
-                label = "Moviments intestinals",
-                icon = Icons.Filled.Air,
-                placeholder = "mL",
-                value = bowelMovements,
-                onValueChange = onBowelMovementsChange
-            )
-            VitalSignTextField(
-                label = "Terapia amb sèrum",
-                icon = Icons.Filled.Air,
-                placeholder = "mL",
-                value = serumTherapy,
-                onValueChange = onSerumTherapyChange
-            )
-        }
-    }
-}
 
-@Composable
-fun EnhancedSaveButton(
-    text: String,
-    isEnabled: Boolean,
-    fontFamily: FontFamily,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth(0.6f)
-            .height(56.dp)
-            .padding(vertical = 8.dp),
-        enabled = isEnabled,
-        shape = RoundedCornerShape(28.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(151, 199, 150),
-            disabledContainerColor = Color.LightGray
-        ),
-        elevation = ButtonDefaults.buttonElevation(
-            defaultElevation = 4.dp,
-            pressedElevation = 8.dp
-        )
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Save,
-                contentDescription = null,
-                tint = Color.White
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 16.dp),
+                thickness = 1.dp,
+                color = HospitalTheme.BackgroundMuted
             )
+
             Text(
-                text = text,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = fontFamily,
-                color = Color.White
+                text = "Mesures Addicionals", style = TextStyle(
+                    fontSize = 20.sp,
+                    fontFamily = NunitoFontFamily,
+                    color = HospitalTheme.TextPrimary
+                ), modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            VitalSignMeasurementField(
+                label = "Volum d'orina",
+                value = urineVolume,
+                onValueChange = { urineVolume = validateDecimal(it, urineVolume) },
+                unit = "mL"
+            )
+
+            VitalSignMeasurementField(
+                label = "Moviments intestinals",
+                value = bowelMovements,
+                onValueChange = { bowelMovements = validateDecimal(it, bowelMovements) },
+                unit = "mL"
+            )
+
+            VitalSignMeasurementField(
+                label = "Terapia amb sèrum",
+                value = serumTherapy,
+                onValueChange = { serumTherapy = validateDecimal(it, serumTherapy) },
+                unit = "mL"
             )
         }
+    }
+
+    // Update the parent with the new VitalSignState whenever any value changes
+    LaunchedEffect(
+        systolic,
+        diastolic,
+        respiratoryRate,
+        pulse,
+        temperature,
+        oxygenSaturation,
+        urineVolume,
+        bowelMovements,
+        serumTherapy
+    ) {
+        val vitalSignState = VitalSignState(
+            systolicBloodPressure = systolic.toDoubleOrNull() ?: 0.0,
+            diastolicBloodPressure = diastolic.toDoubleOrNull() ?: 0.0,
+            respiratoryRate = respiratoryRate.toDoubleOrNull() ?: 0.0,
+            pulse = pulse.toDoubleOrNull() ?: 0.0,
+            temperature = temperature.toDoubleOrNull() ?: 0.0,
+            oxygenSaturation = oxygenSaturation.toDoubleOrNull() ?: 0.0,
+            urineVolume = urineVolume.toDoubleOrNull(),
+            bowelMovements = bowelMovements.toDoubleOrNull(),
+            serumTherapy = serumTherapy.toDoubleOrNull()
+        )
+        onVitalSignStateChange(vitalSignState)
     }
 }
 
 @Composable
-fun SectionTitle(title: String) {
-    Text(
-        text = title,
-        style = TextStyle(
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+fun VitalSignNumberField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    placeholder: String,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        label = { Text(label) },
+        placeholder = { Text(placeholder) },
+        textStyle = TextStyle(
+            fontFamily = NunitoFontFamily, fontSize = 18.sp, color = HospitalTheme.TextPrimary
+        ),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = HospitalTheme.Primary,
+            unfocusedBorderColor = HospitalTheme.TextSecondary.copy(alpha = 0.5f),
+            focusedLabelColor = HospitalTheme.Primary,
+            cursorColor = HospitalTheme.Primary
+        ),
+        shape = RoundedCornerShape(12.dp),
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
     )
 }
 
 @Composable
-fun VitalSignsGroup(
-    title: String,
-    icon: ImageVector,
-    content: @Composable () -> Unit
+fun VitalSignMeasurementField(
+    label: String, value: String, onValueChange: (String) -> Unit, unit: String
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color.White)
-            .padding(12.dp)
+    HospitalTextField(
+        label = label,
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = unit,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        trailingIcon = {
+            Text(
+                text = unit, style = TextStyle(
+                    fontSize = 16.sp, color = HospitalTheme.TextSecondary
+                ), modifier = Modifier.padding(end = 12.dp)
+            )
+        })
+}
+
+@Composable
+fun VitalSignsHeader(title: String, icon: ImageVector) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 8.dp)
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(HospitalTheme.IconColor.copy(alpha = 0.1f)),
+            contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
@@ -459,611 +671,895 @@ fun VitalSignsGroup(
                 tint = Color.Black,
                 modifier = Modifier.size(24.dp)
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = title,
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
-                )
-            )
-        }
-        content()
-    }
-}
-
-@Composable
-fun VitalTextField(
-    label: String,
-    placeholder: String = "",
-    value: String,
-    onValueChange: (String) -> Unit
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text(label) },
-        placeholder = { Text(placeholder) },
-        textStyle = TextStyle(
-            fontFamily = FontFamily.Default,
-            fontSize = 16.sp,
-            color = HospitalTheme.TextPrimary
-        ),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color.Black,
-            unfocusedBorderColor = Color.Black,
-            focusedLabelColor = Color.Black,
-            cursorColor = Color.Black
-        ),
-        shape = RoundedCornerShape(8.dp),
-        singleLine = true
-    )
-}
-
-@Composable
-fun VitalSignTextField(
-    label: String,
-    icon: ImageVector,
-    placeholder: String = "",
-    value: String,
-    onValueChange: (String) -> Unit
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 8.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = Color.Black,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = label,
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
-                )
-            )
         }
 
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(placeholder) },
-            textStyle = TextStyle(
-                fontFamily = FontFamily.Default,
-                fontSize = 16.sp,
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Text(
+            text = title, style = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = NunitoFontFamily,
+                fontWeight = FontWeight.Bold,
                 color = HospitalTheme.TextPrimary
-            ),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Black,
-                unfocusedBorderColor = Color.Black,
-                focusedLabelColor = Color.Black,
-                cursorColor = Color.Black
-            ),
-            shape = RoundedCornerShape(8.dp),
-            singleLine = true
+            )
         )
     }
 }
 
 @Composable
-fun ExpandableTextField(
-    label: String,
-    icon: ImageVector,
-    value: String,
-    onValueChange: (String) -> Unit
-) {
-    var isExpanded by remember { mutableStateOf(false) }
+fun DrainSection(onDrainStateChange: (DrainState) -> Unit) {
+    var drainType by rememberSaveable { mutableStateOf("") }
+    var drainOutput by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color.White)
-            .padding(12.dp)
+            .padding(vertical = 8.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { isExpanded = !isExpanded },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = label,
-                    tint = Color.Black,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = label,
-                    style = TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Black
-                    )
-                )
-            }
+        HospitalTextField(
+            label = "Tipus de Drenatge *",
+            value = drainType,
+            onValueChange = { drainType = it },
+            placeholder = "Ex: Penrose, Jackson-Pratt..."
+        )
 
-            Icon(
-                imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                contentDescription = if (isExpanded) "Collapse" else "Expand",
-                tint = Color.Black
-            )
-        }
+        Spacer(modifier = Modifier.height(16.dp))
 
-        AnimatedVisibility(
-            visible = isExpanded,
-            enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut()
-        ) {
-            Spacer(modifier = Modifier.height(12.dp))
-            OutlinedTextField(
-                value = value,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(
-                    fontFamily = FontFamily.Default,
-                    fontSize = 16.sp,
-                    color = HospitalTheme.TextPrimary
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Black,
-                    focusedLabelColor = Color.Black,
-                    cursorColor = Color.Black
-                ),
-                shape = RoundedCornerShape(8.dp),
-                minLines = 3
+        HospitalTextField(label = "Quantitat de Dèbit *", value = drainOutput, onValueChange = {
+            drainOutput = it
+        }, placeholder = "mL", trailingIcon = {
+            Text(
+                text = "mL", style = TextStyle(
+                    fontSize = 16.sp, color = HospitalTheme.TextSecondary
+                ), modifier = Modifier.padding(end = 12.dp)
             )
+        })
+
+        LaunchedEffect(drainType, drainOutput) {
+            val drainState = DrainState(
+                type = drainType, output = drainOutput
+            )
+            onDrainStateChange(drainState)
         }
     }
 }
 
+// Base text field component
 @Composable
-fun HygieneSelection(
-    icon: ImageVector,
+fun HospitalTextField(
+    label: String,
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    placeholder: String = "",
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    modifier: Modifier = Modifier,
+    trailingIcon: @Composable (() -> Unit)? = null
 ) {
-    val options = listOf("Allitat", "Parcial al llit", "Dutxa amb ajuda", "Autònom")
-    var selectedOption by remember { mutableStateOf(options[0]) }
-    var isExpanded by remember { mutableStateOf(false) }
+    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+        Text(
+            text = label, style = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = NunitoFontFamily,
+                fontWeight = FontWeight.Medium,
+                color = HospitalTheme.TextSecondary
+            ), modifier = Modifier.padding(bottom = 4.dp)
+        )
 
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { isExpanded = !isExpanded }
-                .padding(8.dp)
-        ) {
-            Text(
-                text = "Higiene",
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                modifier = Modifier.weight(1f)
-            )
-            Icon(
-                imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                contentDescription = "Expandir o contraer"
-            )
-        }
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = modifier.fillMaxWidth(),
+            placeholder = {
+                Text(
+                    placeholder, color = HospitalTheme.TextSecondary.copy(alpha = 0.6f)
+                )
+            },
+            textStyle = TextStyle(
+                fontFamily = LatoFontFamily, fontSize = 18.sp, color = HospitalTheme.TextPrimary
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = HospitalTheme.Primary,
+                unfocusedBorderColor = HospitalTheme.TextSecondary.copy(alpha = 0.5f),
+                focusedLabelColor = HospitalTheme.Primary,
+                cursorColor = HospitalTheme.Primary
+            ),
+            shape = RoundedCornerShape(12.dp),
+            singleLine = true,
+            keyboardOptions = keyboardOptions,
+            trailingIcon = trailingIcon
+        )
+    }
+}
 
-        AnimatedVisibility(visible = isExpanded) {
-            Column {
+@Composable
+fun EnhancedRadioGroup(
+    title: String,
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit,
+    isHorizontal: Boolean = options.size <= 2,
+    haveBorder: Boolean = true,
+    hasBackground: Boolean = true,
+    additionalContent: @Composable () -> Unit = {}
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                if (hasBackground) HospitalTheme.ColumColor.copy(alpha = 0.3f) else Color.Transparent
+            )
+            .padding(16.dp)
+    ) {
+        Text(
+            text = title, style = TextStyle(
+                fontSize = 18.sp,
+                fontFamily = LatoFontFamily,
+                fontWeight = FontWeight.Medium,
+                color = HospitalTheme.TextPrimary
+            ), modifier = Modifier.padding(bottom = 12.dp)
+        )
+
+        if (isHorizontal) {
+            // Horizontal layout for 2 or fewer options
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 options.forEach { option ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                selectedOption = option
-                                isExpanded = false
-                                onValueChange(option)
-                            }
-                            .padding(8.dp)
-                    ) {
-                        RadioButton(
-                            selected = (option == selectedOption),
-                            onClick = {
-                                selectedOption = option
-                                isExpanded = false
-                                onValueChange(option)
-                            }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = option, fontSize = 16.sp)
-                    }
+                    EnhancedRadioButton(
+                        option = option,
+                        selectedOption = selectedOption,
+                        onOptionSelected = onOptionSelected,
+                        haveBorder = haveBorder
+                    )
+                }
+            }
+        } else {
+            // Vertical layout for more than 2 options
+            Column(modifier = Modifier.fillMaxWidth()) {
+                options.forEach { option ->
+                    EnhancedRadioButton(
+                        option = option,
+                        selectedOption = selectedOption,
+                        onOptionSelected = onOptionSelected,
+                        haveBorder = haveBorder
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        additionalContent()
     }
 }
 
 @Composable
-fun MobilitzacionsSection(
-    icon: ImageVector,
-    value: String,
-    onValueChange: (String) -> Unit
+fun EnhancedRadioButton(
+    option: String,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit,
+    haveBorder: Boolean = true
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
-    var sedestation by remember { mutableStateOf("") }
-    var walkingAssis by remember { mutableStateOf("Sense ajuda") }
-    var assisDesc by remember { mutableStateOf("") }
-    var changes by remember { mutableStateOf("") }
-    var decubitus by remember { mutableStateOf("") }
+    val isSelected = option == selectedOption
 
-    val tipusAjudaOptions = listOf("Bastó", "Caminador", "Ajuda Física")
-    val decubitoOptions = listOf("Supí", "Lateral E", "Lateral D")
-
-    // 👇 Esta función construye un resumen del estado actual
-    fun updateMobilizationValue() {
-        val newValue = listOf(
-            "sedestation=$sedestation",
-            "walkingAssis=$walkingAssis",
-            "assisDesc=$assisDesc",
-            "changes=$changes",
-            "decubitus=$decubitus"
-        ).joinToString(";")
-        onValueChange(newValue)
-    }
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { isExpanded = !isExpanded }
-                .padding(8.dp)
-        ) {
-            Text(
-                text = "Mobilitzacions",
-                style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(
+                if (isSelected) HospitalTheme.Primary.copy(alpha = 0.15f)
+                else Color.Transparent
+            )
+            .then(
+                if (haveBorder) {
+                    Modifier.border(
+                        width = 1.dp,
+                        color = if (isSelected) HospitalTheme.Primary
+                        else HospitalTheme.TextSecondary.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                } else Modifier
+            )
+            .clickable { onOptionSelected(option) }
+            .padding(vertical = 10.dp, horizontal = 16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            RadioButton(
+                selected = isSelected,
+                onClick = { onOptionSelected(option) },
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = HospitalTheme.Primary,
+                    unselectedColor = HospitalTheme.TextSecondary
+                ),
+                modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-                imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                contentDescription = "Expand Icon"
+            Text(
+                text = option, style = TextStyle(
+                    fontSize = 18.sp,
+                    fontFamily = LatoFontFamily,
+                    fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                    color = if (isSelected) HospitalTheme.Primary else HospitalTheme.TextPrimary
+                )
             )
         }
+    }
+}
 
-        if (isExpanded) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Sedestació",
-                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            )
-            OutlinedTextField(
-                value = sedestation,
-                onValueChange = { sedestation = it },
-                label = { Text("Tolerància") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+@Composable
+fun HygieneSelection(onHygieneStateChange: (HygieneState) -> Unit) {
+    val options = listOf("Allitat", "Parcial al llit", "Dutxa amb ajuda", "Autònom")
+    var selectedOption by rememberSaveable { mutableStateOf("") }
 
-            Spacer(modifier = Modifier.height(16.dp))
+    EnhancedRadioGroup(
+        title = "Tipus d'higiene *",
+        options = options,
+        selectedOption = selectedOption,
+        onOptionSelected = {
+            selectedOption = it
+            onHygieneStateChange(HygieneState(description = it))
+        },
+        haveBorder = false
+    )
+}
 
-            Text(
-                text = "Deambulació",
-                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            )
-            Column {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            walkingAssis = "Sense ajuda"; assisDesc = ""; updateMobilizationValue()
-                        }
-                        .padding(8.dp)
-                ) {
-                    RadioButton(
-                        selected = (walkingAssis == "Sense ajuda"),
-                        onClick = {
-                            walkingAssis = "Sense ajuda"
-                            assisDesc = ""
-                            updateMobilizationValue()
-                        }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Sense ajuda", fontSize = 16.sp)
+@Composable
+fun MobilizationSection(onMobilizationStateChange: (MobilizationState) -> Unit) {
+    var sedestation by rememberSaveable { mutableStateOf("") }
+    var walkingAssis by rememberSaveable { mutableStateOf("") }
+    var assisDesc by rememberSaveable { mutableStateOf("") }
+    var changes by rememberSaveable { mutableStateOf("") }
+    var decubitus by rememberSaveable { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        HospitalTextField(
+            label = "Sedestació *", value = sedestation, onValueChange = { newValue ->
+                if (newValue.isEmpty() || newValue.matches(Regex("^[0-9]+$"))) {
+                    sedestation = newValue
                 }
+            }, placeholder = "Introdueix un valor entre 1 i 10"
+        )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            walkingAssis = "Amb ajuda"
-                            updateMobilizationValue()
-                        }
-                        .padding(8.dp)
-                ) {
-                    RadioButton(
-                        selected = (walkingAssis == "Amb ajuda"),
-                        onClick = { walkingAssis = "Amb ajuda"
-                            updateMobilizationValue()}
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Amb ajuda", fontSize = 16.sp)
-                }
-            }
+        Spacer(modifier = Modifier.height(16.dp))
 
+        EnhancedRadioGroup(
+            title = "Deambulació *",
+            options = listOf("Sense ajuda", "Amb ajuda"),
+            selectedOption = walkingAssis,
+            onOptionSelected = {
+                walkingAssis = it
+                assisDesc = if (it == "Amb ajuda") assisDesc else ""
+            }) {
+            // Only show assistance options when "Amb ajuda" is selected
             if (walkingAssis == "Amb ajuda") {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Tipus d'ajuda",
-                    style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Spacer(modifier = Modifier.height(12.dp))
+                EnhancedRadioGroup(
+                    title = "Tipus d'ajuda:",
+                    options = listOf("Bastó", "Caminador", "Ajuda Física"),
+                    selectedOption = assisDesc,
+                    onOptionSelected = { assisDesc = it },
+                    haveBorder = false,
+                    hasBackground = false
                 )
-                tipusAjudaOptions.forEach { option ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                assisDesc = option
-                                updateMobilizationValue()
-                            }
-                            .padding(8.dp)
-                    ) {
-                        RadioButton(
-                            selected = (assisDesc == option),
-                            onClick = { assisDesc = option
-                                updateMobilizationValue()}
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = option, fontSize = 16.sp)
-                    }
-                }
             }
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Canvis posturals",
-                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            )
-            OutlinedTextField(
-                value = changes,
-                onValueChange = {
-                    if (it.all { c -> c.isDigit() }) {
-                        changes = it
-                        updateMobilizationValue()
-                    }
-                },
-                label = { Text("Quants canvis han hagut?") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Decúbits",
-                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            )
-            decubitoOptions.forEach { option ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            decubitus = option
-                            updateMobilizationValue()
-                        }
-                        .padding(8.dp)
-                ) {
-                    RadioButton(
-                        selected = (decubitus == option),
-                        onClick = {
-                            decubitus = option
-                            updateMobilizationValue()
-                        }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(option, fontSize = 16.sp)
+        HospitalTextField(
+            label = "Canvis Posturals *", value = changes, onValueChange = { newValue ->
+                if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
+                    changes = newValue
                 }
-            }
+            }, placeholder = "Quantitat"
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        EnhancedRadioGroup(
+            title = "Decúbits *",
+            options = listOf("Supí", "Lateral E", "Lateral D"),
+            selectedOption = decubitus,
+            onOptionSelected = { decubitus = it })
+    }
+
+    // Update state when any field changes
+    LaunchedEffect(sedestation, walkingAssis, assisDesc, changes, decubitus) {
+        val mobilizationState = MobilizationState(
+            sedestation = sedestation.toIntOrNull(),
+            walkingAssis = if (walkingAssis.isNotEmpty()) {
+                if (walkingAssis == "Amb ajuda") 1 else 0
+            } else {
+                null
+            },
+            assisDesc = if (assisDesc.isNotEmpty()) assisDesc else null,
+            changes = changes,
+            decubitus = decubitus
+        )
+        onMobilizationStateChange(mobilizationState)
+    }
+}
+
+// Simple scroll position indicator
+@Composable
+fun ScrollPositionIndicator(
+    scrollState: ScrollState, modifier: Modifier = Modifier
+) {
+    if (scrollState.maxValue > 0) {
+        val scrollPercentage = scrollState.value.toFloat() / scrollState.maxValue.toFloat()
+
+        Box(
+            modifier = modifier
+                .width(4.dp)
+                .height(80.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(HospitalTheme.TextSecondary.copy(alpha = 0.2f))
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .height(16.dp)
+                    .offset(x = 0.dp, y = (64 * scrollPercentage).dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(HospitalTheme.Primary)
+            )
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DietaSection() {
-    var isExpanded by remember { mutableStateOf(false) }
+fun DietSection(
+    dietState: DietState,
+    onDietStateChange: (DietState) -> Unit,
+    dietRemoteViewModel: DietRemoteViewModel = viewModel()
+) {
+    // Diet texture state
+    var selectedTextureDiet by remember {
+        mutableStateOf(
+            dietState.dietTypeTexture?.description ?: ""
+        )
+    }
+    var selectedTextureDietId by remember { mutableIntStateOf(dietState.dietTypeTexture?.id ?: 0) }
+    var expandedTextureDiet by remember { mutableStateOf(false) }
 
-    var selectedTexturaDieta by remember { mutableStateOf("") }
-    val texturaDietaOptions = listOf(
-        "Absoluta",
-        "Hídrica (quantitat diària)",
-        "Líquida",
-        "Túrmix",
-        "Semitova",
-        "Tova",
-        "Fàcil masticació",
-        "Basal vegetariana",
-        "Basal vegana",
-        "Basal halal",
-        "Basal mediterrània"
-    )
-    var expandedTexturaDieta by remember { mutableStateOf(false) }
+    // Diet type state
+    val selectedTypeDietIds = remember {
+        mutableStateMapOf<Int, String>().apply {
+            dietState.dietTypes.forEach { put(it.id, it.description) }
+        }
+    }
+    var expandedTypeDiet by remember { mutableStateOf(false) }
 
-    var expandedTipoDieta by remember { mutableStateOf(false) }
-    val selectedTipoDieta = remember { mutableStateListOf<String>() }
-    val tipoDietaOptions = listOf(
-        "Diabètica",
-        "Hipolipídica",
-        "Hipocalòrica",
-        "Hipercalòrica",
-        "Hipoproteica",
-        "Hiperproteica",
-        "Astringent",
-        "Baixa en residus",
-        "Celíaca",
-        "Rica en fibra",
-        "Sense lactosa",
-        "Sense fruits secs",
-        "Sense ou",
-        "Sense porc"
-    )
+    var date by remember { mutableStateOf<Date?>(null) }
+    var dateMeal by remember { mutableStateOf("") }
+    var selectedMeal by remember { mutableStateOf("") }
+    var selectIndependent by remember { mutableStateOf("") }
+    var selectedProsthesis by remember { mutableStateOf("") }
 
-    var selectedAutonomia by remember { mutableStateOf("Autónomo") }
-    val autonomiaOptions = listOf("Autónomo", "Ayuda")
+    // Remote data
+    val textureDietOptions = remember { mutableStateListOf<DietTextureTypeState>() }
+    val typeDietOptions = remember { mutableStateListOf<DietTypeState>() }
+    val dietTextureState = dietRemoteViewModel.remoteDietTexture.value
+    val dietTypeState = dietRemoteViewModel.remoteDietType.value
 
-    var selectedPortadorProtesis by remember { mutableStateOf(0) }
+    // Scroll states for dropdowns
+    val textureScrollState = rememberScrollState()
+    val typeScrollState = rememberScrollState()
+
+    // Load remote data
+    LaunchedEffect(Unit) {
+        dietRemoteViewModel.getDietTexture()
+        dietRemoteViewModel.getDietType()
+    }
+
+    // Process texture data when it changes
+    LaunchedEffect(dietTextureState) {
+        when (dietTextureState) {
+            is RemoteApiMessageListDietTexture.Success -> {
+                textureDietOptions.clear()
+                textureDietOptions.addAll(dietTextureState.message.sortedBy { it.description })
+            }
+
+            else -> {
+            }
+        }
+    }
+
+    // Process diet type data when it changes
+    LaunchedEffect(dietTypeState) {
+        when (dietTypeState) {
+            is RemoteApiMessageListDietType.Success -> {
+                typeDietOptions.clear()
+                typeDietOptions.addAll(dietTypeState.message.sortedBy { it.description })
+            }
+
+            else -> {
+            }
+        }
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        HospitalTextField(
+            label = "Data de la dieta *",
+            value = dateMeal,
+            onValueChange = { newValue ->
+                if (newValue.isEmpty() || newValue.matches(Regex("""^\d{1,2}$""")) ||
+                    newValue.matches(Regex("""^\d{1,2}-$""")) ||
+                    newValue.matches(Regex("""^\d{1,2}-\d{1,2}$""")) ||
+                    newValue.matches(Regex("""^\d{1,2}-\d{1,2}-$""")) ||
+                    newValue.matches(Regex("""^\d{1,2}-\d{1,2}-\d{1,4}$"""))
+                ) {
+                    dateMeal = newValue
+
+                    date = if (newValue.matches(Regex("""^\d{1,2}-\d{1,2}-\d{4}$"""))) {
+                        convertToDate(dateMeal)
+                    } else {
+                        null
+                    }
+                }
+            },
+            placeholder = "dd-MM-YYYY",
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        EnhancedRadioGroup(
+            title = "Selecciona el menjar *",
+            options = listOf("Esmorzar", "Dinar", "Sopar"),
+            selectedOption = selectedMeal.toString(),
+            onOptionSelected = { selectedMeal = it })
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Diet texture selection
+        Text(
+            text = "Tipus de textura *", style = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = NunitoFontFamily,
+                fontWeight = FontWeight.Medium,
+                color = HospitalTheme.TextSecondary
+            ), modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        Spacer(modifier = Modifier.height(5.dp))
+
+        // Handle different states of diet texture data
+        when (dietTextureState) {
+            is RemoteApiMessageListDietTexture.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(HospitalTheme.Surface)
+                        .border(
+                            width = 1.dp,
+                            color = HospitalTheme.TextSecondary.copy(alpha = 0.5f),
+                            shape = RoundedCornerShape(12.dp)
+                        ), contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = HospitalTheme.Primary, modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+
+            is RemoteApiMessageListDietTexture.Error -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(HospitalTheme.Error.copy(alpha = 0.1f))
+                        .border(
+                            width = 1.dp,
+                            color = HospitalTheme.Error,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(16.dp), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Textures de dietas no disponibles",
+                        style = TextStyle(color = HospitalTheme.Error)
+                    )
+                }
+            }
+
+            is RemoteApiMessageListDietTexture.Success -> {
+                ExposedDropdownMenuBox(
+                    expanded = expandedTextureDiet,
+                    onExpandedChange = { expandedTextureDiet = !expandedTextureDiet }) {
+                    OutlinedTextField(
+                        value = selectedTextureDiet,
+                        onValueChange = {},
+                        readOnly = true,
+                        placeholder = {
+                            Text(
+                                "Selecciona un tipus de textura",
+                                color = HospitalTheme.TextSecondary.copy(alpha = 0.6f)
+                            )
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        textStyle = TextStyle(
+                            fontFamily = LatoFontFamily,
+                            fontSize = 18.sp,
+                            color = HospitalTheme.TextPrimary
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = HospitalTheme.Primary,
+                            unfocusedBorderColor = HospitalTheme.TextSecondary.copy(alpha = 0.5f),
+                            cursorColor = HospitalTheme.Primary,
+                            focusedContainerColor = HospitalTheme.Surface,
+                            unfocusedContainerColor = HospitalTheme.Surface
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        trailingIcon = {
+                            Icon(
+                                imageVector = if (expandedTextureDiet) Icons.Filled.KeyboardArrowUp
+                                else Icons.Filled.KeyboardArrowDown,
+                                contentDescription = if (expandedTextureDiet) "Collapse" else "Expand",
+                                tint = HospitalTheme.Primary
+                            )
+                        })
+
+                    ExposedDropdownMenu(
+                        expanded = expandedTextureDiet,
+                        onDismissRequest = { expandedTextureDiet = false },
+                        modifier = Modifier
+                            .background(HospitalTheme.Surface)
+                            .clip(RoundedCornerShape(12.dp))
+                            .requiredHeightIn(max = 250.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .requiredHeightIn(max = 200.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .verticalScroll(textureScrollState)
+                            ) {
+                                Column {
+                                    textureDietOptions.forEach { texture ->
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    texture.description, style = TextStyle(
+                                                        fontSize = 18.sp,
+                                                        fontFamily = LatoFontFamily,
+                                                        color = if (selectedTextureDiet == texture.description) HospitalTheme.Primary
+                                                        else HospitalTheme.TextPrimary
+                                                    )
+                                                )
+                                            }, onClick = {
+                                                selectedTextureDiet = texture.description
+                                                selectedTextureDietId = texture.id
+                                                expandedTextureDiet = false
+                                            }, modifier = Modifier.background(
+                                                if (selectedTextureDiet == texture.description) HospitalTheme.Primary.copy(
+                                                    alpha = 0.1f
+                                                )
+                                                else HospitalTheme.Surface
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                            ScrollPositionIndicator(
+                                scrollState = textureScrollState,
+                                modifier = Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .padding(end = 4.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Diet texture selection
+        Text(
+            text = "Tipus de dieta *", style = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = NunitoFontFamily,
+                fontWeight = FontWeight.Medium,
+                color = HospitalTheme.TextSecondary
+            ), modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        Spacer(modifier = Modifier.height(5.dp))
+
+        // Diet type multi-selection dropdown
+        when (dietTypeState) {
+            is RemoteApiMessageListDietType.Loading -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            }
+
+            is RemoteApiMessageListDietType.Error -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(HospitalTheme.Error.copy(alpha = 0.1f))
+                        .border(
+                            width = 1.dp,
+                            color = HospitalTheme.Error,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(16.dp), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Tipus de dietas no disponibles",
+                        style = TextStyle(color = HospitalTheme.Error)
+                    )
+                }
+            }
+
+            is RemoteApiMessageListDietType.Success -> {
+                ExposedDropdownMenuBox(
+                    expanded = expandedTypeDiet,
+                    onExpandedChange = { expandedTypeDiet = !expandedTypeDiet }) {
+                    OutlinedTextField(
+                        value = if (selectedTypeDietIds.isEmpty()) ""
+                        else selectedTypeDietIds.values.joinToString(),
+                        onValueChange = {},
+                        readOnly = true,
+                        placeholder = {
+                            Text(
+                                "Selecciona un tipus de dieta",
+                                color = HospitalTheme.TextSecondary.copy(alpha = 0.6f)
+                            )
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        textStyle = TextStyle(
+                            fontFamily = LatoFontFamily,
+                            fontSize = 18.sp,
+                            color = HospitalTheme.TextPrimary
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = HospitalTheme.Primary,
+                            unfocusedBorderColor = HospitalTheme.TextSecondary.copy(alpha = 0.5f),
+                            cursorColor = HospitalTheme.Primary,
+                            focusedContainerColor = HospitalTheme.Surface,
+                            unfocusedContainerColor = HospitalTheme.Surface
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        trailingIcon = {
+                            Icon(
+                                imageVector = if (expandedTypeDiet) Icons.Filled.KeyboardArrowUp
+                                else Icons.Filled.KeyboardArrowDown,
+                                contentDescription = if (expandedTypeDiet) "Collapse" else "Expand",
+                                tint = HospitalTheme.Primary
+                            )
+                        })
+
+                    ExposedDropdownMenu(
+                        expanded = expandedTypeDiet,
+                        onDismissRequest = { expandedTypeDiet = false },
+                        modifier = Modifier
+                            .background(HospitalTheme.Surface)
+                            .clip(RoundedCornerShape(12.dp))
+                            .requiredHeightIn(max = 250.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .requiredHeightIn(max = 200.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .verticalScroll(typeScrollState)
+                            ) {
+                                Column {
+                                    typeDietOptions.forEach { dietType ->
+                                        // Use DropdownMenuItem with checkbox for multi-selection
+                                        DropdownMenuItem(
+                                            text = {
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Checkbox(
+                                                        checked = selectedTypeDietIds.containsKey(
+                                                            dietType.id
+                                                        ), onCheckedChange = { isChecked ->
+                                                            if (isChecked) {
+                                                                selectedTypeDietIds[dietType.id] =
+                                                                    dietType.description
+                                                            } else {
+                                                                selectedTypeDietIds.remove(dietType.id)
+                                                            }
+
+                                                            // Update parent state with selected types
+                                                            val dietTypesList =
+                                                                selectedTypeDietIds.entries.map { (id, desc) ->
+                                                                    DietTypeState(
+                                                                        id = id, description = desc
+                                                                    )
+                                                                }.toSet()
+
+                                                            onDietStateChange(
+                                                                dietState.copy(dietTypes = dietTypesList)
+                                                            )
+                                                        })
+                                                    Spacer(modifier = Modifier.width(8.dp))
+                                                    Text(
+                                                        dietType.description, style = TextStyle(
+                                                            fontSize = 18.sp,
+                                                            fontFamily = LatoFontFamily,
+                                                            color = if (selectedTypeDietIds.containsKey(
+                                                                    dietType.id
+                                                                )
+                                                            ) HospitalTheme.Primary
+                                                            else HospitalTheme.TextPrimary
+                                                        )
+                                                    )
+                                                }
+                                            }, onClick = {
+                                                // Toggle selection on click
+                                                if (selectedTypeDietIds.containsKey(dietType.id)) {
+                                                    selectedTypeDietIds.remove(dietType.id)
+                                                } else {
+                                                    selectedTypeDietIds[dietType.id] =
+                                                        dietType.description
+                                                }
+
+                                                // Update parent state with selected types
+                                                val dietTypesList =
+                                                    selectedTypeDietIds.entries.map { (id, desc) ->
+                                                        DietTypeState(id = id, description = desc)
+                                                    }.toSet()
+
+                                                onDietStateChange(
+                                                    dietState.copy(dietTypes = dietTypesList)
+                                                )
+                                            }, modifier = Modifier.background(
+                                                if (selectedTypeDietIds.containsKey(dietType.id)) HospitalTheme.Primary.copy(
+                                                    alpha = 0.1f
+                                                )
+                                                else HospitalTheme.Surface
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                            // Add custom scroll indicator
+                            ScrollPositionIndicator(
+                                scrollState = typeScrollState,
+                                modifier = Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .padding(end = 4.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        EnhancedRadioGroup(
+            title = "Autonomia del paciente *",
+            options = listOf("Autònom", "Ayuda"),
+            selectedOption = selectIndependent,
+            onOptionSelected = { selectIndependent = it })
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        EnhancedRadioGroup(
+            title = "Portador de prótesis *",
+            options = listOf("Sí", "No"),
+            selectedOption = selectedProsthesis,
+            onOptionSelected = { selectedProsthesis = it })
+
+        // Update state when any relevant field changes
+        LaunchedEffect(
+            date,
+            selectedMeal,
+            selectedTextureDiet,
+            selectedTextureDietId,
+            selectedTypeDietIds.size,
+            selectIndependent,
+            selectedProsthesis
+        ) {
+            val dietTypesList = selectedTypeDietIds.entries.map { (id, desc) ->
+                DietTypeState(id = id, description = desc)
+            }.toSet()
+
+            val updatedDietState = DietState(
+                id = dietState.id,
+                date = date,
+                takeData = if (selectedMeal.isNotEmpty()) selectedMeal else null,
+                dietTypes = dietTypesList,
+                dietTypeTexture = if (selectedTextureDiet.isNotEmpty()) {
+                    DietTextureTypeState(
+                        id = selectedTextureDietId, description = selectedTextureDiet
+                    )
+                } else {
+                    null
+                },
+                independent = if (selectIndependent.isNotEmpty()) {
+                    if (selectIndependent == "Ayuda") 1 else 0
+                } else {
+                    null
+                },
+                prosthesis = if (selectedProsthesis.isNotEmpty()) {
+                    if (selectedProsthesis == "Sí") 1 else 0
+                } else {
+                    null
+                }
+            )
+            onDietStateChange(updatedDietState)
+        }
+    }
+}
+
+@SuppressLint("SimpleDateFormat")
+fun convertToDate(inputDate: String): Date {
+    val inputFormat = SimpleDateFormat("dd-MM-yyyy")
+    return inputFormat.parse(inputDate)
+}
+
+
+@Composable
+fun EnhancedSaveButton(
+    text: String, isEnabled: Boolean, fontFamily: FontFamily = LatoFontFamily, onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        enabled = isEnabled,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = HospitalTheme.Primary.copy(alpha = 0.3f)
+            ),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = HospitalTheme.SaveColor,
+            contentColor = Color.White,
+            disabledContainerColor = HospitalTheme.BackgroundMuted,
+            disabledContentColor = HospitalTheme.TextSecondary
+        ),
+        shape = RoundedCornerShape(16.dp),
+        contentPadding = PaddingValues(vertical = 16.dp)
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { isExpanded = !isExpanded }
-                .padding(8.dp)
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "Dieta",
-                style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Icon(
+                imageVector = Icons.Filled.Save,
+                contentDescription = "Save",
+                modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-                imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                contentDescription = "Expand Icon"
+            Text(
+                text = text, style = TextStyle(
+                    fontSize = 20.sp, fontWeight = FontWeight.Bold, fontFamily = NunitoFontFamily
+                )
             )
         }
 
-        if (isExpanded) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ExposedDropdownMenuBox(
-                expanded = expandedTexturaDieta,
-                onExpandedChange = { expandedTexturaDieta = !expandedTexturaDieta }
-            ) {
-                OutlinedTextField(
-                    value = selectedTexturaDieta,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Textura de la dieta") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = expandedTexturaDieta
-                        )
-                    },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-                )
-
-                ExposedDropdownMenu(
-                    expanded = expandedTexturaDieta,
-                    onDismissRequest = { expandedTexturaDieta = false }
-                ) {
-                    texturaDietaOptions.forEach { option ->
-                        DropdownMenuItem(text = { Text(option) }, onClick = {
-                            selectedTexturaDieta = option
-                            expandedTexturaDieta = false
-                        })
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Box {
-                OutlinedTextField(
-                    value = if (selectedTipoDieta.isEmpty()) "" else selectedTipoDieta.joinToString(),
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Tipus de dieta") },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowDropDown,
-                            contentDescription = "Dropdown",
-                            modifier = Modifier.clickable { expandedTipoDieta = true }
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { expandedTipoDieta = true }
-                )
-
-                DropdownMenu(
-                    expanded = expandedTipoDieta,
-                    onDismissRequest = { expandedTipoDieta = false },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    tipoDietaOptions.forEach { option ->
-                        DropdownMenuItem(text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Checkbox(
-                                    checked = selectedTipoDieta.contains(option),
-                                    onCheckedChange = {
-                                        if (it) selectedTipoDieta.add(option)
-                                        else selectedTipoDieta.remove(option)
-                                    }
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(option)
-                            }
-                        }, onClick = {
-                            if (selectedTipoDieta.contains(option)) {
-                                selectedTipoDieta.remove(option)
-                            } else {
-                                selectedTipoDieta.add(option)
-                            }
-                        })
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                autonomiaOptions.forEach { option ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(end = 16.dp)
-                    ) {
-                        RadioButton(
-                            selected = selectedAutonomia == option,
-                            onClick = { selectedAutonomia = option }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(option)
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(text = "Portador de prótesis")
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                val options = listOf("Sí", "No")
-                options.forEachIndexed { index, option ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(end = 16.dp)
-                    ) {
-                        RadioButton(
-                            selected = selectedPortadorProtesis == index,
-                            onClick = { selectedPortadorProtesis = index }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(option)
-                    }
-                }
-            }
+        AnimatedVisibility(visible = !isEnabled) {
+            Text(
+                text = "(Completi els camps obligatoris)", style = TextStyle(
+                    fontSize = 14.sp, fontFamily = fontFamily
+                ), modifier = Modifier.padding(start = 8.dp)
+            )
         }
     }
 }

@@ -207,9 +207,9 @@ private fun hasMobilizationData(mobilization: MobilizationState): Boolean {
 
 // Function to check if DietState has data
 private fun hasDietData(diet: DietState): Boolean {
-    val hasTakeData = diet.takeData.isNotEmpty()
+    val hasTakeData = diet.takeData?.isNotEmpty() == true
     val hasDietTypeTexture = diet.dietTypeTexture != null
-    val hasDietTypes = diet.dietTypes?.isNotEmpty() == true
+    val hasDietTypes = diet.dietTypes.isNotEmpty() == true
 
     return hasTakeData || hasDietTypeTexture || hasDietTypes
 }
@@ -322,16 +322,19 @@ fun MobilizationCard(mobilization: MobilizationState) {
             icon = Icons.Filled.Vaccines
         )
 
-        DetailItemWithIcon(
-            label = "Deambulació",
-            info = mobilization.walkingAssis.toWalkingAssisText(),
-            icon = Icons.Filled.AssistWalker
-        )
-
-        if (mobilization.walkingAssis == 1) {
+        mobilization.walkingAssis?.let {
             DetailItemWithIcon(
-                label = "Tipus", info = mobilization.assisDesc, icon = Icons.Filled.Description
+                label = "Deambulació",
+                info = it.toWalkingAssisText(),
+                icon = Icons.Filled.AssistWalker
             )
+            if (it == 1) {
+                DetailItemWithIcon(
+                    label = "Tipus",
+                    info = mobilization.assisDesc!!,
+                    icon = Icons.Filled.Description
+                )
+            }
         }
 
         DetailItemWithIcon(
@@ -352,10 +355,11 @@ fun DietCard(diet: DietState) {
                 icon = Icons.Filled.CalendarToday
             )
         }
-
-        DetailItemWithIcon(
-            label = "Horari de la dieta", info = diet.takeData, icon = Icons.Filled.Dining
-        )
+        diet.takeData?.let { date ->
+            DetailItemWithIcon(
+                label = "Horari de la dieta", info = date, icon = Icons.Filled.Dining
+            )
+        }
 
         diet.dietTypeTexture?.let { texture ->
             DetailItemWithIcon(
@@ -365,23 +369,21 @@ fun DietCard(diet: DietState) {
             )
         }
 
-        diet.dietTypes?.forEach { dietType ->
-            DetailItemWithIcon(
-                label = "Tipus de dieta",
-                info = dietType.description,
-                icon = Icons.Filled.FilterList
-            )
+        diet.dietTypes.let { dietTypes ->
+            if (dietTypes.isNotEmpty()) {
+                DietTypesListItem(dietTypes)
+            }
         }
 
         DetailItemWithIcon(
-            label = "Necessita ajuda",
-            info = diet.independent.toIndependentText(),
+            label = "Autonomia del pacient",
+            info = diet.independent!!.toIndependentText(),
             icon = Icons.AutoMirrored.Filled.Help
         )
 
         DetailItemWithIcon(
             label = "Portador de protesis",
-            info = diet.prosthesis.toProsthesisText(),
+            info = diet.prosthesis!!.toProsthesisText(),
             icon = Icons.Filled.Person
         )
     }
@@ -458,4 +460,62 @@ fun Date.formatDate(pattern: String): String {
 
 fun getInfoColor(color: Color, alertColor: Color, defaultInfoColor: Color): Color {
     return if (color == Color.Red) alertColor else defaultInfoColor
+}
+
+@Composable
+fun DietTypesListItem(dietTypes: Set<DietTypeState>) {
+    val infoFontSize = 18.sp
+    val labelFontSize = 20.sp
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Filled.FilterList,
+            contentDescription = "Tipus de dieta",
+            tint = Color(0xFF505050),
+            modifier = Modifier.size(24.dp)
+        )
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = "Tipus de dieta",
+                style = TextStyle(
+                    fontFamily = NunitoFontFamily,
+                    fontSize = labelFontSize,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF2C3E50)
+                )
+            )
+
+            dietTypes.forEach { dietType ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(start = 4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(
+                                color = Color(0xFF7F8C8D),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                    )
+                    Text(
+                        text = dietType.description,
+                        style = TextStyle(
+                            fontFamily = LatoFontFamily,
+                            fontSize = infoFontSize,
+                            color = Color(0xFF7F8C8D)
+                        )
+                    )
+                }
+            }
+        }
+    }
 }
