@@ -31,6 +31,8 @@ import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.R.color.colorText
 import com.example.hospitalfrontend.model.AuxiliaryState
 import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
+import com.example.hospitalfrontend.ui.nurses.view.LatoFontFamily
+import com.example.hospitalfrontend.ui.nurses.view.NunitoFontFamily
 import com.example.hospitalfrontend.ui.nurses.viewmodels.AuxiliaryViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 import com.example.hospitalfrontend.ui.theme.Primary
@@ -84,7 +86,7 @@ fun LoginScreenAux(
                         .fillMaxWidth()
                         .padding(bottom = 16.dp),
                     style = TextStyle(
-                        fontSize = 36.sp,
+                        fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = nunitoFont
                     ),
@@ -156,18 +158,16 @@ fun AuxiliaryForm(
             validButton = valid
         })
         Spacer(modifier = Modifier.height(20.dp))
-        // Aquí deberías agregar ToggleLoginRegisterText(navController) si está definida
+
         Spacer(modifier = Modifier.height(50.dp))
         SubmitButtonLogin(textId = "Accedir", inputValid = isValid)
         {
-
             val id = auxiliaryId.value.trim().toIntOrNull()
             if (id != null) {
                 auxiliaryRemoteViewModel.loginAuxiliary(id)
                 auxiliar.id = id
             }
         }
-        // Mostrar el diálogo si es necesario
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
@@ -193,7 +193,7 @@ fun AuxiliaryForm(
                 }
 
                 is RemoteApiMessageAuxiliary.Error -> {
-                    dialogMessage = "Error en la conexión"
+                    dialogMessage = "Error a la connexió"
                     showDialog = true
                 }
 
@@ -229,12 +229,12 @@ fun SubmitButtonLogin(textId: String, inputValid: Boolean, onClick: () -> Unit) 
                 ),
             contentAlignment = Alignment.Center
         ) {
-            val latoFont = FontFamily(Font(R.font.lato_light))
+            val nunitoFont = FontFamily(Font(R.font.nunito_medium))
             Text(
                 text = textId,
-                fontSize = 18.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                fontFamily = latoFont,
+                fontFamily = nunitoFont,
                 color = Color.White
             )
         }
@@ -248,13 +248,13 @@ fun AuxiliaryNumberInput(
     labelId: String = "Número",
     onValidationChanged: (Boolean) -> Unit
 ) {
-    val latoFont = FontFamily(Font(R.font.lato_light_italic))
+    val latoFont = FontFamily(Font(R.font.lato_regular))
 
     InputFieldAuxiliar(
         valueState = auxiliaryId,
         labelId = labelId,
         keyboardType = KeyboardType.Number,
-        textStyle = TextStyle(fontFamily = latoFont),
+        textStyle = TextStyle(fontFamily = latoFont, fontSize = 18.sp),
         onValidationChanged = onValidationChanged
 
     )
@@ -275,7 +275,6 @@ fun InputFieldAuxiliar(
         OutlinedTextField(
             value = valueState.value,
             onValueChange = { newValue ->
-                // Validamos que solo sean números
                 if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
                     valueState.value = newValue
                     showError = false
@@ -285,7 +284,13 @@ fun InputFieldAuxiliar(
                     onValidationChanged(false)
                 }
             },
-            label = { Text(text = labelId) },
+            label = {
+                Text(
+                    text = labelId,
+                    fontFamily = LatoFontFamily,
+                    style = TextStyle(fontSize = 18.sp)
+                )
+            },
             singleLine = isSingleLine,
             modifier = Modifier
                 .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
@@ -303,9 +308,10 @@ fun InputFieldAuxiliar(
         )
         if (showError) {
             Text(
-                text = "Please enter your ID number",
+                text = "Si us plau introduïu el vostre número d'auxiliar",
                 color = Color.Red,
-                style = TextStyle(fontSize = 12.sp),
+                fontFamily = LatoFontFamily,
+                style = TextStyle(fontSize = 16.sp),
                 modifier = Modifier.padding(start = 16.dp, top = 4.dp)
             )
         }
@@ -320,7 +326,6 @@ fun PreviewLoginAuxiliar() {
     val auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel()
     val auxiliaryViewModel = AuxiliaryViewModel()
     HospitalFrontEndTheme {
-
         LoginScreenAuxiliary(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
     }
 }

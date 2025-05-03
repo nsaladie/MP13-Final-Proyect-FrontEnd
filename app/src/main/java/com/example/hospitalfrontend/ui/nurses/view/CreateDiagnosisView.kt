@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
@@ -22,32 +21,22 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.model.DiagnosisState
 import com.example.hospitalfrontend.model.RegisterState
 import com.example.hospitalfrontend.model.PatientState
-import com.example.hospitalfrontend.model.AuxiliaryState
-import com.example.hospitalfrontend.model.VitalSignState
 import com.example.hospitalfrontend.network.DiagnosisRemoteViewModel
 import com.example.hospitalfrontend.network.RemoteApiMessageDiagnosis
-import com.example.hospitalfrontend.network.RemoteApiMessageNurse
-import com.example.hospitalfrontend.ui.nurses.viewmodels.DiagnosisViewModel
 import com.example.hospitalfrontend.ui.nurses.viewmodels.AuxiliaryViewModel
-import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
-import java.util.Date
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateDiagnosisScreen(
     navController: NavHostController,
     diagnosisRemoteViewModel: DiagnosisRemoteViewModel,
-    diagnosisViewModel: DiagnosisViewModel,
     patientId: Int,
     auxiliaryViewModel: AuxiliaryViewModel,
     isError: MutableState<Boolean>,
@@ -59,12 +48,12 @@ fun CreateDiagnosisScreen(
 
     val customPrimaryColor = Color(0xFFA9C7C7)
     val grauOptions = listOf("Autònom AVD", "Depenent parcial AVD", "Depenent total")
-    val selectedGrau = rememberSaveable { mutableStateOf(grauOptions[0]) }
+    val selectedGrau = rememberSaveable { mutableStateOf("") }
 
-    val oxygenRequired = rememberSaveable { mutableStateOf(false) }
+    val oxygenRequired = rememberSaveable { mutableStateOf<Boolean?>(null) }
     val oxygenType = rememberSaveable { mutableStateOf("") }
 
-    val diaperRequired = rememberSaveable { mutableStateOf(false) }
+    val diaperRequired = rememberSaveable { mutableStateOf<Boolean?>(null) }
     val numberOfChanges = rememberSaveable { mutableStateOf("") }
     val skinCondition = rememberSaveable { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
@@ -72,6 +61,32 @@ fun CreateDiagnosisScreen(
     val auxiliary = auxiliaryViewModel.getAuxiliaryState()
     val latoLightFont = FontFamily(Font(R.font.lato_light))
     val messageApi = diagnosisRemoteViewModel.remoteApiMessageDiagnosis.value
+
+    val isFormValidState = remember { mutableStateOf(false) }
+
+    LaunchedEffect(
+        selectedGrau.value,
+        oxygenRequired.value,
+        oxygenType.value,
+        diaperRequired.value,
+        numberOfChanges.value,
+        skinCondition.value,
+        vesicalInfo.value,
+        nasogastricInfo.value,
+        rectalInfo.value
+    ) {
+        isFormValidState.value = isFormValid(
+            selectedGrau.value,
+            oxygenRequired.value,
+            oxygenType.value,
+            diaperRequired.value,
+            numberOfChanges.value,
+            skinCondition.value,
+            vesicalInfo.value,
+            nasogastricInfo.value,
+            rectalInfo.value
+        )
+    }
 
     LaunchedEffect(Unit) {
         createDiagnosisError.value = false
@@ -132,7 +147,6 @@ fun CreateDiagnosisScreen(
             )
         })
     }
-
 
     Scaffold(
         containerColor = customPrimaryColor, topBar = {
@@ -214,16 +228,14 @@ fun CreateDiagnosisScreen(
 
                 )
 
-
                 Button(
                     onClick = {
-
                         val diagnosisState = DiagnosisState(
                             id = 0,
-                            oxygenLevel = if (oxygenRequired.value) 1 else 0,
+                            oxygenLevel = if (oxygenRequired.value == true) 1 else 0,
                             dependencyLevel = selectedGrau.value,
                             oxygenLevelDescription = oxygenType.value,
-                            diapers = diaperRequired.value,
+                            diapers = diaperRequired.value == true,
                             totalChangesDiapers = numberOfChanges.value.toIntOrNull() ?: 0,
                             detailDescription = skinCondition.value,
                             urinaryCatheter = vesicalInfo.value,
@@ -250,6 +262,7 @@ fun CreateDiagnosisScreen(
                             diagnosisRemoteViewModel.createDiagnosis(registerState, diagnosisState)
                         }
                     },
+                    enabled = isFormValidState.value,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp),
@@ -278,10 +291,7 @@ fun CreateDiagnosisScreen(
                             fontFamily = latoLightFont,
                         )
                     }
-
                 }
-
-
             }
         }
     }
@@ -291,16 +301,15 @@ fun CreateDiagnosisScreen(
 fun CreateDiagnosisDetailsCard(
     options: List<String>,
     selectedOption: MutableState<String>,
-    oxygenRequired: MutableState<Boolean>,
+    oxygenRequired: MutableState<Boolean?>,
     oxygenType: MutableState<String>,
-    diaperRequired: MutableState<Boolean>,
+    diaperRequired: MutableState<Boolean?>,
     numberOfChanges: MutableState<String>,
     skinCondition: MutableState<String>,
     vesicalInfo: MutableState<String>,
     nasalInfo: MutableState<String>,
     rectalInfo: MutableState<String>
 ) {
-    val customPrimaryColor = Color(0xFFA9C7C7)
     val customIconColor = Color(0xFF505050)
 
     Card(
@@ -360,8 +369,6 @@ fun CreateDiagnosisDetailsCard(
                 iconColor = customIconColor
             )
 
-
-
             ItemInfo(
                 label = "Sonda Rectal",
                 info = rectalInfo.value,
@@ -369,8 +376,6 @@ fun CreateDiagnosisDetailsCard(
                 icon = Icons.Filled.Medication,
                 iconColor = customIconColor
             )
-
-
 
             ItemInfo(
                 label = "Sonda Nasogàstrica",
@@ -384,7 +389,6 @@ fun CreateDiagnosisDetailsCard(
     }
 }
 
-
 @Composable
 fun LevelofDependency(
     label: String,
@@ -394,8 +398,6 @@ fun LevelofDependency(
     onOptionSelected: (String) -> Unit,
     iconColor: Color = Color(0xFF505050),
 ) {
-    val infoFontSize = 18.sp
-    val labelFontSize = 20.sp
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -410,7 +412,12 @@ fun LevelofDependency(
                 modifier = Modifier.padding(end = 8.dp)
             )
             Text(
-                text = label, style = MaterialTheme.typography.titleMedium
+                text = label,
+                fontSize = 20.sp,
+                fontFamily = NunitoFontFamily,
+                color = Color(0xFF2C3E50),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium
             )
         }
 
@@ -425,7 +432,10 @@ fun LevelofDependency(
                     colors = RadioButtonDefaults.colors(selectedColor = Color.Blue)
                 )
                 Text(
-                    text = level, modifier = Modifier.padding(start = 8.dp), fontSize = 16.sp
+                    text = level,
+                    modifier = Modifier.padding(start = 8.dp),
+                    fontSize = 18.sp,
+                    fontFamily = LatoFontFamily
                 )
             }
         }
@@ -438,14 +448,11 @@ fun OxygenInfoItem(
     icon: ImageVector,
     iconColor: Color = Color(0xFF505050),
     oxygenType: String,
-    oxygenRequired: MutableState<Boolean>,
-    onOxygenRequiredChange: (Boolean) -> Unit,
+    oxygenRequired: MutableState<Boolean?>,
+    onOxygenRequiredChange: (Boolean?) -> Unit,
     onOxygenTypeChange: (String) -> Unit
 
-
 ) {
-    val infoFontSize = 18.sp
-    val labelFontSize = 20.sp
     val options = listOf("Sí", "No")
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -462,7 +469,12 @@ fun OxygenInfoItem(
                 modifier = Modifier.padding(end = 8.dp)
             )
             Text(
-                text = label, style = MaterialTheme.typography.titleMedium
+                text = label,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 20.sp,
+                fontFamily = NunitoFontFamily,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF2C3E50)
             )
         }
 
@@ -472,18 +484,21 @@ fun OxygenInfoItem(
                 modifier = Modifier.padding(start = 32.dp, bottom = 4.dp)
             ) {
                 RadioButton(
-                    selected = if (option == "Sí") oxygenRequired.value else !oxygenRequired.value,
-                    onClick = { onOxygenRequiredChange(option == "Sí") },
+                    selected = oxygenRequired.value == (option == "Sí"),
+                    onClick = { onOxygenRequiredChange(if (option == "Sí") true else false) },
                     colors = RadioButtonDefaults.colors(selectedColor = Color.Blue)
                 )
 
                 Text(
-                    text = option, modifier = Modifier.padding(start = 8.dp), fontSize = 16.sp
+                    text = option,
+                    modifier = Modifier.padding(start = 8.dp),
+                    fontSize = 18.sp,
+                    fontFamily = LatoFontFamily
                 )
             }
         }
 
-        if (oxygenRequired.value) {
+        if (oxygenRequired.value == true) {
             TextField(
                 value = oxygenType,
                 onValueChange = onOxygenTypeChange,
@@ -501,10 +516,10 @@ fun DiaperInfoItem(
     label: String,
     icon: ImageVector,
     iconColor: Color = Color(0xFF505050),
-    diaperRequired: MutableState<Boolean>,
+    diaperRequired: MutableState<Boolean?>,
     numberOfChanges: String,
     skinCondition: String,
-    onDiaperRequiredChange: (Boolean) -> Unit,
+    onDiaperRequiredChange: (Boolean?) -> Unit,
     onNumberOfChangesChange: (String) -> Unit,
     onSkinConditionChange: (String) -> Unit
 ) {
@@ -524,7 +539,12 @@ fun DiaperInfoItem(
                 modifier = Modifier.padding(end = 8.dp)
             )
             Text(
-                text = label, style = MaterialTheme.typography.titleMedium
+                text = label,
+                style = MaterialTheme.typography.titleMedium,
+                fontFamily = NunitoFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = Color(0xFF2C3E50)
             )
         }
 
@@ -534,18 +554,21 @@ fun DiaperInfoItem(
                 modifier = Modifier.padding(start = 32.dp, bottom = 4.dp)
             ) {
                 RadioButton(
-                    selected = if (option == "Sí") diaperRequired.value else !diaperRequired.value,
+                    selected = diaperRequired.value == (option == "Sí"),
                     onClick = { onDiaperRequiredChange(option == "Sí") },
                     colors = RadioButtonDefaults.colors(selectedColor = Color.Blue)
                 )
 
                 Text(
-                    text = option, modifier = Modifier.padding(start = 8.dp), fontSize = 16.sp
+                    text = option,
+                    modifier = Modifier.padding(start = 8.dp),
+                    fontSize = 18.sp,
+                    fontFamily = LatoFontFamily
                 )
             }
         }
 
-        if (diaperRequired.value) {
+        if (diaperRequired.value == true) {
             TextField(
                 value = numberOfChanges,
                 onValueChange = { newValue ->
@@ -571,7 +594,6 @@ fun DiaperInfoItem(
     }
 }
 
-
 @Composable
 fun ItemInfo(
     label: String,
@@ -580,9 +602,6 @@ fun ItemInfo(
     icon: ImageVector,
     iconColor: Color = Color(0xFF505050),
 ) {
-    val infoFontSize = 18.sp
-    val labelFontSize = 20.sp
-
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -597,7 +616,12 @@ fun ItemInfo(
                 modifier = Modifier.padding(end = 8.dp)
             )
             Text(
-                text = label, style = MaterialTheme.typography.titleMedium
+                text = label,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 20.sp,
+                fontFamily = NunitoFontFamily,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF2C3E50)
             )
         }
         Row(
@@ -618,17 +642,21 @@ fun ItemInfo(
     }
 }
 
-
-/*
-@Preview(showBackground = true)
-@Composable
-fun PreviewDiagnosis() {
-    val navController = rememberNavController()
-    val diagnosisViewModel = DiagnosisViewModel()
-    val diagnosisRemoteViewModel = DiagnosisRemoteViewModel()
-    val id = 1
-    HospitalFrontEndTheme {
-        DiagnosisScreen(navController, diagnosisRemoteViewModel, diagnosisViewModel, id)
-    }
+fun isFormValid(
+    selectedGrau: String,
+    oxygenRequired: Boolean?,
+    oxygenType: String,
+    diaperRequired: Boolean?,
+    numberOfChanges: String,
+    skinCondition: String,
+    vesicalInfo: String,
+    nasogastricInfo: String,
+    rectalInfo: String
+): Boolean {
+    return selectedGrau.isNotEmpty() &&
+            (oxygenRequired == false || (oxygenRequired == true && oxygenType.isNotEmpty())) &&
+            (diaperRequired == false || (diaperRequired == true && numberOfChanges.isNotEmpty() && skinCondition.isNotEmpty())) &&
+            vesicalInfo.isNotEmpty() &&
+            nasogastricInfo.isNotEmpty() &&
+            rectalInfo.isNotEmpty()
 }
- */

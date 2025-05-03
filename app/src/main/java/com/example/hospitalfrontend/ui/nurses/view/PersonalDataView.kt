@@ -1,20 +1,16 @@
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
@@ -54,7 +50,6 @@ fun PersonalData(
 
     val nunitoFont = FontFamily(Font(R.font.nunito_bold))
     val latoFont = FontFamily(Font(R.font.lato_regular))
-    val latoLightFont = FontFamily(Font(R.font.lato_light))
 
     val backgroundColor = Color(169, 199, 199)
 
@@ -205,7 +200,7 @@ fun PersonalData(
 
                                 EnhancedMultilineField(
                                     labelValue = "Antecedents mèdics",
-                                    icon = Icons.Default.Assignment,
+                                    icon = Icons.Default.EditNote,
                                     textValue = antecedentsMedics,
                                     fontFamily = latoFont
                                 )
@@ -239,7 +234,7 @@ fun PersonalData(
                                 Spacer(modifier = Modifier.height(24.dp))
                             }
                         }
-
+                        /*
                         // Save Button
                         EnhancedSaveButton(
                             text = "Desar canvis",
@@ -248,6 +243,7 @@ fun PersonalData(
                         ) {
                             // Action to save data
                         }
+                         */
                     }
                 }
             }
@@ -273,7 +269,7 @@ fun SectionHeader(text: String, fontFamily: FontFamily) {
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
         )
 
-        Divider(
+        HorizontalDivider(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
@@ -322,7 +318,7 @@ fun EnhancedTextField(
         ),
         textStyle = TextStyle(
             fontFamily = fontFamily,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = Color.DarkGray
         )
     )
@@ -368,7 +364,7 @@ fun EnhancedMultilineField(
         ),
         textStyle = TextStyle(
             fontFamily = fontFamily,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = Color.DarkGray
         ),
         minLines = 3

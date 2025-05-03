@@ -21,13 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
-import com.example.hospitalfrontend.model.RoomState
 import com.example.hospitalfrontend.model.RoomWithObservation
 import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.regex.Pattern
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +61,6 @@ fun HomeScreen(
     }
 
     val nunitoFont = FontFamily(Font(R.font.nunito_bold))
-    val backgroundColor = Color.White
 
     Scaffold(
         topBar = {
@@ -79,9 +75,7 @@ fun HomeScreen(
                             textAlign = TextAlign.Center
                         ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                     )
-                }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = backgroundColor
-                )
+                },
             )
         }) { paddingValues ->
         Box(
@@ -115,10 +109,8 @@ fun RoomListItem(
     val latoFont = FontFamily(Font(R.font.lato_regular))
 
     // Specific colors as requested
-    val cardColor =
-        if (room.room!!.patient != null) Color(169, 199, 199) else Color(200, 200, 200)
+    val cardColor = if (room.room!!.patient != null) Color(169, 199, 199) else Color(200, 200, 200)
     var showObservation by remember { mutableStateOf(false) }
-    // Estado para almacenar la última observación
 
     // Format date to dd/mm/yyyy if patient exists
     val formattedDate = room.room?.patient?.dateEntry?.let {
@@ -126,7 +118,7 @@ fun RoomListItem(
             val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             sdf.format(it)
         } catch (e: Exception) {
-            it.toString() // Si falla, muestra la fecha tal como viene
+            it.toString()
         }
     }
 
@@ -160,18 +152,18 @@ fun RoomListItem(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "Número d'habitació: ${room.room.roomNumber}", style = TextStyle(
-                        fontFamily = latoFont, fontSize = 16.sp, fontWeight = FontWeight.Bold
+                    text = "Nº HAB: ${room.room.roomNumber}", style = TextStyle(
+                        fontFamily = latoFont, fontSize = 20.sp, fontWeight = FontWeight.Bold
                     )
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 if (room.room.patient != null) {
                     Text(
                         text = "Nom: ${room.room.patient.name} ${room.room.patient.surname}",
                         style = TextStyle(
-                            fontFamily = latoFont, fontSize = 14.sp
+                            fontFamily = latoFont, fontSize = 18.sp
                         )
                     )
 
@@ -179,23 +171,25 @@ fun RoomListItem(
 
                     Text(
                         text = "Data d'ingrés: $formattedDate", style = TextStyle(
-                            fontFamily = latoFont, fontSize = 14.sp
+                            fontFamily = latoFont, fontSize = 18.sp
                         )
                     )
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Última observació: ${room.lastObservation ?: "No disponible"}",
                         style = TextStyle(
-                            fontFamily = latoFont, fontSize = 14.sp, fontWeight = FontWeight.Medium
+                            fontFamily = latoFont, fontSize = 18.sp, fontWeight = FontWeight.Medium
                         )
                     )
                 } else {
+                    Spacer(modifier = Modifier.height(4.dp))
+
                     Text(
                         text = "Habitació buida", color = Color.Red, style = TextStyle(
-                            fontFamily = latoFont, fontSize = 14.sp
+                            fontFamily = latoFont, fontSize = 18.sp
                         )
                     )
                 }
-
             }
         }
     }
