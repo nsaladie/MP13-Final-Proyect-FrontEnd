@@ -1,5 +1,7 @@
 package com.example.hospitalfrontend.ui.nurses.view
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -22,9 +24,12 @@ import com.example.hospitalfrontend.model.*
 import com.example.hospitalfrontend.network.*
 import com.example.hospitalfrontend.utils.*
 import java.text.SimpleDateFormat
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CureDetailsScreen(
@@ -114,6 +119,7 @@ fun ErrorScreen(customPrimaryColor: Color, onRetry: () -> Unit) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SuccessScreen(
@@ -227,6 +233,7 @@ private fun hasHygieneData(hygiene: HygieneState): Boolean {
     return hygiene.description.isNotEmpty()
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BasicInfoCard(data: RegisterState) {
     CardContent(title = "${data.patient.name} ${data.patient.surname}") {
@@ -295,21 +302,26 @@ fun VitalSignCard(vitalSign: VitalSignState, alertColor: Color, defaultInfoColor
                 getOxygenSaturationColor(vitalSign.oxygenSaturation), alertColor, defaultInfoColor
             )
         )
-        DetailItemWithIcon(
-            label = "Volum d'Orina", info = "${vitalSign.urineVolume} ml", icon = Icons.Filled.Air
-        )
+        vitalSign.urineVolume?.let {
+            DetailItemWithIcon(
+                label = "Volum d'Orina", info = "$it ml", icon = Icons.Filled.Air
+            )
+        }
+        vitalSign.bowelMovements?.let {
+            DetailItemWithIcon(
+                label = "Moviments intestinals",
+                info = "$it ml",
+                icon = Icons.Filled.Air
+            )
 
-        DetailItemWithIcon(
-            label = "Moviments intestinals",
-            info = "${vitalSign.bowelMovements} ml",
-            icon = Icons.Filled.Air
-        )
-
-        DetailItemWithIcon(
-            label = "Terapia amb sèrum",
-            info = "${vitalSign.serumTherapy} ml",
-            icon = Icons.Filled.Air
-        )
+        }
+        vitalSign.serumTherapy?.let {
+            DetailItemWithIcon(
+                label = "Terapia amb sèrum",
+                info = "$it ml",
+                icon = Icons.Filled.Air
+            )
+        }
     }
 }
 
@@ -456,6 +468,12 @@ fun CardContent(title: String, content: @Composable () -> Unit) {
 fun Date.formatDate(pattern: String): String {
     val outputFormat = SimpleDateFormat(pattern, Locale.getDefault())
     return outputFormat.format(this)
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun OffsetDateTime.formatDate(pattern: String): String {
+    val formatter = DateTimeFormatter.ofPattern(pattern, Locale.getDefault())
+    return this.format(formatter)
 }
 
 fun getInfoColor(color: Color, alertColor: Color, defaultInfoColor: Color): Color {

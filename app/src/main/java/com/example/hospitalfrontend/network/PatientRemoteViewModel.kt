@@ -1,16 +1,19 @@
 package com.example.hospitalfrontend.network
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hospitalfrontend.model.DietTypeState
 import com.example.hospitalfrontend.model.RegisterState
 import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
+import com.example.hospitalfrontend.utils.OffsetDateTimeAdapter
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.OffsetDateTime
 
 
 class PatientRemoteViewModel : ViewModel() {
@@ -34,15 +37,21 @@ class PatientRemoteViewModel : ViewModel() {
 
     val gsonDate = GsonBuilder().setDateFormat("yyyy-MM-dd").create()
 
-    val gsonDateAndHour = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm").create()
+    @RequiresApi(Build.VERSION_CODES.O)
+    val gsonFormat =
+        GsonBuilder().registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
+            .create()
 
     // Retrofit instance with ApiService creation for network requests
     private val apiService: ApiService = Retrofit.Builder().baseUrl("http://10.0.2.2:8080/")
         .addConverterFactory(GsonConverterFactory.create(gsonDate)).build()
         .create(ApiService::class.java)
 
-    private val apiServiceHour: ApiService = Retrofit.Builder().baseUrl("http://10.0.2.2:8080/")
-        .addConverterFactory(GsonConverterFactory.create(gsonDateAndHour)).build()
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val apiServiceHour: ApiService = Retrofit.Builder()
+        .baseUrl("http://10.0.2.2:8080/")
+        .addConverterFactory(GsonConverterFactory.create(gsonFormat))
+        .build()
         .create(ApiService::class.java)
 
 
@@ -99,6 +108,7 @@ class PatientRemoteViewModel : ViewModel() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getCureDetail(cureId: Int) {
         viewModelScope.launch {
             try {
@@ -110,5 +120,4 @@ class PatientRemoteViewModel : ViewModel() {
             }
         }
     }
-
 }
