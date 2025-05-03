@@ -112,7 +112,6 @@ fun MyAppHomePage(
 
             CreateDiagnosisScreen(
                 navController = navController,
-                diagnosisViewModel = diagnosisViewModel,
                 diagnosisRemoteViewModel = diagnosisRemoteViewModel,
                 patientId = patientId,
                 isError = isError,

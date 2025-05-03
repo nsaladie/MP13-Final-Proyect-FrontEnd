@@ -25,9 +25,10 @@ class PatientViewModel : ViewModel(
     // Variable for a list of rooms
     private val _rooms = MutableStateFlow<List<RoomWithObservation>>(listOf())
     val rooms: MutableStateFlow<List<RoomWithObservation>> = _rooms
-    // Si no tienes un StateFlow de registros en tu ViewModel, podrías añadir:
+
     private val _registers = MutableStateFlow<List<RegisterState>>(emptyList())
     val registers: StateFlow<List<RegisterState>> = _registers
+
     // Variable for a list of cures
     private val _cures = MutableStateFlow<List<VitalSignState>>(listOf())
     val cures: MutableStateFlow<List<VitalSignState>> = _cures
@@ -45,6 +46,4 @@ class PatientViewModel : ViewModel(
     fun setPatientData(patient: PatientState) {
         _patientState.value = patient
     }
-
-
 }

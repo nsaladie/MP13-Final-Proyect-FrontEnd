@@ -1,11 +1,12 @@
 package com.example.hospitalfrontend.model
 
+import java.time.OffsetDateTime
 import java.util.Date
 
 data class RegisterState(
     val id: Int = 0,
     val auxiliary: AuxiliaryState,
-    val date: Date? = null,
+    val date: OffsetDateTime? = null,
     val patient: PatientState,
     val hygieneType: HygieneState? = null,
     val diet: DietState? = null,
