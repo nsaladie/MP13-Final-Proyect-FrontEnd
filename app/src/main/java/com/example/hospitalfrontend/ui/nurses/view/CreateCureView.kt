@@ -27,6 +27,7 @@ import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.model.*
 import com.example.hospitalfrontend.network.*
 import com.example.hospitalfrontend.ui.nurses.viewmodels.*
+import com.example.hospitalfrontend.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -50,6 +51,7 @@ object HospitalTheme {
 fun CreateCureScreen(
     navController: NavController,
     patientRemoteViewModel: PatientRemoteViewModel,
+
     patientId: Int,
     auxiliaryViewModel: AuxiliaryViewModel,
     dietRemoteViewModel: DietRemoteViewModel = viewModel()
@@ -69,6 +71,9 @@ fun CreateCureScreen(
     var showSuccessDialog by rememberSaveable { mutableStateOf(false) }
     var showErrorDialog by rememberSaveable { mutableStateOf(false) }
     var dialogMessage by rememberSaveable { mutableStateOf("") }
+
+    var showOutOfRangeDialog by rememberSaveable { mutableStateOf(false) }
+    var outOfRangeMessages by rememberSaveable { mutableStateOf(listOf<String>()) }
 
     val remoteApiMessage = patientRemoteViewModel.remoteApiMessageBoolean.value
 
@@ -137,25 +142,31 @@ fun CreateCureScreen(
                 isEnabled = isFormValid,
                 fontFamily = HospitalTheme.latoBoldFont
             ) {
-                val register = RegisterState(
-                    id = 0,
-                    date = null,
-                    auxiliary = auxiliary!!,
-                    patient = patient,
-                    hygieneType = hygieneState.takeIf { it.description.isNotBlank() },
-                    diet = dietState.takeIf {
-                        it.date != null || it.takeData != null || it.dietTypes.isNotEmpty() ||
-                                it.dietTypeTexture != null || it.independent != null || it.prosthesis != null
-                    },
-                    drain = drainState.takeIf { it.output.isNotBlank() || it.type.isNotBlank() },
-                    mobilization = mobilizationState.takeIf {
-                        it.sedestation != null || it.walkingAssis != null ||
-                                it.assisDesc != null || it.changes.isNotBlank() || it.decubitus.isNotBlank()
-                    },
-                    vitalSign = vitalSignState,
-                    observation = observation.takeIf { it.isNotBlank() }
-                )
-                patientRemoteViewModel.createCure(register)
+                val outOfRange = getVitalSignOutOfRangeMessages(vitalSignState)
+                if (outOfRange.isNotEmpty()) {
+                    outOfRangeMessages = outOfRange
+                    showOutOfRangeDialog = true
+                } else {
+                    val register = RegisterState(
+                        id = 0,
+                        date = null,
+                        auxiliary = auxiliary!!,
+                        patient = patient,
+                        hygieneType = hygieneState.takeIf { it.description.isNotBlank() },
+                        diet = dietState.takeIf {
+                            it.date != null || it.takeData != null || it.dietTypes.isNotEmpty() ||
+                                    it.dietTypeTexture != null || it.independent != null || it.prosthesis != null
+                        },
+                        drain = drainState.takeIf { it.output.isNotBlank() || it.type.isNotBlank() },
+                        mobilization = mobilizationState.takeIf {
+                            it.sedestation != null || it.walkingAssis != null ||
+                                    it.assisDesc != null || it.changes.isNotBlank() || it.decubitus.isNotBlank()
+                        },
+                        vitalSign = vitalSignState,
+                        observation = observation.takeIf { it.isNotBlank() }
+                    )
+                    patientRemoteViewModel.createCure(register)
+                }
             }
         }, containerColor = HospitalTheme.Background
     ) { paddingValues ->
@@ -251,8 +262,72 @@ fun CreateCureScreen(
                     }
                 })
         }
+        if (showOutOfRangeDialog) {
+            HospitalAlertDialog(
+                onDismissRequest = { showOutOfRangeDialog = false },
+                title = "Signes vitals fora de rang",
+                text = outOfRangeMessages.joinToString("\n"),
+                confirmButton = {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = {
+                            showOutOfRangeDialog = false
+                            val register = RegisterState(
+                                id = 0,
+                                date = null,
+                                auxiliary = auxiliary!!,
+                                patient = patient,
+                                hygieneType = hygieneState.takeIf { it.description.isNotBlank() },
+                                diet = dietState.takeIf {
+                                    it.date != null || it.takeData != null || it.dietTypes.isNotEmpty() ||
+                                            it.dietTypeTexture != null || it.independent != null || it.prosthesis != null
+                                },
+                                drain = drainState.takeIf { it.output.isNotBlank() || it.type.isNotBlank() },
+                                mobilization = mobilizationState.takeIf {
+                                    it.sedestation != null || it.walkingAssis != null ||
+                                            it.assisDesc != null || it.changes.isNotBlank() || it.decubitus.isNotBlank()
+                                },
+                                vitalSign = vitalSignState,
+                                observation = observation.takeIf { it.isNotBlank() }
+                            )
+                            patientRemoteViewModel.createCure(register)
+                        }) {
+                            Text("Sí, continuar")
+                        }
+                        TextButton(onClick = { showOutOfRangeDialog = false }) {
+                            Text("Cancel·lar")
+                        }
+                    }
+                }
+            )
+        }
     }
 }
+fun getVitalSignOutOfRangeMessages(vitals: VitalSignState): List<String> {
+    val messages = mutableListOf<String>()
+
+    if (vitals.systolicBloodPressure < SYSTOLIC_LOW || vitals.systolicBloodPressure > SYSTOLIC_HIGH) {
+        messages.add("Pressió sistòlica fora de rang (${vitals.systolicBloodPressure} mmHg)")
+    }
+    if (vitals.diastolicBloodPressure < DIASTOLIC_LOW || vitals.diastolicBloodPressure > DIASTOLIC_HIGH) {
+        messages.add("Pressió diastòlica fora de rang (${vitals.diastolicBloodPressure}mmHg)")
+    }
+    if (vitals.respiratoryRate < RESPIRATORY_RATE_LOW || vitals.respiratoryRate > RESPIRATORY_RATE_HIGH) {
+        messages.add("Freqüència respiratòria fora de rang (${vitals.respiratoryRate}x')")
+    }
+    if (vitals.pulse < PULSE_LOW || vitals.pulse > PULSE_HIGH) {
+        messages.add("Pols fora de rang (${vitals.pulse}x')")
+    }
+    if (vitals.temperature < TEMPERATURE_LOW || vitals.temperature > TEMPERATURE_HIGH) {
+        messages.add("Temperatura fora de rang (${vitals.temperature}ºC)")
+    }
+    if (vitals.oxygenSaturation < OXYGEN_SATURATION_LOW) {
+        messages.add("Saturació d'oxigen baixa (${vitals.oxygenSaturation}%)")
+    }
+
+    return messages
+}
+
+
 
 @Composable
 fun FormSection(title: String, icon: ImageVector, content: @Composable () -> Unit) {
