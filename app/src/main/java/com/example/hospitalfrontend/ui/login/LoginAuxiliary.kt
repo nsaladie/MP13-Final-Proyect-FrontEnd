@@ -29,11 +29,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.R.color.colorText
-import com.example.hospitalfrontend.model.AuxiliaryState
-import com.example.hospitalfrontend.network.AuxiliaryRemoteViewModel
-import com.example.hospitalfrontend.ui.nurses.view.LatoFontFamily
-import com.example.hospitalfrontend.ui.nurses.view.NunitoFontFamily
-import com.example.hospitalfrontend.ui.nurses.viewmodels.AuxiliaryViewModel
+import com.example.hospitalfrontend.domain.model.user.AuxiliaryState
+import com.example.hospitalfrontend.data.remote.viewmodel.AuxiliaryRemoteViewModel
+import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
+import com.example.hospitalfrontend.ui.auxiliary.viewmodel.AuxiliaryViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 import com.example.hospitalfrontend.ui.theme.Primary
 
