@@ -2,8 +2,8 @@ package com.example.hospitalfrontend.ui.nurses.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hospitalfrontend.model.LoginState
-import com.example.hospitalfrontend.model.NurseState
+import com.example.hospitalfrontend.domain.model.auth.LoginState
+import com.example.hospitalfrontend.domain.model.user.NurseState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

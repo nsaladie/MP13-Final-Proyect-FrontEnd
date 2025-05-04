@@ -20,11 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.hospitalfrontend.R
-import com.example.hospitalfrontend.model.NurseState
-import com.example.hospitalfrontend.network.NurseRemoteViewModel
-import com.example.hospitalfrontend.network.PatientRemoteViewModel
+import com.example.hospitalfrontend.domain.model.user.NurseState
+import com.example.hospitalfrontend.data.remote.viewmodel.NurseRemoteViewModel
 import com.example.hospitalfrontend.ui.nurses.viewmodels.NurseViewModel
-import com.example.hospitalfrontend.ui.nurses.viewmodels.PatientViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter

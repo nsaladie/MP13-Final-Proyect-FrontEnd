@@ -24,8 +24,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.R.color.*
-import com.example.hospitalfrontend.model.NurseState
-import com.example.hospitalfrontend.network.*
+import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageNurse
+import com.example.hospitalfrontend.data.remote.viewmodel.NurseRemoteViewModel
+import com.example.hospitalfrontend.domain.model.user.NurseState
 import com.example.hospitalfrontend.ui.nurses.viewmodels.NurseViewModel
 import com.example.hospitalfrontend.ui.theme.*
 

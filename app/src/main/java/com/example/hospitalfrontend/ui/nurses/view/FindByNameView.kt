@@ -28,9 +28,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.*
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.hospitalfrontend.model.NurseState
-import com.example.hospitalfrontend.network.RemoteApiMessageNurse
-import com.example.hospitalfrontend.network.NurseRemoteViewModel
+import com.example.hospitalfrontend.domain.model.user.NurseState
+import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageNurse
+import com.example.hospitalfrontend.data.remote.viewmodel.NurseRemoteViewModel
 
 
 @Preview
