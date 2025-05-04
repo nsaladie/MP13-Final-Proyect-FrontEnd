@@ -1,36 +1,31 @@
 package com.example.hospitalfrontend
 
 import PersonalData
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListRoom
-import com.example.hospitalfrontend.data.remote.viewmodel.AuxiliaryRemoteViewModel
-import com.example.hospitalfrontend.data.remote.viewmodel.DiagnosisRemoteViewModel
-import com.example.hospitalfrontend.data.remote.viewmodel.PatientRemoteViewModel
-import com.example.hospitalfrontend.domain.model.patient.PatientState
+import com.example.hospitalfrontend.data.remote.viewmodel.*
 import com.example.hospitalfrontend.ui.auxiliary.viewmodel.AuxiliaryViewModel
-import com.example.hospitalfrontend.ui.cure.view.CreateCureScreen
-import com.example.hospitalfrontend.ui.cure.view.CureDetailsScreen
-import com.example.hospitalfrontend.ui.cure.view.ListCuresScreen
-import com.example.hospitalfrontend.ui.diagnosis.view.CreateDiagnosisScreen
-import com.example.hospitalfrontend.ui.diagnosis.view.DiagnosisScreen
+import com.example.hospitalfrontend.ui.cure.view.*
+import com.example.hospitalfrontend.ui.diagnosis.view.*
 import com.example.hospitalfrontend.ui.diagnosis.viewmodel.DiagnosisViewModel
-import com.example.hospitalfrontend.ui.home.view.HomeScreen
-import com.example.hospitalfrontend.ui.home.view.MenuScreen
+import com.example.hospitalfrontend.ui.home.view.*
 import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
-import com.example.hospitalfrontend.ui.nurses.viewmodels.*
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -43,13 +38,13 @@ class MainActivity : ComponentActivity() {
                     patientViewModel = PatientViewModel(),
                     diagnosisViewModel = DiagnosisViewModel(),
                     diagnosisRemoteViewModel = DiagnosisRemoteViewModel(),
-                    patientState = PatientState()
                 )
             }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun HomePage() {
@@ -61,11 +56,11 @@ fun HomePage() {
             patientViewModel = PatientViewModel(),
             diagnosisViewModel = DiagnosisViewModel(),
             diagnosisRemoteViewModel = DiagnosisRemoteViewModel(),
-            patientState = PatientState()
         )
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MyAppHomePage(
     auxiliaryViewModel: AuxiliaryViewModel,
@@ -74,7 +69,6 @@ fun MyAppHomePage(
     patientViewModel: PatientViewModel,
     diagnosisViewModel: DiagnosisViewModel,
     diagnosisRemoteViewModel: DiagnosisRemoteViewModel,
-    patientState: PatientState
 ) {
     val remoteApiMessageListRoom = patientRemoteViewModel.remoteApiListMessageRoom.value
     val navController = rememberNavController()
@@ -205,7 +199,7 @@ fun MyAppHomePage(
                 patientId = patientId
             )
         }
-        
+
         composable(
             "createCure/{patientId}",
             arguments = listOf(navArgument("patientId") { type = NavType.IntType })
