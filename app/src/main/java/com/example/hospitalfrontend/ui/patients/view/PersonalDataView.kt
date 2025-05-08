@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
@@ -22,9 +23,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.R.color.colorText
+import com.example.hospitalfrontend.data.remote.response.RemoteApiMessagePatient
 import com.example.hospitalfrontend.domain.model.patient.PatientState
 import com.example.hospitalfrontend.data.remote.viewmodel.PatientRemoteViewModel
+import com.example.hospitalfrontend.ui.cure.view.EnhancedSaveButton
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -37,21 +41,79 @@ fun PersonalData(
     patientId: Int,
 ) {
     var patientState by remember { mutableStateOf<PatientState?>(null) }
-
+    var updateRequested by remember { mutableStateOf(false) }
+    var dataLoaded by remember { mutableStateOf(false) }
+    var patientData by remember { mutableStateOf<PatientState?>(null) }
     LaunchedEffect(patientId) {
         patientRemoteViewModel.getPatientById(patientId, patientViewModel)
     }
 
     LaunchedEffect(patientViewModel.patientState) {
+
         patientViewModel.patientState.collect { newState ->
             patientState = newState
         }
     }
-
+    LaunchedEffect(Unit) {
+        patientViewModel.patientState.collect { newState ->
+            patientData = newState
+            if (newState != null) {
+                dataLoaded = true
+            }
+        }
+    }
     val nunitoFont = FontFamily(Font(R.font.nunito_bold))
     val latoFont = FontFamily(Font(R.font.lato_regular))
 
     val backgroundColor = Color(169, 199, 199)
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    // Form data states
+    val nameValue =
+        rememberSaveable { mutableStateOf(patientState?.name ?: "") }
+    val surnameValue =
+        rememberSaveable { mutableStateOf(patientState?.surname ?: "") }
+    val addressValue =
+        rememberSaveable { mutableStateOf(patientState?.direction ?: "") }
+    val birthdayValue = rememberSaveable {
+        mutableStateOf(patientState?.dateBirth?.let {
+            dateFormat.format(it)
+        } ?: "")
+    }
+    val languageValue =
+        rememberSaveable { mutableStateOf(patientState?.language ?: "") }
+    val antecedentsMedics =
+        rememberSaveable { mutableStateOf(patientState?.history ?: "") }
+    val caregiverName = rememberSaveable {
+        mutableStateOf(
+            patientState?.caragiverName ?: ""
+        )
+    }
+    val caregiverNumber = rememberSaveable {
+        mutableStateOf(
+            patientState?.caragiverNumber ?: ""
+        )
+    }
+    val allergiesValue =
+        rememberSaveable { mutableStateOf(patientState?.allergy ?: "") }
+    var showSuccessDialog by rememberSaveable { mutableStateOf(false) }
+    var showErrorDialog by rememberSaveable { mutableStateOf(false) }
+    var dialogMessage by rememberSaveable { mutableStateOf("") }
+    val remoteApiMessage = patientRemoteViewModel.remoteApiMessage.value
+    // Actualizar los valores cuando los datos se cargan
+    LaunchedEffect(patientData, dataLoaded) {
+        if (dataLoaded && patientData != null) {
+            nameValue.value = patientData?.name ?: ""
+            surnameValue.value = patientData?.surname ?: ""
+            addressValue.value = patientData?.direction ?: ""
+            birthdayValue.value = patientData?.dateBirth?.let { dateFormat.format(it) } ?: ""
+            languageValue.value = patientData?.language ?: ""
+            antecedentsMedics.value = patientData?.history ?: ""
+            caregiverName.value = patientData?.caragiverName ?: ""
+            caregiverNumber.value = patientData?.caragiverNumber ?: ""
+            allergiesValue.value = patientData?.allergy ?: ""
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -132,18 +194,6 @@ fun PersonalData(
                                 .fillMaxWidth()
                                 .weight(1f)
                         ) {
-                            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-
-                            // Form data states
-                            val nameValue = rememberSaveable { mutableStateOf(patientState?.name ?: "") }
-                            val surnameValue = rememberSaveable { mutableStateOf(patientState?.surname ?: "") }
-                            val addressValue = rememberSaveable { mutableStateOf(patientState?.direction ?: "") }
-                            val birthdayValue = rememberSaveable { mutableStateOf(patientState?.dateBirth?.let { dateFormat.format(it) } ?: "") }
-                            val languageValue = rememberSaveable { mutableStateOf(patientState?.language ?: "") }
-                            val antecedentsMedics = rememberSaveable { mutableStateOf(patientState?.history ?: "") }
-                            val caregiverName = rememberSaveable { mutableStateOf(patientState?.caragiverName ?: "") }
-                            val caregiverNumber = rememberSaveable { mutableStateOf(patientState?.caragiverNumber ?: "") }
-                            val allergiesValue = rememberSaveable { mutableStateOf(patientState?.allergy ?: "") }
 
                             // Scrollable Form
                             Column(
@@ -234,20 +284,108 @@ fun PersonalData(
                                 Spacer(modifier = Modifier.height(24.dp))
                             }
                         }
-                        /*
                         // Save Button
                         EnhancedSaveButton(
                             text = "Desar canvis",
                             isEnabled = true,
-                            fontFamily = latoLightFont
+                            fontFamily = latoFont
                         ) {
+                            val parsedDate = try {
+                                dateFormat.parse(birthdayValue.value)
+                            } catch (e: ParseException) {
+                                null
+                            }
                             // Action to save data
+                            if (patientId != null) {
+                                val updatePatientData = PatientState(
+                                    historialNumber = patientId,
+                                    name = nameValue.value,
+                                    surname = surnameValue.value,
+                                    direction = addressValue.value,
+                                    dateBirth = parsedDate,
+                                    language = languageValue.value,
+                                    history = antecedentsMedics.value,
+                                    caragiverName = caregiverName.value,
+                                    caragiverNumber = caregiverNumber.value,
+                                    allergy = allergiesValue.value,
+                                    dateEntry = patientState?.dateEntry // Mantener la fecha de ingreso original
+                                )
+
+                                patientRemoteViewModel.updatePatient(patientId, updatePatientData)
+                                updateRequested = true
+                            }
                         }
-                         */
+                        LaunchedEffect(remoteApiMessage, updateRequested) {
+                            if (updateRequested) {
+                                when (remoteApiMessage) {
+                                    is RemoteApiMessagePatient.Success -> {
+                                        dialogMessage = "Data updated successfully."
+                                        showSuccessDialog = true
+                                        updateRequested = false // Reinicia la bandera
+                                    }
+                                    is RemoteApiMessagePatient.Error -> {
+                                        dialogMessage = "Failing to update data."
+                                        showErrorDialog = true
+                                        updateRequested = false // Reinicia la bandera
+                                    }
+                                    RemoteApiMessagePatient.Loading -> Log.d("Loading Update", "Loading")
+                                }
+                            }
+                        }
+                        SuccessDialog(
+                            showDialog = showSuccessDialog,
+                            message = dialogMessage,
+                            onDismiss = { showSuccessDialog = false }
+                        )
+                        ErrorDialog(
+                            showDialog = showErrorDialog,
+                            message = dialogMessage,
+                            onDismiss = { showErrorDialog = false }
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SuccessDialog(
+    showDialog: Boolean,
+    message: String,
+    onDismiss: () -> Unit
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = { Text("Success") },
+            text = { Text(message) },
+            confirmButton = {
+                Button(onClick = onDismiss) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun ErrorDialog(
+    showDialog: Boolean,
+    message: String,
+    onDismiss: () -> Unit
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = { Text("Error") },
+            text = { Text(message) },
+            confirmButton = {
+                Button(onClick = onDismiss) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
 
