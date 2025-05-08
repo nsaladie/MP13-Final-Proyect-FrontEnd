@@ -308,7 +308,7 @@ fun PersonalData(
                                     caragiverName = caregiverName.value,
                                     caragiverNumber = caregiverNumber.value,
                                     allergy = allergiesValue.value,
-                                    dateEntry = patientState?.dateEntry // Mantener la fecha de ingreso original
+                                    dateEntry = patientState?.dateEntry
                                 )
 
                                 patientRemoteViewModel.updatePatient(patientId, updatePatientData)
@@ -319,14 +319,14 @@ fun PersonalData(
                             if (updateRequested) {
                                 when (remoteApiMessage) {
                                     is RemoteApiMessagePatient.Success -> {
-                                        dialogMessage = "Data updated successfully."
+                                        dialogMessage = "S'han modificat les dates del pacient"
                                         showSuccessDialog = true
-                                        updateRequested = false // Reinicia la bandera
+                                        updateRequested = false
                                     }
                                     is RemoteApiMessagePatient.Error -> {
-                                        dialogMessage = "Failing to update data."
+                                        dialogMessage = "No s'han modificat les dates del pacient"
                                         showErrorDialog = true
-                                        updateRequested = false // Reinicia la bandera
+                                        updateRequested = false
                                     }
                                     RemoteApiMessagePatient.Loading -> Log.d("Loading Update", "Loading")
                                 }
@@ -358,7 +358,7 @@ fun SuccessDialog(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { onDismiss() },
-            title = { Text("Success") },
+            title = { Text("Dates Modificats") },
             text = { Text(message) },
             confirmButton = {
                 Button(onClick = onDismiss) {
