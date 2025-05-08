@@ -11,8 +11,10 @@ import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageBoolean
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageCureDetail
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListCure
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListRoom
+import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageNurse
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessagePatient
 import com.example.hospitalfrontend.domain.model.auth.RegisterState
+import com.example.hospitalfrontend.domain.model.patient.PatientState
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import com.example.hospitalfrontend.utils.OffsetDateTimeAdapter
 import com.google.gson.GsonBuilder
@@ -126,4 +128,16 @@ class PatientRemoteViewModel : ViewModel() {
             }
         }
     }
+    fun updatePatient(patientId: Int, updatePatient:PatientState){
+        viewModelScope.launch {
+            remoteApiMessage.value = RemoteApiMessagePatient.Loading
+            try {
+                val response = apiService.updatePatient(patientId, updatePatient)
+                remoteApiMessage.value = RemoteApiMessagePatient.Success(response)
+            } catch (e: Exception) {
+                remoteApiMessage.value = RemoteApiMessagePatient.Error
+            }
+        }
+    }
+
 }
