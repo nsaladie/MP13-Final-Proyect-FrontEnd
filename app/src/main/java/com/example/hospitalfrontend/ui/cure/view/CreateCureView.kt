@@ -24,24 +24,15 @@ import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
-import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageBoolean
-import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListDietTexture
-import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListDietType
-import com.example.hospitalfrontend.data.remote.viewmodel.DietRemoteViewModel
-import com.example.hospitalfrontend.data.remote.viewmodel.PatientRemoteViewModel
+import com.example.hospitalfrontend.data.remote.response.*
+import com.example.hospitalfrontend.data.remote.viewmodel.*
 import com.example.hospitalfrontend.domain.model.auth.RegisterState
-import com.example.hospitalfrontend.domain.model.diet.DietState
-import com.example.hospitalfrontend.domain.model.diet.DietTextureTypeState
-import com.example.hospitalfrontend.domain.model.diet.DietTypeState
-import com.example.hospitalfrontend.domain.model.medical.DrainState
-import com.example.hospitalfrontend.domain.model.medical.HygieneState
-import com.example.hospitalfrontend.domain.model.medical.MobilizationState
-import com.example.hospitalfrontend.domain.model.medical.VitalSignState
-import com.example.hospitalfrontend.domain.model.patient.PatientState
+import com.example.hospitalfrontend.domain.model.diet.*
+import com.example.hospitalfrontend.domain.model.medical.*
+import com.example.hospitalfrontend.domain.model.patient.*
 import com.example.hospitalfrontend.ui.auxiliary.viewmodel.AuxiliaryViewModel
 import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
 import com.example.hospitalfrontend.ui.diagnosis.view.NunitoFontFamily
-import com.example.hospitalfrontend.ui.nurses.viewmodels.*
 import com.example.hospitalfrontend.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -1012,7 +1003,8 @@ fun MobilizationSection(onMobilizationStateChange: (MobilizationState) -> Unit) 
                 if (newValue.isEmpty() || newValue.matches(Regex("^[0-9]+$"))) {
                     sedestation = newValue
                 }
-            }, placeholder = "Introdueix un valor entre 1 i 10"
+            }, placeholder = "Introdueix un valor entre 1 i 10",
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -1046,7 +1038,8 @@ fun MobilizationSection(onMobilizationStateChange: (MobilizationState) -> Unit) 
                 if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
                     changes = newValue
                 }
-            }, placeholder = "Quantitat"
+            }, placeholder = "Quantitat",
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -1195,7 +1188,6 @@ fun DietSection(
                 }
             },
             placeholder = "dd-MM-YYYY",
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
