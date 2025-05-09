@@ -3,10 +3,12 @@ package com.example.hospitalfrontend.ui.diagnosis.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.sharp.AccessTime
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -95,49 +97,55 @@ fun DiagnosisScreen(
     }
 
 
-    Scaffold(
-        containerColor = customPrimaryColor, topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "DIAGNÒSTIC", style = TextStyle(
-                                fontSize = 30.sp,
-                                fontFamily = NunitoFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center
-                            ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
-                        )
-                    }
-                }, navigationIcon = {
-                    IconButton(onClick = {
-                        diagnosisRemoteViewModel.clearApiMessage()
-                        navController.popBackStack()
-                    }) {
-                        Icon(
-                            Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
-                        )
-                    }
-                }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
-                ), actions = {
-                    IconButton(onClick = {
-                        diagnosisRemoteViewModel.clearApiMessage()
-                        navController.navigate("createDiagnosis/$patientId")
-                    }) {
-                        Icon(
-                            Icons.Filled.LocalHospital,
-                            contentDescription = "Diagnòstic",
-                            tint = Color.Black,
-                            modifier = Modifier.padding(end = 16.dp)
-                        )
-                    }
-                })
-        }) { paddingValues ->
+    Scaffold(containerColor = customPrimaryColor, floatingActionButton = {
+        FloatingActionButton(
+            onClick = {
+                navController.navigate("diagnosisHistory/$patientId")
+            }, modifier = Modifier.padding(16.dp), shape = CircleShape
+        ) {
+            Icon(Icons.Sharp.AccessTime, contentDescription = "See diagnosis history")
+        }
+    }, topBar = {
+        TopAppBar(
+            title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "DIAGNÒSTIC", style = TextStyle(
+                        fontSize = 30.sp,
+                        fontFamily = NunitoFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center
+                    ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                )
+            }
+        }, navigationIcon = {
+            IconButton(onClick = {
+                diagnosisRemoteViewModel.clearApiMessage()
+                navController.popBackStack()
+            }) {
+                Icon(
+                    Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
+                )
+            }
+        }, colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
+        ), actions = {
+            IconButton(onClick = {
+                diagnosisRemoteViewModel.clearApiMessage()
+                navController.navigate("createDiagnosis/$patientId")
+            }) {
+                Icon(
+                    Icons.Filled.LocalHospital,
+                    contentDescription = "Diagnòstic",
+                    tint = Color.Black,
+                    modifier = Modifier.padding(end = 16.dp)
+                )
+            }
+        })
+    }) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -326,8 +334,7 @@ fun OxygenSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = diagnosisState!!.oxygenLevel.toOxygenLevelText(),
-                color = when {
+                text = diagnosisState!!.oxygenLevel.toOxygenLevelText(), color = when {
                     diagnosisState.oxygenLevel > 0 -> Color(0xFF1EA01E)
                     else -> Color(0xFFE74C3C)
                 }, fontSize = 18.sp, fontFamily = LatoFontFamily
@@ -409,8 +416,7 @@ fun NoDataInformation(label: String, info: String, icon: ImageVector) {
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = info,
-            style = TextStyle(
+            text = info, style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = LatoFontFamily,
                 color = Color.White,

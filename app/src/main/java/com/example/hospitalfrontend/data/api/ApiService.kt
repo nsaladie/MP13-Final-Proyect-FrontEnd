@@ -98,4 +98,8 @@ interface ApiService {
     // List of DietTexture
     @GET("diet/texture")
     suspend fun getAllDietTexture(): List<DietTextureTypeState>
+
+    // List of Diagnosis
+    @GET("register/diagnosisList/{id}")
+    suspend fun getAllDiagnosis(@Path("id") id: Int): List<DiagnosisState>
 }
