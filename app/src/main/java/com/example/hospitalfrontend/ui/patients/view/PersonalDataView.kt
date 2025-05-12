@@ -214,35 +214,40 @@ fun PersonalData(
                                     labelValue = "Nom",
                                     icon = Icons.Default.Person,
                                     textValue = nameValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                    readOnly = true
                                 )
 
                                 EnhancedTextField(
                                     labelValue = "Cognoms",
                                     icon = Icons.Default.Person,
                                     textValue = surnameValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                    readOnly = true
                                 )
 
                                 EnhancedBirthdayField(
                                     labelValue = "Data de naixement",
                                     icon = Icons.Default.Today,
                                     dateValue = birthdayValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                            readOnly = true
                                 )
 
                                 EnhancedTextField(
                                     labelValue = "Adreça",
                                     icon = Icons.Default.LocationOn,
                                     textValue = addressValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                    readOnly = true
                                 )
 
                                 EnhancedTextField(
                                     labelValue = "Llengua",
                                     icon = Icons.Default.Language,
                                     textValue = languageValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                    readOnly = true
                                 )
 
                                 Spacer(modifier = Modifier.height(16.dp))
@@ -254,14 +259,15 @@ fun PersonalData(
                                     labelValue = "Antecedents mèdics",
                                     icon = Icons.Default.EditNote,
                                     textValue = antecedentsMedics,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                    readOnly = true
                                 )
 
                                 EnhancedMultilineField(
                                     labelValue = "Al·lèrgies",
                                     icon = Icons.Default.ReportProblem,
                                     textValue = allergiesValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
                                 )
 
                                 Spacer(modifier = Modifier.height(16.dp))
@@ -327,12 +333,17 @@ fun PersonalData(
                                         showSuccessDialog = true
                                         updateRequested = false
                                     }
+
                                     is RemoteApiMessagePatient.Error -> {
                                         dialogMessage = "No s'han modificat les dades del pacient"
                                         showErrorDialog = true
                                         updateRequested = false
                                     }
-                                    RemoteApiMessagePatient.Loading -> Log.d("Loading Update", "Loading")
+
+                                    RemoteApiMessagePatient.Loading -> Log.d(
+                                        "Loading Update",
+                                        "Loading"
+                                    )
                                 }
                             }
                         }
@@ -420,6 +431,7 @@ fun SectionHeader(text: String, fontFamily: FontFamily) {
         )
     }
 }
+
 @Composable
 fun EnhancedNumberField(
     labelValue: String,
@@ -498,11 +510,13 @@ fun EnhancedTextField(
     labelValue: String,
     icon: ImageVector,
     textValue: MutableState<String>,
-    fontFamily: FontFamily
+    fontFamily: FontFamily,
+    readOnly: Boolean = false
 ) {
     OutlinedTextField(
         value = textValue.value,
         onValueChange = { textValue.value = it },
+        readOnly = readOnly,
         label = {
             Text(
                 text = labelValue,
@@ -543,11 +557,13 @@ fun EnhancedMultilineField(
     labelValue: String,
     icon: ImageVector,
     textValue: MutableState<String>,
-    fontFamily: FontFamily
+    fontFamily: FontFamily,
+    readOnly: Boolean = false
 ) {
     OutlinedTextField(
         value = textValue.value,
         onValueChange = { textValue.value = it },
+        readOnly = readOnly,
         label = {
             Text(
                 text = labelValue,
@@ -590,11 +606,13 @@ fun EnhancedBirthdayField(
     labelValue: String,
     icon: ImageVector,
     dateValue: MutableState<String>,
-    fontFamily: FontFamily
+    fontFamily: FontFamily,
+    readOnly: Boolean = false
 ) {
     OutlinedTextField(
         value = dateValue.value,
         onValueChange = { dateValue.value = it },
+        readOnly = readOnly,
         label = {
             Text(
                 text = labelValue,
