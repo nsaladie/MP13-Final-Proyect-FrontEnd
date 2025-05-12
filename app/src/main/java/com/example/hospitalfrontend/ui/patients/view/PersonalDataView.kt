@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.*
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -100,7 +102,7 @@ fun PersonalData(
     var showErrorDialog by rememberSaveable { mutableStateOf(false) }
     var dialogMessage by rememberSaveable { mutableStateOf("") }
     val remoteApiMessage = patientRemoteViewModel.remoteApiMessage.value
-    // Actualizar los valores cuando los datos se cargan
+    // Show personal data of the database
     LaunchedEffect(patientData, dataLoaded) {
         if (dataLoaded && patientData != null) {
             nameValue.value = patientData?.name ?: ""
@@ -274,12 +276,14 @@ fun PersonalData(
                                     fontFamily = latoFont
                                 )
 
-                                EnhancedTextField(
+                                EnhancedNumberField(
                                     labelValue = "Telèfon del cuidador",
                                     icon = Icons.Default.Call,
                                     textValue = caregiverNumber,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                    maxLength = 9
                                 )
+
 
                                 Spacer(modifier = Modifier.height(24.dp))
                             }
@@ -319,12 +323,12 @@ fun PersonalData(
                             if (updateRequested) {
                                 when (remoteApiMessage) {
                                     is RemoteApiMessagePatient.Success -> {
-                                        dialogMessage = "S'han modificat les dates del pacient"
+                                        dialogMessage = "S'han modificat les dades del pacient"
                                         showSuccessDialog = true
                                         updateRequested = false
                                     }
                                     is RemoteApiMessagePatient.Error -> {
-                                        dialogMessage = "No s'han modificat les dates del pacient"
+                                        dialogMessage = "No s'han modificat les dades del pacient"
                                         showErrorDialog = true
                                         updateRequested = false
                                     }
@@ -358,7 +362,7 @@ fun SuccessDialog(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { onDismiss() },
-            title = { Text("Dates Modificats") },
+            title = { Text("Dades Modificats") },
             text = { Text(message) },
             confirmButton = {
                 Button(onClick = onDismiss) {
@@ -414,6 +418,78 @@ fun SectionHeader(text: String, fontFamily: FontFamily) {
             thickness = 1.dp,
             color = Color.LightGray
         )
+    }
+}
+@Composable
+fun EnhancedNumberField(
+    labelValue: String,
+    icon: ImageVector,
+    textValue: MutableState<String>,
+    fontFamily: FontFamily,
+    maxLength: Int = Int.MAX_VALUE
+) {
+    val isError = remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        OutlinedTextField(
+            value = textValue.value,
+            onValueChange = {
+                if (it.matches(Regex("^\\d{0,9}$"))) { // Permite hasta 9 dígitos
+                    textValue.value = it
+                    isError.value = false
+                } else {
+                    isError.value = true
+                }
+            },
+            label = {
+                Text(
+                    text = labelValue,
+                    fontFamily = fontFamily,
+                    fontSize = 14.sp
+                )
+            },
+            shape = RoundedCornerShape(16.dp),
+            leadingIcon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color.Black,
+                    modifier = Modifier.size(22.dp)
+                )
+            },
+            isError = isError.value,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color(250, 250, 250),
+                unfocusedContainerColor = Color(250, 250, 250),
+                focusedIndicatorColor = Color(151, 199, 150),
+                unfocusedIndicatorColor = Color.LightGray,
+                cursorColor = Color(151, 199, 150),
+                focusedLabelColor = Color(151, 199, 150),
+                errorIndicatorColor = Color.Red,
+                errorLabelColor = Color.Red
+            ),
+            textStyle = TextStyle(
+                fontFamily = fontFamily,
+                fontSize = 18.sp,
+                color = Color.DarkGray
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        if (isError.value && textValue.value.isNotEmpty()) {
+            Text(
+                text = "Només es permet 9 dígits",
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp, start = 16.dp)
+            )
+        }
+
     }
 }
 
