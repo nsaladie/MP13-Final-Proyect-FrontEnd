@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 fun getBloodPressureColor(systolic: Double, diastolic: Double): Color {
     return if ((systolic > SYSTOLIC_HIGH || systolic < SYSTOLIC_LOW) ||
-        (diastolic >= DIASTOLIC_HIGH || diastolic < DIASTOLIC_LOW)
+        (diastolic > DIASTOLIC_HIGH || diastolic < DIASTOLIC_LOW)
     ) Color.Red else Color.Black
 }
 
