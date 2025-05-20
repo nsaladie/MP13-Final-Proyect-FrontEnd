@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.data.remote.response.*
 import com.example.hospitalfrontend.data.remote.viewmodel.*
 import com.example.hospitalfrontend.domain.model.medication.MedicationState
@@ -122,8 +123,8 @@ fun MedicationScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     NoDataInformation(
-                        label = "No hi ha medicaments disponibles",
-                        info = "Pots crear-ne un amb el botó a la part superior dreta",
+                        labelRes = R.string.empty_medication,
+                        infoRes = R.string.create_diagnosis,
                         icon = Icons.Filled.Medication
                     )
                 }

@@ -138,7 +138,6 @@
     <string name="mobilization_decubitus_lateral_left">Lateral E</string>
     <string name="mobilization_decubitus_lateral_right">Lateral D</string>
     <string name="button_save_create">(Completi els camps obligatoris)</string>
-
     <string name="diet_date_label">Data de la dieta *</string>
     <string name="date_format_placeholder">dd-MM-YYYY</string>
     <string name="select_meal_label">Selecciona l\'àpat *</string>
@@ -157,7 +156,6 @@
     <string name="autonomous">Autònom</string>
     <string name="needs_help">Necessita ajuda</string>
     <string name="prosthesis_carrier_label">Portador de pròtesi *</string>
-
     //List care
     <string name="list_care_title">LLISTAT DE CURES</string>
     <string name="care">Cura</string>
@@ -177,5 +175,6 @@
     <string name="observation_title">Observacions</string>
     <string name="drain">Drenatge</string>
     <string name="tolerance_level">Nivell de tolerància</string>
-
+    //Medication View
+    <string name="empty_medication">No hi ha medicaments disponibles</string>
 </resources>
