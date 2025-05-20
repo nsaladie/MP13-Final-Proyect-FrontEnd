@@ -1,9 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Hospital FrontEnd</string>
-    <string name="login_title">Log In</string>
     <string name="switch_language">Switch Language</string>
     //Login
-    <string name="button_login">Login</string>
+    <string name="login_title">Login</string>
+    <string name="button_login">Sign In</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_error">ERROR: Login</string>
     <string name="error_connection">Connection Error</string>
@@ -18,14 +19,14 @@
     <string name="name">Name</string>
     <string name="date_entry">Admission Date</string>
     <string name="observation">Last Observation</string>
-    <string name="hab_empty">Bedroom empty</string>
+    <string name="hab_empty">Empty Room</string>
     <string name="obs_unavailable">Unavailable</string>
     //Menu
-    <string name="menu_title">MENU PATIENT</string>
+    <string name="menu_title">PATIENT MENU</string>
     <string name="menu_personal_data">Patient Personal Data</string>
     <string name="menu_diagnosis">Admission Diagnosis</string>
     <string name="menu_care_list">Care List</string>
-    //Dades Personals
+    //Personal Data
     <string name="dades_title">PERSONAL DATA</string>
     <string name="patient_info">Patient Information</string>
     <string name="medic_info">Medical Information</string>
@@ -105,6 +106,7 @@
     <string name="prosthesis">Wears prosthesis</string>
     <string name="shift_remarks">Shift remarks</string>
     <string name="quantity">Quantity</string>
+
     <string name="type_hygiene_required">Type of hygiene *</string>
     <string name="hygiene_option_bedridden">Bedridden</string>
     <string name="hygiene_option_partial_bed">Partial in bed</string>
@@ -177,3 +179,6 @@
     <string name="drain">Drainage</string>
     <string name="tolerance_level">Tolerance level</string>
 </resources>
+
+
+

@@ -1,5 +1,6 @@
 package com.example.hospitalfrontend.ui.cure.view
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,12 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.domain.model.medical.VitalSignState
 import com.example.hospitalfrontend.data.remote.viewmodel.PatientRemoteViewModel
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListCure
@@ -75,7 +78,7 @@ fun ListCuresScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "LLISTAT DE CURES", style = TextStyle(
+                            text = stringResource(id=R.string.list_care_title), style = TextStyle(
                                 fontSize = 30.sp,
                                 fontFamily = NunitoFontFamily,
                                 fontWeight = FontWeight.Bold,
@@ -131,8 +134,8 @@ fun ListCuresScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     NoDataInformation(
-                        label = "No hi ha cures disponibles",
-                        info = "Pots crear-ne un amb el botó a la part superior dreta",
+                        labelRes = R.string.empty_care,
+                        infoRes = R.string.create_care,
                         icon = Icons.Filled.NoteAlt
                     )
                 }
@@ -160,7 +163,6 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
     val customIconColor = Color(0xFF505050)
     val alertColor = Color(0xFFE74C3C)
     val defaultInfoColor = Color(0xFF7F8C8D)
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,7 +188,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Cura ${cure.id}",
+                    text = "${stringResource(id = R.string.care)} ${cure.id}",
                     style = TextStyle(
                         fontFamily = NunitoFontFamily,
                         fontSize = 22.sp,
@@ -223,7 +225,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
             }
 
             DetailItemWithIcon(
-                label = "Tensió Arterial",
+                labelResId = R.string.blood_pressure,
                 info = "${cure.systolicBloodPressure} mmHg/${cure.diastolicBloodPressure} mmHg",
                 icon = Icons.Filled.Favorite,
                 iconColor = getBloodPressureColor(
@@ -236,7 +238,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
             )
 
             DetailItemWithIcon(
-                label = "Freqüència Respiratòria",
+                labelResId = R.string.respiratory_rate,
                 info = "${cure.respiratoryRate} bpm",
                 icon = Icons.Filled.MonitorHeart,
                 iconColor = getRespiratoryRateColor(cure.respiratoryRate),
@@ -244,7 +246,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
             )
 
             DetailItemWithIcon(
-                label = "Pols",
+                labelResId = R.string.pulse,
                 info = cure.pulse.toString(),
                 icon = Icons.Filled.Monitor,
                 iconColor = getPulseColor(cure.pulse),
@@ -252,7 +254,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
             )
 
             DetailItemWithIcon(
-                label = "Temperatura",
+                labelResId = R.string.temperature,
                 info = "${cure.temperature} ºC",
                 icon = Icons.Filled.DeviceThermostat,
                 iconColor = getTemperatureColor(cure.temperature),
@@ -260,7 +262,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
             )
 
             DetailItemWithIcon(
-                label = "Saturació d'Oxigen",
+                labelResId = R.string.oxygen_saturation,
                 info = "${cure.oxygenSaturation} %",
                 icon = Icons.Filled.Air,
                 iconColor = getOxygenSaturationColor(cure.oxygenSaturation),
@@ -272,12 +274,13 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
 
 @Composable
 fun DetailItemWithIcon(
-    label: String,
+    @StringRes labelResId: Int,
     info: String,
     icon: ImageVector,
     iconColor: Color = Color(0xFF505050),
     infoColor: Color
 ) {
+    val label = stringResource(id = labelResId)
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,

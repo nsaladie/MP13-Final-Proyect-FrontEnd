@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.domain.model.facility.RoomWithObservation
+import com.example.hospitalfrontend.ui.login.LanguageSwitcher
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -35,7 +37,6 @@ fun HomeScreen(
 ) {
     val rooms by patientViewModel.rooms.collectAsState()
     var isLoading by remember { mutableStateOf(true) }
-    val register by patientViewModel.registers.collectAsState()
 
     LaunchedEffect(rooms) {
         if (rooms.isNotEmpty()) {
@@ -53,21 +54,25 @@ fun HomeScreen(
                         popUpTo("home") { inclusive = true }
                     }
                 }) {
-                    Text("OK")
+                    Text(text = stringResource(id = R.string.dialog_ok))
                 }
             },
-            title = { Text(text = "Error: List Room", color = Color.Red) },
-            text = { Text(text = "Failing into fetching data of list rooms") })
+            title = {
+                Text(
+                    text = stringResource(id = R.string.error_list_title),
+                    color = Color.Red
+                )
+            },
+            text = { Text(text = stringResource(id = R.string.error_list_text)) })
     }
 
     val nunitoFont = FontFamily(Font(R.font.nunito_bold))
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "LLISTAT D'HABITACIONS", style = TextStyle(
+                        text = stringResource(id = R.string.home_title), style = TextStyle(
                             fontSize = 30.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = nunitoFont,
@@ -87,31 +92,30 @@ fun HomeScreen(
             if (isLoading) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(items = rooms) { room ->
-                        RoomListItem(room, navController, patientViewModel)
+                Column(modifier = Modifier.fillMaxSize()) {
+                    LanguageSwitcher()
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(items = rooms) { room ->
+                            RoomListItem(room, navController, patientViewModel)
+                        }
                     }
                 }
             }
         }
     }
 }
-
-
 @Composable
 fun RoomListItem(
     room: RoomWithObservation, navController: NavController, patientViewModel: PatientViewModel
 ) {
     val latoFont = FontFamily(Font(R.font.lato_regular))
-
     // Specific colors as requested
     val cardColor = if (room.room!!.patient != null) Color(169, 199, 199) else Color(200, 200, 200)
     var showObservation by remember { mutableStateOf(false) }
-
     // Format date to dd/mm/yyyy if patient exists
     val formattedDate = room.room?.patient?.dateEntry?.let {
         try {
@@ -121,7 +125,6 @@ fun RoomListItem(
             it.toString()
         }
     }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -137,7 +140,6 @@ fun RoomListItem(
                     showObservation = true
                 }
             },
-
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Row(
@@ -152,40 +154,44 @@ fun RoomListItem(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "Nº HAB: ${room.room.roomNumber}", style = TextStyle(
-                        fontFamily = latoFont, fontSize = 20.sp, fontWeight = FontWeight.Bold
+                    text = "${stringResource(id = R.string.num_hab)}: ${room.room.roomNumber}",
+                    style = TextStyle(
+                        fontFamily = latoFont,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 )
-
                 Spacer(modifier = Modifier.height(8.dp))
-
                 if (room.room.patient != null) {
                     Text(
-                        text = "Nom: ${room.room.patient.name} ${room.room.patient.surname}",
+                        text = "${stringResource(id = R.string.name)}: ${room.room.patient.name} ${room.room.patient.surname}",
                         style = TextStyle(
                             fontFamily = latoFont, fontSize = 18.sp
                         )
                     )
-
                     Spacer(modifier = Modifier.height(4.dp))
-
                     Text(
-                        text = "Data d'ingrés: $formattedDate", style = TextStyle(
+                        text = "${stringResource(id = R.string.date_entry)}: $formattedDate",
+                        style = TextStyle(
                             fontFamily = latoFont, fontSize = 18.sp
                         )
                     )
                     Spacer(modifier = Modifier.height(4.dp))
+                    val unavailable = stringResource(id = R.string.obs_unavailable)
+                    val text =
+                        "${stringResource(id = R.string.observation)}: ${room.lastObservation ?: unavailable}"
                     Text(
-                        text = "Última observació: ${room.lastObservation ?: "No disponible"}",
+                        text = text,
                         style = TextStyle(
                             fontFamily = latoFont, fontSize = 18.sp, fontWeight = FontWeight.Medium
                         )
                     )
                 } else {
                     Spacer(modifier = Modifier.height(4.dp))
-
                     Text(
-                        text = "Habitació buida", color = Color.Red, style = TextStyle(
+                        text = stringResource(id = R.string.hab_empty),
+                        color = Color.Red,
+                        style = TextStyle(
                             fontFamily = latoFont, fontSize = 18.sp
                         )
                     )

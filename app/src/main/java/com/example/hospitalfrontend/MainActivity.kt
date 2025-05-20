@@ -23,11 +23,16 @@ import com.example.hospitalfrontend.ui.home.view.*
 import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
+import com.example.hospitalfrontend.utils.LanguageManager.getSavedLanguage
+import com.example.hospitalfrontend.utils.LanguageManager.setLanguage
+
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val languageCode = getSavedLanguage(this)?: "ca"
+        setLanguage(this, languageCode)
         enableEdgeToEdge()
         setContent {
             HospitalFrontEndTheme {
@@ -42,7 +47,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
