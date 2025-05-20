@@ -1,28 +1,16 @@
 package com.example.hospitalfrontend.data.api
 
-import com.example.hospitalfrontend.domain.model.user.AuxiliaryState
-import com.example.hospitalfrontend.domain.model.medical.DiagnosisRequest
-import com.example.hospitalfrontend.domain.model.medical.DiagnosisState
-import com.example.hospitalfrontend.domain.model.diet.DietTextureTypeState
-import com.example.hospitalfrontend.domain.model.diet.DietTypeState
-import com.example.hospitalfrontend.domain.model.auth.LoginAuxiliary
-import com.example.hospitalfrontend.domain.model.auth.LoginRequest
-import com.example.hospitalfrontend.domain.model.user.NurseState
+import com.example.hospitalfrontend.domain.model.diet.*
+import com.example.hospitalfrontend.domain.model.auth.*
+import com.example.hospitalfrontend.domain.model.user.*
+import com.example.hospitalfrontend.domain.model.medical.*
 import com.example.hospitalfrontend.domain.model.patient.PatientState
-import com.example.hospitalfrontend.domain.model.auth.RegisterState
+import com.example.hospitalfrontend.domain.model.medication.MedicationState
 import com.example.hospitalfrontend.domain.model.facility.RoomWithObservation
-import com.example.hospitalfrontend.domain.model.medical.VitalSignState
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Part
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface ApiService {
     @GET("nurse/{id}")
@@ -102,4 +90,8 @@ interface ApiService {
     // List of Diagnosis
     @GET("register/diagnosisList/{id}")
     suspend fun getAllDiagnosis(@Path("id") id: Int): List<DiagnosisState>
+
+    // List of Medication
+    @GET("/medication")
+    suspend fun getAllMedication(): List<MedicationState>
 }

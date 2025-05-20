@@ -20,10 +20,12 @@ import com.example.hospitalfrontend.ui.diagnosis.view.*
 import com.example.hospitalfrontend.ui.diagnosis.viewmodel.DiagnosisViewModel
 import com.example.hospitalfrontend.ui.home.view.HomeScreen
 import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
-import com.example.hospitalfrontend.ui.medication.MedicationScreen
+import com.example.hospitalfrontend.ui.medication.view.MedicationScreen
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import PersonalData
+import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListMedication
 import com.example.hospitalfrontend.ui.home.view.MenuScreen
+import com.example.hospitalfrontend.ui.medication.viewmodel.MedicationViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -36,6 +38,8 @@ fun AppNavHost(
     patientViewModel: PatientViewModel,
     diagnosisViewModel: DiagnosisViewModel,
     diagnosisRemoteViewModel: DiagnosisRemoteViewModel,
+    medicationViewModel: MedicationViewModel,
+    medicationRemoteViewModel: MedicationRemoteViewModel
 ) {
     NavHost(
         navController = navController,
@@ -82,7 +86,7 @@ fun AppNavHost(
         }
 
         composable(BottomNavItem.Medication.route) {
-            MedicationScreen(navController)
+            MedicationScreen(navController, medicationViewModel, medicationRemoteViewModel)
         }
 
         composable(BottomNavItem.Configuration.route) {

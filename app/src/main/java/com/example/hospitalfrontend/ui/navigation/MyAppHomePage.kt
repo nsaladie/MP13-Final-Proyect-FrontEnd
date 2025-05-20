@@ -13,6 +13,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.hospitalfrontend.ui.components.BottomNavigationBar
 import com.example.hospitalfrontend.ui.auxiliary.viewmodel.AuxiliaryViewModel
 import com.example.hospitalfrontend.ui.diagnosis.viewmodel.DiagnosisViewModel
+import com.example.hospitalfrontend.ui.medication.viewmodel.MedicationViewModel
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -26,6 +27,8 @@ fun MyAppHomePage() {
     val patientViewModel = remember { PatientViewModel() }
     val diagnosisViewModel = remember { DiagnosisViewModel() }
     val diagnosisRemoteViewModel = remember { DiagnosisRemoteViewModel() }
+    val medicationViewModel = remember { MedicationViewModel() }
+    val medicationRemoteViewModel = remember { MedicationRemoteViewModel() }
 
     val loginState by auxiliaryViewModel.loginState.collectAsState()
     val startDestination = if (loginState.isLogin) "home" else "login"
@@ -71,7 +74,9 @@ fun MyAppHomePage() {
                 patientRemoteViewModel = patientRemoteViewModel,
                 patientViewModel = patientViewModel,
                 diagnosisViewModel = diagnosisViewModel,
-                diagnosisRemoteViewModel = diagnosisRemoteViewModel
+                diagnosisRemoteViewModel = diagnosisRemoteViewModel,
+                medicationViewModel = medicationViewModel,
+                medicationRemoteViewModel = medicationRemoteViewModel
             )
         }
     }
