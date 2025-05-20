@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.*
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -102,6 +104,8 @@ fun PersonalData(
     var showErrorDialog by rememberSaveable { mutableStateOf(false) }
     var dialogMessage by rememberSaveable { mutableStateOf("") }
     val remoteApiMessage = patientRemoteViewModel.remoteApiMessage.value
+
+    // Show personal data of the database
     LaunchedEffect(patientData, dataLoaded) {
         if (dataLoaded && patientData != null) {
             nameValue.value = patientData?.name ?: ""
@@ -213,35 +217,40 @@ fun PersonalData(
                                     labelRes = R.string.name,
                                     icon = Icons.Default.Person,
                                     textValue = nameValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                    readOnly = true
                                 )
 
                                 EnhancedTextField(
                                     labelRes = R.string.surname,
                                     icon = Icons.Default.Person,
                                     textValue = surnameValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                    readOnly = true
                                 )
 
                                 EnhancedBirthdayField(
                                     labelRes = R.string.birthday,
                                     icon = Icons.Default.Today,
                                     dateValue = birthdayValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                            readOnly = true
                                 )
 
                                 EnhancedTextField(
                                     labelRes = R.string.address,
                                     icon = Icons.Default.LocationOn,
                                     textValue = addressValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                    readOnly = true
                                 )
 
                                 EnhancedTextField(
                                     labelRes = R.string.language,
                                     icon = Icons.Default.Language,
                                     textValue = languageValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                    readOnly = true
                                 )
 
                                 Spacer(modifier = Modifier.height(16.dp))
@@ -253,14 +262,15 @@ fun PersonalData(
                                     labelRes = R.string.medical_history,
                                     icon = Icons.Default.EditNote,
                                     textValue = antecedentsMedics,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
+                                    readOnly = true
                                 )
 
                                 EnhancedMultilineField(
                                     labelRes = R.string.allergies,
                                     icon = Icons.Default.ReportProblem,
                                     textValue = allergiesValue,
-                                    fontFamily = latoFont
+                                    fontFamily = latoFont,
                                 )
 
                                 Spacer(modifier = Modifier.height(16.dp))
@@ -281,6 +291,7 @@ fun PersonalData(
                                     textValue = caregiverNumber,
                                     fontFamily = latoFont
                                 )
+
 
                                 Spacer(modifier = Modifier.height(24.dp))
                             }
@@ -326,12 +337,17 @@ fun PersonalData(
                                         showSuccessDialog = true
                                         updateRequested = false
                                     }
+
                                     is RemoteApiMessagePatient.Error -> {
                                         dialogMessage = errorMessage
                                         showErrorDialog = true
                                         updateRequested = false
                                     }
-                                    RemoteApiMessagePatient.Loading -> Log.d("Loading Update", "Loading")
+
+                                    RemoteApiMessagePatient.Loading -> Log.d(
+                                        "Loading Update",
+                                        "Loading"
+                                    )
                                 }
                             }
                         }
@@ -421,16 +437,91 @@ fun SectionHeader(text: String, fontFamily: FontFamily) {
 }
 
 @Composable
+fun EnhancedNumberField(
+    labelValue: String,
+    icon: ImageVector,
+    textValue: MutableState<String>,
+    fontFamily: FontFamily,
+    maxLength: Int = Int.MAX_VALUE
+) {
+    val isError = remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        OutlinedTextField(
+            value = textValue.value,
+            onValueChange = {
+                if (it.matches(Regex("^\\d{0,9}$"))) { // Permite hasta 9 dígitos
+                    textValue.value = it
+                    isError.value = false
+                } else {
+                    isError.value = true
+                }
+            },
+            label = {
+                Text(
+                    text = labelValue,
+                    fontFamily = fontFamily,
+                    fontSize = 14.sp
+                )
+            },
+            shape = RoundedCornerShape(16.dp),
+            leadingIcon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color.Black,
+                    modifier = Modifier.size(22.dp)
+                )
+            },
+            isError = isError.value,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color(250, 250, 250),
+                unfocusedContainerColor = Color(250, 250, 250),
+                focusedIndicatorColor = Color(151, 199, 150),
+                unfocusedIndicatorColor = Color.LightGray,
+                cursorColor = Color(151, 199, 150),
+                focusedLabelColor = Color(151, 199, 150),
+                errorIndicatorColor = Color.Red,
+                errorLabelColor = Color.Red
+            ),
+            textStyle = TextStyle(
+                fontFamily = fontFamily,
+                fontSize = 18.sp,
+                color = Color.DarkGray
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        if (isError.value && textValue.value.isNotEmpty()) {
+            Text(
+                text = "Només es permet 9 dígits",
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp, start = 16.dp)
+            )
+        }
+
+    }
+}
+
+@Composable
 fun EnhancedTextField(
     @StringRes labelRes: Int,
     icon: ImageVector,
     textValue: MutableState<String>,
-    fontFamily: FontFamily
+    fontFamily: FontFamily,
+    readOnly: Boolean = false
 ) {
     val labelValue = stringResource(id = labelRes)
     OutlinedTextField(
         value = textValue.value,
         onValueChange = { textValue.value = it },
+        readOnly = readOnly,
         label = {
             Text(
                 text = labelValue,
@@ -471,12 +562,14 @@ fun EnhancedMultilineField(
     @StringRes labelRes: Int,
     icon: ImageVector,
     textValue: MutableState<String>,
-    fontFamily: FontFamily
+    fontFamily: FontFamily,
+    readOnly: Boolean = false
 ) {
     val labelValue = stringResource(id = labelRes)
     OutlinedTextField(
         value = textValue.value,
         onValueChange = { textValue.value = it },
+        readOnly = readOnly,
         label = {
             Text(
                 text = labelValue,
@@ -519,12 +612,14 @@ fun EnhancedBirthdayField(
     @StringRes labelRes: Int,
     icon: ImageVector,
     dateValue: MutableState<String>,
-    fontFamily: FontFamily
+    fontFamily: FontFamily,
+    readOnly: Boolean = false
 ) {
     val labelValue = stringResource(id = labelRes)
     OutlinedTextField(
         value = dateValue.value,
         onValueChange = { dateValue.value = it },
+        readOnly = readOnly,
         label = {
             Text(
                 text = labelValue,

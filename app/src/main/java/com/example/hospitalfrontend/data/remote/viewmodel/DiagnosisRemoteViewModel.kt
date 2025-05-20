@@ -26,10 +26,8 @@ class DiagnosisRemoteViewModel : ViewModel() {
 
 
     // Retrofit instance with ApiService creation for network requests
-    private val apiService: ApiService = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:8080/")
-        .addConverterFactory(GsonConverterFactory.create()).
-        build().create(ApiService::class.java)
+    private val apiService: ApiService = Retrofit.Builder().baseUrl("http://10.0.2.2:8080/")
+        .addConverterFactory(GsonConverterFactory.create()).build().create(ApiService::class.java)
 
 
     fun getDiagnosisById(patientId: Int, diagnosisViewModel: DiagnosisViewModel) {
@@ -70,8 +68,7 @@ class DiagnosisRemoteViewModel : ViewModel() {
                 )
 
                 val request = DiagnosisRequest(
-                    register = registerState,
-                    diagnosis = diagnosisData
+                    register = registerState, diagnosis = diagnosisData
                 )
                 val response = apiService.createDiagnosis(request)
 
@@ -83,6 +80,22 @@ class DiagnosisRemoteViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.d("ERROR DiagnosisCreate", e.toString())
                 remoteApiMessageDiagnosis.value = RemoteApiMessageDiagnosis.Error
+            }
+        }
+    }
+
+    fun getDiagnosisListById(patientId: Int, diagnosisViewModel: DiagnosisViewModel) {
+        viewModelScope.launch {
+            remoteApiMessageDiagnosis.value = RemoteApiMessageDiagnosis.Loading
+
+            try {
+                val response = apiService.getAllDiagnosis(patientId)
+                remoteApiMessageDiagnosis.value = RemoteApiMessageDiagnosis.SuccessList(response)
+                Log.d("Entra", "Hola")
+            } catch (e: Exception) {
+                Log.d("ERROR DiagList", e.toString())
+                diagnosisViewModel.setDiagnosisDetail(null)
+                remoteApiMessageDiagnosis.value = RemoteApiMessageDiagnosis.NotFound
             }
         }
     }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Hospital FrontEnd</string>
+    <string name="app_name">HealthNest</string>
     <string name="login_title">Log In</string>
     <string name="switch_language">Switch Language</string>
     //Login

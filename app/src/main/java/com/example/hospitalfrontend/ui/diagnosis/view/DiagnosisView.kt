@@ -4,10 +4,12 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.sharp.AccessTime
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -330,8 +332,7 @@ fun OxygenSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = diagnosisState!!.oxygenLevel.toOxygenLevelText(),
-                color = when {
+                text = diagnosisState!!.oxygenLevel.toOxygenLevelText(), color = when {
                     diagnosisState.oxygenLevel > 0 -> Color(0xFF1EA01E)
                     else -> Color(0xFFE74C3C)
                 }, fontSize = 18.sp, fontFamily = LatoFontFamily
@@ -417,8 +418,7 @@ fun NoDataInformation(@StringRes labelRes: Int, @StringRes infoRes: Int, icon: I
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = info,
-            style = TextStyle(
+            text = info, style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = LatoFontFamily,
                 color = Color.White,

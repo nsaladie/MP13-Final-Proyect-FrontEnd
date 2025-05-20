@@ -100,7 +100,7 @@ fun HomeScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(items = rooms) { room ->
-                            RoomListItem(room, navController, patientViewModel)
+                            RoomListItem(room, navController)
                         }
                     }
                 }
@@ -110,19 +110,19 @@ fun HomeScreen(
 }
 @Composable
 fun RoomListItem(
-    room: RoomWithObservation, navController: NavController, patientViewModel: PatientViewModel
+    room: RoomWithObservation, navController: NavController
 ) {
     val latoFont = FontFamily(Font(R.font.lato_regular))
     // Specific colors as requested
-    val cardColor = if (room.room!!.patient != null) Color(169, 199, 199) else Color(200, 200, 200)
+    val cardColor = if (room.room.patient != null) Color(169, 199, 199) else Color(200, 200, 200)
     var showObservation by remember { mutableStateOf(false) }
     // Format date to dd/mm/yyyy if patient exists
-    val formattedDate = room.room?.patient?.dateEntry?.let {
+    val formattedDate = room.room.patient?.dateEntry?.let {
         try {
             val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             sdf.format(it)
         } catch (e: Exception) {
-            it.toString()
+            e.toString()
         }
     }
     Card(
