@@ -178,6 +178,8 @@
     <string name="observation_title">Observations</string>
     <string name="drain">Drainage</string>
     <string name="tolerance_level">Tolerance level</string>
+    <string name="empty_medication">No medications available</string>
+
 </resources>
 
 

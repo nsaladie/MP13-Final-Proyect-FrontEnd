@@ -175,4 +175,5 @@
     <string name="observation_title">Observaciones</string>
     <string name="drain">Drenaje</string>
     <string name="tolerance_level">Nivel de tolerancia</string>
+    <string name="empty_medication">No hay medicamentos disponibles</string>
 </resources>

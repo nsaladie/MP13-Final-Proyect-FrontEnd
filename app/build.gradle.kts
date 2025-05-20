@@ -82,5 +82,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose.v277)
     implementation(libs.coil.compose.v222)
     implementation(libs.material) // o la última versión
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
 
 }
