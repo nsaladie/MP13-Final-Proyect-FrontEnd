@@ -1,6 +1,7 @@
 package com.example.hospitalfrontend.ui.home.view
 
 import androidx.compose.animation.animateContentSize
+import com.example.hospitalfrontend.R
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -27,6 +29,7 @@ import com.example.hospitalfrontend.domain.model.patient.PatientState
 import com.example.hospitalfrontend.data.remote.viewmodel.PatientRemoteViewModel
 import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
 import com.example.hospitalfrontend.ui.diagnosis.view.NunitoFontFamily
+import com.example.hospitalfrontend.ui.login.LanguageSwitcher
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 
 sealed class Screen(val route: String) {
@@ -44,16 +47,19 @@ fun MenuScreen(
     val textColor = Color(0xFF2C3E50)
     val cardColor = Color(0xFFF5F7FA)
     val accentColor = Color(0xFF3498DB)
+    val personalDataText = stringResource(id = R.string.menu_personal_data)
+    val diagnosisText = stringResource(id = R.string.menu_diagnosis)
+    val careListText = stringResource(id = R.string.menu_care_list)
 
     val menuOptions = listOf(
         Triple(
-            "Dades personals del pacient",
+            personalDataText,
             Screen.PersonalData(patientId).route,
             Icons.Outlined.Person
         ), Triple(
-            "Diagnòstic d'Ingrés", Screen.Diagnosis(patientId).route, Icons.Outlined.Description
+            diagnosisText, Screen.Diagnosis(patientId).route, Icons.Outlined.Description
         ), Triple(
-            "Llistat de cures", Screen.ListRegister(patientId).route, Icons.Outlined.MedicalServices
+            careListText, Screen.ListRegister(patientId).route, Icons.Outlined.MedicalServices
         )
     )
 
@@ -68,13 +74,13 @@ fun MenuScreen(
             isLoading = false
         }
     }
-
     Scaffold(
         containerColor = primaryColor, topBar = {
+            LanguageSwitcher()
             TopAppBar(
                 title = {
                     Text(
-                        text = "MENÚ PACIENT", style = TextStyle(
+                        text = stringResource(id = R.string.menu_title), style = TextStyle(
                             fontSize = 30.sp,
                             fontFamily = NunitoFontFamily,
                             fontWeight = FontWeight.Bold,

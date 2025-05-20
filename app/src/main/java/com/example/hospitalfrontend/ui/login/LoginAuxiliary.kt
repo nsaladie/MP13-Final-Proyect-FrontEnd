@@ -1,11 +1,17 @@
 package com.example.hospitalfrontend.ui.login
 
+import android.app.Activity
+import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.background
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -14,27 +20,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.R.color.colorText
 import com.example.hospitalfrontend.domain.model.user.AuxiliaryState
 import com.example.hospitalfrontend.data.remote.viewmodel.AuxiliaryRemoteViewModel
 import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
 import com.example.hospitalfrontend.ui.auxiliary.viewmodel.AuxiliaryViewModel
-import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
 import com.example.hospitalfrontend.ui.theme.Primary
+import com.example.hospitalfrontend.utils.LanguageManager
 
 @Composable
 fun LoginScreenAuxiliary(
@@ -56,7 +62,7 @@ fun LoginScreenAuxiliary(
 fun LoginScreenAux(
     navController: NavController,
     auxiliaryRemoteViewModel: AuxiliaryRemoteViewModel,
-    auxiliaryViewModel: AuxiliaryViewModel
+    auxiliaryViewModel: AuxiliaryViewModel,
 ) {
     Box(
         modifier = Modifier
@@ -71,6 +77,7 @@ fun LoginScreenAux(
                 .background(Color.White, shape = RoundedCornerShape(20.dp))
                 .padding(24.dp)
         ) {
+
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -80,7 +87,7 @@ fun LoginScreenAux(
 
                 // Title
                 Text(
-                    text = "INCIAR SESSIÓ",
+                    text = stringResource(id = R.string.login_title),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp),
@@ -119,6 +126,7 @@ fun LoginScreenAux(
     }
 }
 
+
 @Composable
 fun Logo() {
     androidx.compose.foundation.Image(
@@ -145,12 +153,14 @@ fun AuxiliaryForm(
     // State for controller of dialog visibility
     var showDialog by rememberSaveable { mutableStateOf(false) }
     var dialogMessage by rememberSaveable { mutableStateOf("") }
+    var dialogMessageResId by remember { mutableStateOf<Int?>(null) }
+
     //To hide the login button
     val isValid = rememberSaveable(auxiliaryId.value) {
         //trims() to remove the white space and .isNotEmpty for that isn't empty
         auxiliaryId.value.trim().isNotEmpty()
     }
-    // Statefor a validation button login
+    // State for a validation button login
     var validButton by rememberSaveable { mutableStateOf(false) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         AuxiliaryNumberInput(auxiliaryId = auxiliaryId, onValidationChanged = { valid ->
@@ -159,7 +169,7 @@ fun AuxiliaryForm(
         Spacer(modifier = Modifier.height(20.dp))
 
         Spacer(modifier = Modifier.height(50.dp))
-        SubmitButtonLogin(textId = "Accedir", inputValid = isValid)
+        SubmitButtonLogin(textId = stringResource(id = R.string.button_login), inputValid = isValid)
         {
             val id = auxiliaryId.value.trim().toIntOrNull()
             if (id != null) {
@@ -172,14 +182,16 @@ fun AuxiliaryForm(
                 onDismissRequest = { showDialog = false },
                 confirmButton = {
                     TextButton(onClick = { showDialog = false }) {
-                        Text("OK")
+                        Text(text = stringResource(id = R.string.dialog_ok)) //'OK'
                     }
                 },
                 title = {
-                    Text(text = "ERROR: Login")
+                    Text(text = stringResource(id = R.string.dialog_error)) //text = "ERROR: Login"
                 },
                 text = {
-                    Text(text = dialogMessage)
+                    dialogMessageResId?.let {
+                        Text(text = stringResource(id = it))
+                    } ?: Text(text = dialogMessage)
                 }
             )
         }
@@ -192,7 +204,7 @@ fun AuxiliaryForm(
                 }
 
                 is RemoteApiMessageAuxiliary.Error -> {
-                    dialogMessage = "Error a la connexió"
+                    dialogMessageResId = R.string.connection_error
                     showDialog = true
                 }
 
@@ -201,6 +213,99 @@ fun AuxiliaryForm(
             }
         }
     }
+}
+
+
+@Composable
+fun LanguageSwitcher() {
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier
+        .wrapContentSize(Alignment.TopEnd)
+        .padding(4.dp)
+    ) {
+        IconButton(
+            onClick = { expanded = true },
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color.LightGray.copy(alpha = 0.2f))
+        ) {
+            Icon(
+                imageVector = Icons.Default.Language,
+                contentDescription = stringResource(id = R.string.switch_language),
+                tint = colorResource(id = colorText)
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .background(Color.White)
+                .width(150.dp)
+        ) {
+            // Obtenemos el idioma actual del sistema
+            val currentLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                context.resources.configuration.locales.get(0)
+            } else {
+                context.resources.configuration.locale
+            }
+            val currentLanguage = currentLocale.language
+
+            LanguageMenuItem("Català", "ca", currentLanguage) {
+                LanguageManager.setLanguage(context, "ca")
+                expanded = false
+                (context as? Activity)?.recreate()
+            }
+
+            LanguageMenuItem("English", "en", currentLanguage) {
+                LanguageManager.setLanguage(context, "en")
+                expanded = false
+                (context as? Activity)?.recreate()
+            }
+
+            LanguageMenuItem("Español", "es", currentLanguage) {
+                LanguageManager.setLanguage(context, "es")
+                expanded = false
+                (context as? Activity)?.recreate()
+            }
+        }
+    }
+}
+@Composable
+fun LanguageMenuItem(
+    text: String,
+    languageCode: String,
+    currentLanguage: String,
+    onClick: () -> Unit
+) {
+    val isSelected = currentLanguage == languageCode
+
+    DropdownMenuItem(
+        text = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = text,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isSelected) Primary else colorResource(id = colorText)
+                )
+                if (isSelected) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint = Primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+        },
+        onClick = onClick
+    )
 }
 
 @Composable
@@ -244,14 +349,13 @@ fun SubmitButtonLogin(textId: String, inputValid: Boolean, onClick: () -> Unit) 
 @Composable
 fun AuxiliaryNumberInput(
     auxiliaryId: MutableState<String>,
-    labelId: String = "Número",
     onValidationChanged: (Boolean) -> Unit
 ) {
     val latoFont = FontFamily(Font(R.font.lato_regular))
-
+    val labelText = stringResource(id = R.string.aux_number_label)
     InputFieldAuxiliar(
         valueState = auxiliaryId,
-        labelId = labelId,
+        labelId = labelText,
         keyboardType = KeyboardType.Number,
         textStyle = TextStyle(fontFamily = latoFont, fontSize = 18.sp),
         onValidationChanged = onValidationChanged
@@ -307,24 +411,12 @@ fun InputFieldAuxiliar(
         )
         if (showError) {
             Text(
-                text = "Si us plau introduïu el vostre número d'auxiliar",
+                text = stringResource(id = R.string.regex),
                 color = Color.Red,
                 fontFamily = LatoFontFamily,
                 style = TextStyle(fontSize = 16.sp),
                 modifier = Modifier.padding(start = 16.dp, top = 4.dp)
             )
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewLoginAuxiliar() {
-    val navController = rememberNavController()
-    val auxiliaryRemoteViewModel = AuxiliaryRemoteViewModel()
-    val auxiliaryViewModel = AuxiliaryViewModel()
-    HospitalFrontEndTheme {
-        LoginScreenAuxiliary(navController, auxiliaryRemoteViewModel, auxiliaryViewModel)
     }
 }

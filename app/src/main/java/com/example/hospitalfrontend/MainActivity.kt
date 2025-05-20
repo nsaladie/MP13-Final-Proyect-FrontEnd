@@ -12,13 +12,18 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.*
 import com.example.hospitalfrontend.ui.navigation.MyAppHomePage
 import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
+import com.example.hospitalfrontend.utils.LanguageManager.getSavedLanguage
+import com.example.hospitalfrontend.utils.LanguageManager.setLanguage
+
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val languageCode = getSavedLanguage(this)?: "ca"
+        setLanguage(this, languageCode)
         enableEdgeToEdge()
-
+        
         // Hide system navigation bar
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars())

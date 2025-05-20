@@ -1,6 +1,7 @@
 package com.example.hospitalfrontend.ui.cure.view
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -16,6 +17,8 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.input.KeyboardType
@@ -137,18 +140,20 @@ fun CreateCureScreen(
 
         vitalSignsValid && dietValid && hygieneValid && drainValid && mobilizationValid
     }
-
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             HospitalTopAppBar(
-                title = "CREAR NOVA CURA", onCloseClick = { navController.popBackStack() })
+                title = stringResource(id = R.string.create_care_title),
+                onCloseClick = { navController.popBackStack() })
         }, bottomBar = {
             HospitalBottomBar(
-                text = "Desar canvis",
+                text = stringResource(id = R.string.button_save_changes),
                 isEnabled = isFormValid,
                 fontFamily = HospitalTheme.latoBoldFont
             ) {
-                val outOfRange = getVitalSignOutOfRangeMessages(vitalSignState)
+                val outOfRange = getVitalSignOutOfRangeMessages(context, vitalSignState)
+
                 if (outOfRange.isNotEmpty()) {
                     outOfRangeMessages = outOfRange
                     showOutOfRangeDialog = true
@@ -191,7 +196,10 @@ fun CreateCureScreen(
                 VitalSignsCard(onVitalSignStateChange = { vitalSignState = it })
                 Spacer(modifier = Modifier.height(20.dp))
 
-                FormSection(title = "Dieta", icon = Icons.Outlined.Restaurant) {
+                FormSection(
+                    title = stringResource(id = R.string.diet),
+                    icon = Icons.Outlined.Restaurant
+                ) {
                     DietSection(
                         dietState = dietState,
                         onDietStateChange = { dietState = it },
@@ -199,19 +207,31 @@ fun CreateCureScreen(
                     )
                 }
 
-                FormSection(title = "Drenatges", icon = Icons.Outlined.MedicalServices) {
+                FormSection(
+                    title = stringResource(id = R.string.drain),
+                    icon = Icons.Outlined.MedicalServices
+                ) {
                     DrainSection(onDrainStateChange = { drainState = it })
                 }
 
-                FormSection(title = "Higiene", icon = Icons.Outlined.CleanHands) {
+                FormSection(
+                    title = stringResource(id = R.string.hygiene),
+                    icon = Icons.Outlined.CleanHands
+                ) {
                     HygieneSelection(onHygieneStateChange = { hygieneState = it })
                 }
 
-                FormSection(title = "Mobilitzacions", icon = Icons.Outlined.AccessibilityNew) {
+                FormSection(
+                    title = stringResource(id = R.string.mobilization),
+                    icon = Icons.Outlined.AccessibilityNew
+                ) {
                     MobilizationSection(onMobilizationStateChange = { mobilizationState = it })
                 }
 
-                FormSection(title = "Observacions", icon = Icons.Outlined.ContentPasteGo) {
+                FormSection(
+                    title = stringResource(id = R.string.observation_title),
+                    icon = Icons.Outlined.ContentPasteGo
+                ) {
                     ObservationsField(
                         value = observation, onValueChange = { observation = it })
                 }
@@ -219,18 +239,20 @@ fun CreateCureScreen(
                 Spacer(modifier = Modifier.height(80.dp))
             }
         }
+        val successMessage = stringResource(R.string.cure_created_successfully)
+        val errorMessage = stringResource(R.string.cure_creation_error)
 
         LaunchedEffect(remoteApiMessage) {
             when (remoteApiMessage) {
                 is RemoteApiMessageBoolean.Success -> {
-                    dialogMessage = "Nova cura creada correctament"
+                    dialogMessage = successMessage
                     showSuccessDialog = true
                     patientRemoteViewModel.clearApiMessage()
                 }
 
                 is RemoteApiMessageBoolean.Error -> {
                     dialogMessage =
-                        "Hi ha hagut una error en la creació de la nova cura, si us plau intenta-ho de nou"
+                        errorMessage
                     showErrorDialog = true
                     patientRemoteViewModel.clearApiMessage()
                 }
@@ -245,14 +267,14 @@ fun CreateCureScreen(
         if (showSuccessDialog) {
             HospitalAlertDialog(
                 onDismissRequest = { showSuccessDialog = false },
-                title = "Èxit",
+                title = stringResource(id = R.string.success),
                 text = dialogMessage,
                 confirmButton = {
                     Button(onClick = {
                         showSuccessDialog = false
                         navController.popBackStack()
                     }) {
-                        Text("Acceptar")
+                        Text(stringResource(id = R.string.accept))
                     }
                 })
         }
@@ -260,18 +282,18 @@ fun CreateCureScreen(
         if (showErrorDialog) {
             HospitalAlertDialog(
                 onDismissRequest = { showErrorDialog = false },
-                title = "Error",
+                title = stringResource(id = R.string.error_title),
                 text = dialogMessage,
                 confirmButton = {
                     Button(onClick = { showErrorDialog = false }) {
-                        Text("Acceptar")
+                        Text(stringResource(id = R.string.accept))
                     }
                 })
         }
         if (showOutOfRangeDialog) {
             HospitalAlertDialog(
                 onDismissRequest = { showOutOfRangeDialog = false },
-                title = "Signes vitals fora de rang",
+                title = stringResource(id = R.string.dialog_title_range),
                 text = outOfRangeMessages.joinToString("\n"),
                 confirmButton = {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -297,10 +319,10 @@ fun CreateCureScreen(
                             )
                             patientRemoteViewModel.createCure(register)
                         }) {
-                            Text("Sí, continuar")
+                            Text(stringResource(id = R.string.button_continue))
                         }
                         TextButton(onClick = { showOutOfRangeDialog = false }) {
-                            Text("Cancel·lar")
+                            Text(stringResource(id = R.string.button_cancel))
                         }
                     }
                 }
@@ -308,31 +330,43 @@ fun CreateCureScreen(
         }
     }
 }
-fun getVitalSignOutOfRangeMessages(vitals: VitalSignState): List<String> {
+
+fun getVitalSignOutOfRangeMessages(context: Context, vitals: VitalSignState): List<String> {
     val messages = mutableListOf<String>()
 
     if (vitals.systolicBloodPressure < SYSTOLIC_LOW || vitals.systolicBloodPressure > SYSTOLIC_HIGH) {
-        messages.add("Pressió sistòlica fora de rang (${vitals.systolicBloodPressure} mmHg)")
+        messages.add(
+            context.getString(R.string.systolic_pressure_range, vitals.systolicBloodPressure)
+        )
     }
     if (vitals.diastolicBloodPressure < DIASTOLIC_LOW || vitals.diastolicBloodPressure > DIASTOLIC_HIGH) {
-        messages.add("Pressió diastòlica fora de rang (${vitals.diastolicBloodPressure}mmHg)")
+        messages.add(
+            context.getString(R.string.diastolic_pressure_range, vitals.diastolicBloodPressure)
+        )
     }
     if (vitals.respiratoryRate < RESPIRATORY_RATE_LOW || vitals.respiratoryRate > RESPIRATORY_RATE_HIGH) {
-        messages.add("Freqüència respiratòria fora de rang (${vitals.respiratoryRate}x')")
+        messages.add(
+            context.getString(R.string.respiratory_rate_range, vitals.respiratoryRate)
+        )
     }
     if (vitals.pulse < PULSE_LOW || vitals.pulse > PULSE_HIGH) {
-        messages.add("Pols fora de rang (${vitals.pulse}x')")
+        messages.add(
+            context.getString(R.string.pulse_range, vitals.pulse)
+        )
     }
     if (vitals.temperature < TEMPERATURE_LOW || vitals.temperature > TEMPERATURE_HIGH) {
-        messages.add("Temperatura fora de rang (${vitals.temperature}ºC)")
+        messages.add(
+            context.getString(R.string.temperature_range, vitals.temperature)
+        )
     }
     if (vitals.oxygenSaturation < OXYGEN_SATURATION_LOW) {
-        messages.add("Saturació d'oxigen baixa (${vitals.oxygenSaturation}%)")
+        messages.add(
+            context.getString(R.string.oxygen_saturation_range, vitals.oxygenSaturation)
+        )
     }
 
     return messages
 }
-
 
 
 @Composable
@@ -552,7 +586,10 @@ fun VitalSignsCard(onVitalSignStateChange: (VitalSignState) -> Unit) {
                 .padding(24.dp)
                 .fillMaxWidth()
         ) {
-            VitalSignsHeader(title = "Constants Vitals", icon = Icons.Outlined.MonitorHeart)
+            VitalSignsHeader(
+                title = stringResource(id = R.string.vital_signs),
+                icon = Icons.Outlined.MonitorHeart
+            )
 
             Column(
                 modifier = Modifier
@@ -562,7 +599,7 @@ fun VitalSignsCard(onVitalSignStateChange: (VitalSignState) -> Unit) {
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Tensió Arterial *", style = TextStyle(
+                    text = stringResource(id = R.string.blood_pressure_required), style = TextStyle(
                         fontSize = 20.sp,
                         fontFamily = NunitoFontFamily,
                         fontWeight = FontWeight.Medium,
@@ -577,7 +614,7 @@ fun VitalSignsCard(onVitalSignStateChange: (VitalSignState) -> Unit) {
                     VitalSignNumberField(
                         value = systolic,
                         onValueChange = { systolic = validateDecimal(it, systolic) },
-                        label = "Sistólica",
+                        label = stringResource(id = R.string.systolic),
                         placeholder = "mmHg",
                         modifier = Modifier.weight(1f)
                     )
@@ -585,7 +622,7 @@ fun VitalSignsCard(onVitalSignStateChange: (VitalSignState) -> Unit) {
                     VitalSignNumberField(
                         value = diastolic,
                         onValueChange = { diastolic = validateDecimal(it, diastolic) },
-                        label = "Diastólica",
+                        label = stringResource(id = R.string.diastolic),
                         placeholder = "mmHg",
                         modifier = Modifier.weight(1f)
                     )
@@ -595,28 +632,28 @@ fun VitalSignsCard(onVitalSignStateChange: (VitalSignState) -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             VitalSignMeasurementField(
-                label = "Freqüència Respiratòria *",
+                label = stringResource(id = R.string.respiratory_rate_required),
                 value = respiratoryRate,
                 onValueChange = { respiratoryRate = validateDecimal(it, respiratoryRate) },
                 unit = "x'"
             )
 
             VitalSignMeasurementField(
-                label = "Pols *",
+                label = stringResource(id = R.string.pulse_required),
                 value = pulse,
                 onValueChange = { pulse = validateDecimal(it, pulse) },
                 unit = "x'"
             )
 
             VitalSignMeasurementField(
-                label = "Temperatura *",
+                label = stringResource(id = R.string.temperature_required),
                 value = temperature,
                 onValueChange = { temperature = validateDecimal(it, temperature) },
                 unit = "°C"
             )
 
             VitalSignMeasurementField(
-                label = "Saturació O₂ *",
+                label = stringResource(id = R.string.oxygen_saturation_required),
                 value = oxygenSaturation,
                 onValueChange = { oxygenSaturation = validateDecimal(it, oxygenSaturation) },
                 unit = "%"
@@ -629,7 +666,7 @@ fun VitalSignsCard(onVitalSignStateChange: (VitalSignState) -> Unit) {
             )
 
             Text(
-                text = "Mesures Addicionals", style = TextStyle(
+                text = stringResource(id = R.string.additional_measures), style = TextStyle(
                     fontSize = 20.sp,
                     fontFamily = NunitoFontFamily,
                     color = HospitalTheme.TextPrimary
@@ -637,21 +674,21 @@ fun VitalSignsCard(onVitalSignStateChange: (VitalSignState) -> Unit) {
             )
 
             VitalSignMeasurementField(
-                label = "Volum d'orina",
+                label = stringResource(id = R.string.urine_volume),
                 value = urineVolume,
                 onValueChange = { urineVolume = validateDecimal(it, urineVolume) },
                 unit = "mL"
             )
 
             VitalSignMeasurementField(
-                label = "Moviments intestinals",
+                label = stringResource(id = R.string.bowel_movements),
                 value = bowelMovements,
                 onValueChange = { bowelMovements = validateDecimal(it, bowelMovements) },
                 unit = "mL"
             )
 
             VitalSignMeasurementField(
-                label = "Terapia amb sèrum",
+                label = stringResource(id = R.string.serum_therapy),
                 value = serumTherapy,
                 onValueChange = { serumTherapy = validateDecimal(it, serumTherapy) },
                 unit = "mL"
@@ -778,23 +815,28 @@ fun DrainSection(onDrainStateChange: (DrainState) -> Unit) {
             .padding(vertical = 8.dp)
     ) {
         HospitalTextField(
-            label = "Tipus de Drenatge *",
+            label = stringResource(id = R.string.drain_type),
             value = drainType,
             onValueChange = { drainType = it },
-            placeholder = "Ex: Penrose, Jackson-Pratt..."
+            placeholder = stringResource(id = R.string.drain_type_ex)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        HospitalTextField(label = "Quantitat de Dèbit *", value = drainOutput, onValueChange = {
-            drainOutput = it
-        }, placeholder = "mL", trailingIcon = {
-            Text(
-                text = "mL", style = TextStyle(
-                    fontSize = 16.sp, color = HospitalTheme.TextSecondary
-                ), modifier = Modifier.padding(end = 12.dp)
-            )
-        })
+        HospitalTextField(
+            label = stringResource(id = R.string.debit_quantity),
+            value = drainOutput,
+            onValueChange = {
+                drainOutput = it
+            },
+            placeholder = "mL",
+            trailingIcon = {
+                Text(
+                    text = "mL", style = TextStyle(
+                        fontSize = 16.sp, color = HospitalTheme.TextSecondary
+                    ), modifier = Modifier.padding(end = 12.dp)
+                )
+            })
 
         LaunchedEffect(drainType, drainOutput) {
             val drainState = DrainState(
@@ -970,11 +1012,16 @@ fun EnhancedRadioButton(
 
 @Composable
 fun HygieneSelection(onHygieneStateChange: (HygieneState) -> Unit) {
-    val options = listOf("Allitat", "Parcial al llit", "Dutxa amb ajuda", "Autònom")
+    val options = listOf(
+        stringResource(id = R.string.hygiene_option_bedridden),
+        stringResource(id = R.string.hygiene_option_partial_bed),
+        stringResource(id = R.string.hygiene_option_helped_shower),
+        stringResource(id = R.string.hygiene_option_autonomous)
+    )
     var selectedOption by rememberSaveable { mutableStateOf("") }
 
     EnhancedRadioGroup(
-        title = "Tipus d'higiene *",
+        title = stringResource(id = R.string.type_hygiene_required),
         options = options,
         selectedOption = selectedOption,
         onOptionSelected = {
@@ -992,6 +1039,7 @@ fun MobilizationSection(onMobilizationStateChange: (MobilizationState) -> Unit) 
     var assisDesc by rememberSaveable { mutableStateOf("") }
     var changes by rememberSaveable { mutableStateOf("") }
     var decubitus by rememberSaveable { mutableStateOf("") }
+    val withHelp = stringResource(R.string.mobilization_walking_with_help)
 
     Column(
         modifier = Modifier
@@ -999,30 +1047,40 @@ fun MobilizationSection(onMobilizationStateChange: (MobilizationState) -> Unit) 
             .padding(vertical = 8.dp)
     ) {
         HospitalTextField(
-            label = "Sedestació *", value = sedestation, onValueChange = { newValue ->
+            label = stringResource(R.string.mobilization_sedestation_label),
+            value = sedestation,
+            onValueChange = { newValue ->
                 if (newValue.isEmpty() || newValue.matches(Regex("^[0-9]+$"))) {
                     sedestation = newValue
                 }
-            }, placeholder = "Introdueix un valor entre 1 i 10",
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            },
+            placeholder = stringResource(R.string.mobilization_sedestation_placeholder)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         EnhancedRadioGroup(
-            title = "Deambulació *",
-            options = listOf("Sense ajuda", "Amb ajuda"),
+            title = stringResource(R.string.mobilization_walking_title),
+            options = listOf(
+                stringResource(R.string.mobilization_walking_no_help),
+                stringResource(R.string.mobilization_walking_with_help)
+            ),
             selectedOption = walkingAssis,
             onOptionSelected = {
                 walkingAssis = it
-                assisDesc = if (it == "Amb ajuda") assisDesc else ""
+                assisDesc =
+                    if (it == withHelp) assisDesc else ""
             }) {
             // Only show assistance options when "Amb ajuda" is selected
-            if (walkingAssis == "Amb ajuda") {
+            if (walkingAssis == stringResource(R.string.mobilization_walking_with_help)) {
                 Spacer(modifier = Modifier.height(12.dp))
                 EnhancedRadioGroup(
-                    title = "Tipus d'ajuda:",
-                    options = listOf("Bastó", "Caminador", "Ajuda Física"),
+                    title = stringResource(R.string.mobilization_help_type_title),
+                    options = listOf(
+                        stringResource(R.string.mobilization_help_type_cane),
+                        stringResource(R.string.mobilization_help_type_walker),
+                        stringResource(R.string.mobilization_help_type_physical)
+                    ),
                     selectedOption = assisDesc,
                     onOptionSelected = { assisDesc = it },
                     haveBorder = false,
@@ -1034,29 +1092,34 @@ fun MobilizationSection(onMobilizationStateChange: (MobilizationState) -> Unit) 
         Spacer(modifier = Modifier.height(16.dp))
 
         HospitalTextField(
-            label = "Canvis Posturals *", value = changes, onValueChange = { newValue ->
+            label = stringResource(R.string.mobilization_changes_label),
+            value = changes,
+            onValueChange = { newValue ->
                 if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
                     changes = newValue
                 }
-            }, placeholder = "Quantitat",
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            },
+            placeholder = stringResource(R.string.mobilization_changes_placeholder)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         EnhancedRadioGroup(
-            title = "Decúbits *",
-            options = listOf("Supí", "Lateral E", "Lateral D"),
+            title = stringResource(R.string.mobilization_decubitus_title),
+            options = listOf(
+                stringResource(R.string.mobilization_decubitus_supine),
+                stringResource(R.string.mobilization_decubitus_lateral_left),
+                stringResource(R.string.mobilization_decubitus_lateral_right)
+            ),
             selectedOption = decubitus,
             onOptionSelected = { decubitus = it })
     }
-
     // Update state when any field changes
     LaunchedEffect(sedestation, walkingAssis, assisDesc, changes, decubitus) {
         val mobilizationState = MobilizationState(
             sedestation = sedestation.toIntOrNull(),
             walkingAssis = if (walkingAssis.isNotEmpty()) {
-                if (walkingAssis == "Amb ajuda") 1 else 0
+                if (walkingAssis == withHelp) 1 else 0
             } else {
                 null
             },
@@ -1169,7 +1232,7 @@ fun DietSection(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         HospitalTextField(
-            label = "Data de la dieta *",
+            label = stringResource(id = R.string.diet_date_label),
             value = dateMeal,
             onValueChange = { newValue ->
                 if (newValue.isEmpty() || newValue.matches(Regex("""^\d{1,2}$""")) ||
@@ -1187,14 +1250,19 @@ fun DietSection(
                     }
                 }
             },
-            placeholder = "dd-MM-YYYY",
+            placeholder = stringResource(id = R.string.date_format_placeholder),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         EnhancedRadioGroup(
-            title = "Selecciona el menjar *",
-            options = listOf("Esmorzar", "Dinar", "Sopar"),
+            title = stringResource(id = R.string.select_meal_label),
+            options = listOf(
+                stringResource(id = R.string.breakfast),
+                stringResource(id = R.string.lunch),
+                stringResource(id = R.string.dinner)
+            ),
             selectedOption = selectedMeal.toString(),
             onOptionSelected = { selectedMeal = it })
 
@@ -1202,7 +1270,7 @@ fun DietSection(
 
         // Diet texture selection
         Text(
-            text = "Tipus de textura *", style = TextStyle(
+            text =  stringResource(id = R.string.texture_type_label), style = TextStyle(
                 fontSize = 20.sp,
                 fontFamily = NunitoFontFamily,
                 fontWeight = FontWeight.Medium,
@@ -1247,7 +1315,7 @@ fun DietSection(
                         .padding(16.dp), contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Textures de dietas no disponibles",
+                        text = stringResource(id = R.string.diet_textures_not_available),
                         style = TextStyle(color = HospitalTheme.Error)
                     )
                 }
@@ -1263,7 +1331,7 @@ fun DietSection(
                         readOnly = true,
                         placeholder = {
                             Text(
-                                "Selecciona un tipus de textura",
+                                stringResource(id = R.string.select_texture_type),
                                 color = HospitalTheme.TextSecondary.copy(alpha = 0.6f)
                             )
                         },
@@ -1353,7 +1421,7 @@ fun DietSection(
 
         // Diet texture selection
         Text(
-            text = "Tipus de dieta *", style = TextStyle(
+            text = stringResource(id = R.string.diet_type_label), style = TextStyle(
                 fontSize = 20.sp,
                 fontFamily = NunitoFontFamily,
                 fontWeight = FontWeight.Medium,
@@ -1383,7 +1451,7 @@ fun DietSection(
                         .padding(16.dp), contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Tipus de dietas no disponibles",
+                        text =  stringResource(id = R.string.diet_types_not_available),
                         style = TextStyle(color = HospitalTheme.Error)
                     )
                 }
@@ -1400,7 +1468,7 @@ fun DietSection(
                         readOnly = true,
                         placeholder = {
                             Text(
-                                "Selecciona un tipus de dieta",
+                                stringResource(id = R.string.select_diet_type),
                                 color = HospitalTheme.TextSecondary.copy(alpha = 0.6f)
                             )
                         },
@@ -1533,19 +1601,22 @@ fun DietSection(
         Spacer(modifier = Modifier.height(16.dp))
 
         EnhancedRadioGroup(
-            title = "Autonomia del paciente *",
-            options = listOf("Autònom", "Ayuda"),
+            title = stringResource(id = R.string.patient_autonomy_label),
+            options = listOf( stringResource(id = R.string.autonomous),
+                stringResource(id = R.string.needs_help)),
             selectedOption = selectIndependent,
             onOptionSelected = { selectIndependent = it })
 
         Spacer(modifier = Modifier.height(16.dp))
 
         EnhancedRadioGroup(
-            title = "Portador de prótesis *",
-            options = listOf("Sí", "No"),
+            title = stringResource(id = R.string.prosthesis_carrier_label),
+            options = listOf( stringResource(id = R.string.yes),
+                stringResource(id = R.string.no)),
             selectedOption = selectedProsthesis,
             onOptionSelected = { selectedProsthesis = it })
-
+        val needHelp = stringResource(R.string.needs_help)
+        val yes = stringResource(id = R.string.yes)
         // Update state when any relevant field changes
         LaunchedEffect(
             date,
@@ -1573,12 +1644,12 @@ fun DietSection(
                     null
                 },
                 independent = if (selectIndependent.isNotEmpty()) {
-                    if (selectIndependent == "Ayuda") 1 else 0
+                    if (selectIndependent == needHelp) 1 else 0
                 } else {
                     null
                 },
                 prosthesis = if (selectedProsthesis.isNotEmpty()) {
-                    if (selectedProsthesis == "Sí") 1 else 0
+                    if (selectedProsthesis == yes) 1 else 0
                 } else {
                     null
                 }
@@ -1638,7 +1709,7 @@ fun EnhancedSaveButton(
 
         AnimatedVisibility(visible = !isEnabled) {
             Text(
-                text = "(Completi els camps obligatoris)", style = TextStyle(
+                text = stringResource(id = R.string.button_save_create), style = TextStyle(
                     fontSize = 14.sp, fontFamily = fontFamily
                 ), modifier = Modifier.padding(start = 8.dp)
             )

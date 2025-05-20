@@ -1,5 +1,6 @@
 package com.example.hospitalfrontend.ui.diagnosis.view
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -97,55 +99,49 @@ fun DiagnosisScreen(
     }
 
 
-    Scaffold(containerColor = customPrimaryColor, floatingActionButton = {
-        FloatingActionButton(
-            onClick = {
-                navController.navigate("diagnosisHistory/$patientId")
-            }, modifier = Modifier.padding(16.dp), shape = CircleShape
-        ) {
-            Icon(Icons.Sharp.AccessTime, contentDescription = "See diagnosis history")
-        }
-    }, topBar = {
-        TopAppBar(
-            title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "DIAGNÒSTIC", style = TextStyle(
-                        fontSize = 30.sp,
-                        fontFamily = NunitoFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        textAlign = TextAlign.Center
-                    ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
-                )
-            }
-        }, navigationIcon = {
-            IconButton(onClick = {
-                diagnosisRemoteViewModel.clearApiMessage()
-                navController.popBackStack()
-            }) {
-                Icon(
-                    Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
-                )
-            }
-        }, colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
-        ), actions = {
-            IconButton(onClick = {
-                diagnosisRemoteViewModel.clearApiMessage()
-                navController.navigate("createDiagnosis/$patientId")
-            }) {
-                Icon(
-                    Icons.Filled.LocalHospital,
-                    contentDescription = "Diagnòstic",
-                    tint = Color.Black,
-                    modifier = Modifier.padding(end = 16.dp)
-                )
-            }
-        })
-    }) { paddingValues ->
+    Scaffold(
+        containerColor = customPrimaryColor, topBar = {
+            TopAppBar(
+                title = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.diagnosis_title), style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = NunitoFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                                textAlign = TextAlign.Center
+                            ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                        )
+                    }
+                }, navigationIcon = {
+                    IconButton(onClick = {
+                        diagnosisRemoteViewModel.clearApiMessage()
+                        navController.popBackStack()
+                    }) {
+                        Icon(
+                            Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
+                        )
+                    }
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
+                ), actions = {
+                    IconButton(onClick = {
+                        diagnosisRemoteViewModel.clearApiMessage()
+                        navController.navigate("createDiagnosis/$patientId")
+                    }) {
+                        Icon(
+                            Icons.Filled.LocalHospital,
+                            contentDescription = "Diagnòstic",
+                            tint = Color.Black,
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+                    }
+                })
+        }) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -162,8 +158,8 @@ fun DiagnosisScreen(
 
                 diagnosisState == null -> {
                     NoDataInformation(
-                        label = "No hi ha cap diagnòstic disponible",
-                        info = "Pots crear-ne un amb el botó a la part superior dreta",
+                        labelRes = R.string.empty_diagnosis,
+                        infoRes = R.string.create_diagnosis,
                         icon = Icons.Filled.NoteAlt
                     )
                 }
@@ -210,7 +206,7 @@ fun DiagnosisDetailsCard(diagnosisState: DiagnosisState?) {
         ) {
             diagnosisState?.dependencyLevel?.let {
                 DetailItemWithIcon(
-                    label = "Grau de dependència",
+                    labelRes = R.string.dependency_level,
                     info = it,
                     icon = Icons.Filled.Accessibility,
                     iconColor = customIconColor,
@@ -227,7 +223,7 @@ fun DiagnosisDetailsCard(diagnosisState: DiagnosisState?) {
 
             diagnosisState?.urinaryCatheter?.let {
                 DetailItemWithIcon(
-                    label = "Vesical",
+                    labelRes = R.string.urinary,
                     info = it,
                     icon = Icons.Filled.Water,
                     iconColor = customIconColor,
@@ -236,7 +232,7 @@ fun DiagnosisDetailsCard(diagnosisState: DiagnosisState?) {
 
             diagnosisState?.rectalCatheter?.let {
                 DetailItemWithIcon(
-                    label = "Rectal",
+                    labelRes = R.string.rectal,
                     info = it,
                     icon = Icons.Filled.Medication,
                     iconColor = customIconColor,
@@ -245,7 +241,7 @@ fun DiagnosisDetailsCard(diagnosisState: DiagnosisState?) {
 
             diagnosisState?.nasogastricTube?.let {
                 DetailItemWithIcon(
-                    label = "Nasogàstrica",
+                    labelRes = R.string.nasogastric,
                     info = it,
                     icon = Icons.Filled.HealthAndSafety,
                     iconColor = customIconColor,
@@ -266,7 +262,9 @@ fun DiapersSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Bolquer", style = TextStyle(
+            text = stringResource(
+                id = R.string.bolquer
+            ), style = TextStyle(
                 fontFamily = NunitoFontFamily,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -293,13 +291,13 @@ fun DiapersSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
         diagnosisState?.diapers?.let { diaper ->
             if (diaper) {
                 DetailItemWithIcon(
-                    label = "Número de canvis",
+                    labelRes = R.string.number_changes,
                     info = diagnosisState.totalChangesDiapers.toString(),
                     icon = Icons.Filled.Replay,
                     iconColor = Color(0xFF505050),
                 )
                 DetailItemWithIcon(
-                    label = "Estat de la pell",
+                    labelRes = R.string.skin_status,
                     info = diagnosisState.detailDescription,
                     icon = Icons.Filled.Healing,
                     iconColor = Color(0xFF505050),
@@ -320,7 +318,7 @@ fun OxygenSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Oxigen", style = TextStyle(
+            text = stringResource(id = R.string.oxygen), style = TextStyle(
                 fontFamily = NunitoFontFamily,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -343,7 +341,7 @@ fun OxygenSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
 
         if (diagnosisState?.oxygenLevel != null && diagnosisState.oxygenLevel > 0) {
             DetailItemWithIcon(
-                label = "Tipus",
+                labelRes = R.string.type,
                 info = diagnosisState.oxygenLevelDescription,
                 icon = Icons.Filled.Science,
                 iconColor = Color(0xFF505050),
@@ -354,11 +352,13 @@ fun OxygenSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
 
 @Composable
 fun DetailItemWithIcon(
-    label: String,
+    @StringRes labelRes: Int,
     info: String,
     icon: ImageVector,
     iconColor: Color = Color(0xFF505050),
+    infoColor: Color = Color(0xFF7F8C8D)
 ) {
+    val label = stringResource(id = labelRes)
     val infoFontSize = 18.sp
     val labelFontSize = 20.sp
 
@@ -392,7 +392,9 @@ fun DetailItemWithIcon(
 }
 
 @Composable
-fun NoDataInformation(label: String, info: String, icon: ImageVector) {
+fun NoDataInformation(@StringRes labelRes: Int, @StringRes infoRes: Int, icon: ImageVector) {
+    val label = stringResource(id = labelRes)
+    val info = stringResource(id = infoRes)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -426,14 +428,3 @@ fun NoDataInformation(label: String, info: String, icon: ImageVector) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewDiagnosis() {
-    val navController = rememberNavController()
-    val diagnosisViewModel = DiagnosisViewModel()
-    val diagnosisRemoteViewModel = DiagnosisRemoteViewModel()
-    val id = 1
-    HospitalFrontEndTheme {
-        DiagnosisScreen(navController, diagnosisRemoteViewModel, diagnosisViewModel, id)
-    }
-}
