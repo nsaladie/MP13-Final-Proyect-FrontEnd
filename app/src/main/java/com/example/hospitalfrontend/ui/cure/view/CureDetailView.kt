@@ -14,12 +14,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageCureDetail
 import com.example.hospitalfrontend.data.remote.viewmodel.PatientRemoteViewModel
 import com.example.hospitalfrontend.domain.model.auth.RegisterState
@@ -144,7 +146,7 @@ fun SuccessScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "DETALLS DE LA CURA", style = TextStyle(
+                        text = stringResource(id = R.string.detail_care_title), style = TextStyle(
                             fontSize = 30.sp,
                             fontFamily = NunitoFontFamily,
                             fontWeight = FontWeight.Bold,
@@ -248,13 +250,13 @@ private fun hasHygieneData(hygiene: HygieneState): Boolean {
 fun BasicInfoCard(data: RegisterState) {
     CardContent(title = "${data.patient.name} ${data.patient.surname}") {
         DetailItemWithIcon(
-            label = "Data",
+            labelRes = R.string.data,
             info = data.date?.formatDate("dd/MM/yyyy HH:mm") ?: "",
             icon = Icons.Filled.CalendarMonth,
             iconColor = Color(0xFF505050)
         )
         DetailItemWithIcon(
-            label = "Auxiliar",
+            labelRes = R.string.auxiliary_name,
             info = "${data.auxiliary.name} ${data.auxiliary.surname}",
             icon = Icons.Filled.PersonPin,
             iconColor = Color(0xFF505050)
@@ -264,9 +266,9 @@ fun BasicInfoCard(data: RegisterState) {
 
 @Composable
 fun VitalSignCard(vitalSign: VitalSignState, alertColor: Color, defaultInfoColor: Color) {
-    CardContent(title = "Signes Vitals") {
+    CardContent(title = stringResource(R.string.vital_signs)) {
         DetailItemWithIcon(
-            label = "Tensió Arterial",
+            labelRes = R.string.blood_pressure,
             info = "${vitalSign.systolicBloodPressure}mmHg/${vitalSign.diastolicBloodPressure}mmHg",
             icon = Icons.Filled.Favorite,
             iconColor = getBloodPressureColor(
@@ -279,7 +281,7 @@ fun VitalSignCard(vitalSign: VitalSignState, alertColor: Color, defaultInfoColor
             )
         )
         DetailItemWithIcon(
-            label = "Feqüència Respiratòria",
+            labelRes = R.string.respiratory_rate,
             info = "${vitalSign.respiratoryRate} bpm",
             icon = Icons.Filled.MonitorHeart,
             iconColor = getRespiratoryRateColor(vitalSign.respiratoryRate),
@@ -288,14 +290,14 @@ fun VitalSignCard(vitalSign: VitalSignState, alertColor: Color, defaultInfoColor
             )
         )
         DetailItemWithIcon(
-            label = "Pols",
+            labelRes = R.string.pulse,
             info = "${vitalSign.pulse}",
             icon = Icons.Filled.Monitor,
             iconColor = getPulseColor(vitalSign.pulse),
             infoColor = getInfoColor(getPulseColor(vitalSign.pulse), alertColor, defaultInfoColor)
         )
         DetailItemWithIcon(
-            label = "Temperatura",
+            labelRes = R.string.temperature,
             info = "${vitalSign.temperature} ºC",
             icon = Icons.Filled.DeviceThermostat,
             iconColor = getTemperatureColor(vitalSign.temperature),
@@ -304,7 +306,7 @@ fun VitalSignCard(vitalSign: VitalSignState, alertColor: Color, defaultInfoColor
             )
         )
         DetailItemWithIcon(
-            label = "Saturació d'Oxigen",
+            labelRes = R.string.oxygen_saturation,
             info = "${vitalSign.oxygenSaturation} %",
             icon = Icons.Filled.Air,
             iconColor = getOxygenSaturationColor(vitalSign.oxygenSaturation),
@@ -314,12 +316,12 @@ fun VitalSignCard(vitalSign: VitalSignState, alertColor: Color, defaultInfoColor
         )
         vitalSign.urineVolume?.let {
             DetailItemWithIcon(
-                label = "Volum d'Orina", info = "$it ml", icon = Icons.Filled.Air
+                labelRes = R.string.urine_volume, info = "$it ml", icon = Icons.Filled.Air
             )
         }
         vitalSign.bowelMovements?.let {
             DetailItemWithIcon(
-                label = "Moviments intestinals",
+                labelRes = R.string.bowel_movements,
                 info = "$it ml",
                 icon = Icons.Filled.Air
             )
@@ -327,7 +329,7 @@ fun VitalSignCard(vitalSign: VitalSignState, alertColor: Color, defaultInfoColor
         }
         vitalSign.serumTherapy?.let {
             DetailItemWithIcon(
-                label = "Terapia amb sèrum",
+                labelRes = R.string.serum_therapy,
                 info = "$it ml",
                 icon = Icons.Filled.Air
             )
@@ -337,22 +339,22 @@ fun VitalSignCard(vitalSign: VitalSignState, alertColor: Color, defaultInfoColor
 
 @Composable
 fun MobilizationCard(mobilization: MobilizationState) {
-    CardContent(title = "Mobilització") {
+    CardContent(title = stringResource(R.string.mobilization)) {
         DetailItemWithIcon(
-            label = "Sedestació",
-            info = "Nivel de tolerància: ${mobilization.sedestation}",
+            labelRes = R.string.sedestation,
+            info = stringResource(R.string.tolerance_level, (mobilization.sedestation).toString()),
             icon = Icons.Filled.Vaccines
         )
 
         mobilization.walkingAssis?.let {
             DetailItemWithIcon(
-                label = "Deambulació",
+                labelRes = R.string.wander,
                 info = it.toWalkingAssisText(),
                 icon = Icons.Filled.AssistWalker
             )
             if (it == 1) {
                 DetailItemWithIcon(
-                    label = "Tipus",
+                    labelRes = R.string.type,
                     info = mobilization.assisDesc!!,
                     icon = Icons.Filled.Description
                 )
@@ -360,7 +362,7 @@ fun MobilizationCard(mobilization: MobilizationState) {
         }
 
         DetailItemWithIcon(
-            label = "Canvis posturals",
+            labelRes = R.string.posture_changes,
             info = mobilization.decubitus,
             icon = Icons.Filled.Rotate90DegreesCw
         )
@@ -369,23 +371,23 @@ fun MobilizationCard(mobilization: MobilizationState) {
 
 @Composable
 fun DietCard(diet: DietState) {
-    CardContent(title = "Dieta") {
+    CardContent(title = stringResource(R.string.diet)) {
         diet.date?.let {
             DetailItemWithIcon(
-                label = "Data per a la dieta",
+                labelRes = R.string.diet_data,
                 info = it.formatDate("dd/MM/yyyy"),
                 icon = Icons.Filled.CalendarToday
             )
         }
         diet.takeData?.let { date ->
             DetailItemWithIcon(
-                label = "Horari de la dieta", info = date, icon = Icons.Filled.Dining
+                labelRes = R.string.diet_time, info = date, icon = Icons.Filled.Dining
             )
         }
 
         diet.dietTypeTexture?.let { texture ->
             DetailItemWithIcon(
-                label = "Tipus de textura",
+                labelRes = R.string.texture_type,
                 info = texture.description,
                 icon = Icons.Filled.FilterList
             )
@@ -398,13 +400,13 @@ fun DietCard(diet: DietState) {
         }
 
         DetailItemWithIcon(
-            label = "Autonomia del pacient",
+            labelRes = R.string.autonomy,
             info = diet.independent!!.toIndependentText(),
             icon = Icons.AutoMirrored.Filled.Help
         )
 
         DetailItemWithIcon(
-            label = "Portador de protesis",
+            labelRes = R.string.prosthesis,
             info = diet.prosthesis!!.toProsthesisText(),
             icon = Icons.Filled.Person
         )
@@ -413,31 +415,32 @@ fun DietCard(diet: DietState) {
 
 @Composable
 fun HygieneCard(hygiene: HygieneState) {
-    CardContent(title = "Higiene") {
+    CardContent(title = stringResource(R.string.hygiene)) {
         DetailItemWithIcon(
-            label = "Tipus", info = hygiene.description, icon = Icons.Filled.FilterList
+            labelRes = R.string.type,
+            info = hygiene.description, icon = Icons.Filled.FilterList
         )
     }
 }
 
 @Composable
 fun ObservationCard(observation: String) {
-    CardContent(title = "Observacions") {
+    CardContent(title =stringResource(R.string.observation_title)) {
         DetailItemWithIcon(
-            label = "Observacions del torn", info = observation, icon = Icons.Filled.Description
+            labelRes = R.string.shift_remarks, info = observation, icon = Icons.Filled.Description
         )
     }
 }
 
 @Composable
 fun DrainCard(drain: DrainState) {
-    CardContent(title = "Drenatge") {
+    CardContent(title = stringResource(R.string.drain)) {
         DetailItemWithIcon(
-            label = "Quantitat", info = drain.output, icon = Icons.Filled.Output
+            labelRes = R.string.quantity, info = drain.output, icon = Icons.Filled.Output
         )
 
         DetailItemWithIcon(
-            label = "Tipus", info = drain.type, icon = Icons.Filled.FilterList
+            labelRes = R.string.type, info = drain.type, icon = Icons.Filled.FilterList
         )
     }
 }
@@ -511,7 +514,7 @@ fun DietTypesListItem(dietTypes: Set<DietTypeState>) {
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = "Tipus de dieta",
+                text = stringResource( id = R.string.diet_type),
                 style = TextStyle(
                     fontFamily = NunitoFontFamily,
                     fontSize = labelFontSize,
