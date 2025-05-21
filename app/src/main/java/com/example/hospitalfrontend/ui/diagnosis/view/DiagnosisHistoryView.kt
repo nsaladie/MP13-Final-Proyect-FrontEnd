@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -74,7 +75,6 @@ fun DiagnosisHistoryScreen(
     }
 
 
-
     Scaffold(containerColor = customPrimaryColor, topBar = {
         TopAppBar(
             title = {
@@ -121,8 +121,8 @@ fun DiagnosisHistoryScreen(
 
                 diagnosisList.isEmpty() -> {
                     NoDataInformation(
-                        label = "No hi ha cap diagnòstic disponible",
-                        info = "Pots crear-ne un amb el botó a la part superior dreta",
+                        labelRes = com.example.hospitalfrontend.R.string.empty_diagnosis,
+                        infoRes = com.example.hospitalfrontend.R.string.create_diagnosis,
                         icon = Icons.Filled.NoteAlt
                     )
                 }

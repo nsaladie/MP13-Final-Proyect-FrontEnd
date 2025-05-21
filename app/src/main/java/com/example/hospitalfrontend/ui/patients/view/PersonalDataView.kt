@@ -1,4 +1,5 @@
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.input.KeyboardType
@@ -102,6 +104,7 @@ fun PersonalData(
     var showErrorDialog by rememberSaveable { mutableStateOf(false) }
     var dialogMessage by rememberSaveable { mutableStateOf("") }
     val remoteApiMessage = patientRemoteViewModel.remoteApiMessage.value
+
     // Show personal data of the database
     LaunchedEffect(patientData, dataLoaded) {
         if (dataLoaded && patientData != null) {
@@ -122,7 +125,7 @@ fun PersonalData(
             TopAppBar(
                 title = {
                     Text(
-                        text = "DADES PERSONALS",
+                        text = stringResource(id= R.string.dades_title),
                         style = TextStyle(
                             fontSize = 30.sp,
                             fontWeight = FontWeight.Bold,
@@ -208,10 +211,10 @@ fun PersonalData(
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 // Patient Information Section
-                                SectionHeader(text = "Informació del Pacient", latoFont)
+                                SectionHeader(text = stringResource(id= R.string.patient_info), latoFont)
 
                                 EnhancedTextField(
-                                    labelValue = "Nom",
+                                    labelRes = R.string.name,
                                     icon = Icons.Default.Person,
                                     textValue = nameValue,
                                     fontFamily = latoFont,
@@ -219,7 +222,7 @@ fun PersonalData(
                                 )
 
                                 EnhancedTextField(
-                                    labelValue = "Cognoms",
+                                    labelRes = R.string.surname,
                                     icon = Icons.Default.Person,
                                     textValue = surnameValue,
                                     fontFamily = latoFont,
@@ -227,7 +230,7 @@ fun PersonalData(
                                 )
 
                                 EnhancedBirthdayField(
-                                    labelValue = "Data de naixement",
+                                    labelRes = R.string.birthday,
                                     icon = Icons.Default.Today,
                                     dateValue = birthdayValue,
                                     fontFamily = latoFont,
@@ -235,7 +238,7 @@ fun PersonalData(
                                 )
 
                                 EnhancedTextField(
-                                    labelValue = "Adreça",
+                                    labelRes = R.string.address,
                                     icon = Icons.Default.LocationOn,
                                     textValue = addressValue,
                                     fontFamily = latoFont,
@@ -243,7 +246,7 @@ fun PersonalData(
                                 )
 
                                 EnhancedTextField(
-                                    labelValue = "Llengua",
+                                    labelRes = R.string.language,
                                     icon = Icons.Default.Language,
                                     textValue = languageValue,
                                     fontFamily = latoFont,
@@ -253,10 +256,10 @@ fun PersonalData(
                                 Spacer(modifier = Modifier.height(16.dp))
 
                                 // Medical Information Section
-                                SectionHeader(text = "Informació Mèdica", latoFont)
+                                SectionHeader(text = stringResource(id= R.string.medic_info), latoFont)
 
                                 EnhancedMultilineField(
-                                    labelValue = "Antecedents mèdics",
+                                    labelRes = R.string.medical_history,
                                     icon = Icons.Default.EditNote,
                                     textValue = antecedentsMedics,
                                     fontFamily = latoFont,
@@ -264,7 +267,7 @@ fun PersonalData(
                                 )
 
                                 EnhancedMultilineField(
-                                    labelValue = "Al·lèrgies",
+                                    labelRes = R.string.allergies,
                                     icon = Icons.Default.ReportProblem,
                                     textValue = allergiesValue,
                                     fontFamily = latoFont,
@@ -273,21 +276,20 @@ fun PersonalData(
                                 Spacer(modifier = Modifier.height(16.dp))
 
                                 // Caregiver Information Section
-                                SectionHeader(text = "Informació del Cuidador", latoFont)
+                                SectionHeader(text = stringResource(id= R.string.info_caragiver), latoFont)
 
                                 EnhancedTextField(
-                                    labelValue = "Nom del cuidador",
+                                    labelRes = R.string.caregiver_name,
                                     icon = Icons.Default.PermContactCalendar,
                                     textValue = caregiverName,
                                     fontFamily = latoFont
                                 )
 
-                                EnhancedNumberField(
-                                    labelValue = "Telèfon del cuidador",
+                                EnhancedTextField(
+                                    labelRes = R.string.caregiver_phone,
                                     icon = Icons.Default.Call,
                                     textValue = caregiverNumber,
-                                    fontFamily = latoFont,
-                                    maxLength = 9
+                                    fontFamily = latoFont
                                 )
 
 
@@ -296,7 +298,7 @@ fun PersonalData(
                         }
                         // Save Button
                         EnhancedSaveButton(
-                            text = "Desar canvis",
+                            text = stringResource(id= R.string.dades_button),
                             isEnabled = true,
                             fontFamily = latoFont
                         ) {
@@ -325,17 +327,19 @@ fun PersonalData(
                                 updateRequested = true
                             }
                         }
+                        val successMessage = stringResource(id = R.string.success_message)
+                        val errorMessage = stringResource(id = R.string.error_message)
                         LaunchedEffect(remoteApiMessage, updateRequested) {
                             if (updateRequested) {
                                 when (remoteApiMessage) {
                                     is RemoteApiMessagePatient.Success -> {
-                                        dialogMessage = "S'han modificat les dades del pacient"
+                                        dialogMessage = successMessage
                                         showSuccessDialog = true
                                         updateRequested = false
                                     }
 
                                     is RemoteApiMessagePatient.Error -> {
-                                        dialogMessage = "No s'han modificat les dades del pacient"
+                                        dialogMessage = errorMessage
                                         showErrorDialog = true
                                         updateRequested = false
                                     }
@@ -373,11 +377,11 @@ fun SuccessDialog(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { onDismiss() },
-            title = { Text("Dades Modificats") },
+            title = { Text(stringResource(id = R.string.success_title)) },
             text = { Text(message) },
             confirmButton = {
                 Button(onClick = onDismiss) {
-                    Text("OK")
+                    Text(stringResource(id = R.string.dialog_ok))
                 }
             }
         )
@@ -393,11 +397,11 @@ fun ErrorDialog(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { onDismiss() },
-            title = { Text("Error") },
+            title = { Text(stringResource(id = R.string.error_title)) },
             text = { Text(message) },
             confirmButton = {
                 Button(onClick = onDismiss) {
-                    Text("OK")
+                    Text(stringResource(id = R.string.dialog_ok))
                 }
             }
         )
@@ -507,12 +511,13 @@ fun EnhancedNumberField(
 
 @Composable
 fun EnhancedTextField(
-    labelValue: String,
+    @StringRes labelRes: Int,
     icon: ImageVector,
     textValue: MutableState<String>,
     fontFamily: FontFamily,
     readOnly: Boolean = false
 ) {
+    val labelValue = stringResource(id = labelRes)
     OutlinedTextField(
         value = textValue.value,
         onValueChange = { textValue.value = it },
@@ -554,12 +559,13 @@ fun EnhancedTextField(
 
 @Composable
 fun EnhancedMultilineField(
-    labelValue: String,
+    @StringRes labelRes: Int,
     icon: ImageVector,
     textValue: MutableState<String>,
     fontFamily: FontFamily,
     readOnly: Boolean = false
 ) {
+    val labelValue = stringResource(id = labelRes)
     OutlinedTextField(
         value = textValue.value,
         onValueChange = { textValue.value = it },
@@ -603,12 +609,13 @@ fun EnhancedMultilineField(
 
 @Composable
 fun EnhancedBirthdayField(
-    labelValue: String,
+    @StringRes labelRes: Int,
     icon: ImageVector,
     dateValue: MutableState<String>,
     fontFamily: FontFamily,
     readOnly: Boolean = false
 ) {
+    val labelValue = stringResource(id = labelRes)
     OutlinedTextField(
         value = dateValue.value,
         onValueChange = { dateValue.value = it },
