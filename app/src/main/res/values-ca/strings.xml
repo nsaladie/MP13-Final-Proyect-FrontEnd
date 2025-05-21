@@ -34,7 +34,7 @@
     <string name="medic_info">Informació Mèdica</string>
     <string name="info_caragiver">Informació del Cuidador</string>
     <string name="button_save_changes">Desar canvis</string>
-    <string name="success_title">Dates Modificats</string>
+    <string name="success_title">Dades Modificats</string>
     <string name="error_title">Error</string>
     <string name="success_message">S\'han modificat les dades del pacient</string>
     <string name="error_message">No s\'han modificat les dades del pacient</string>
@@ -178,10 +178,21 @@
     <string name="tolerance_level">Nivell de tolerància</string>
     //Medication View
     <string name="empty_medication">No hi ha medicaments disponibles</string>
+
+
+    //create medication
+    <string name="create_medication_title">CREAR MEDICINA</string>
+    <string name="medication_name">Nombre</string>
+    <string name="medication_dossage">Dosi</string>
+    <string name="medication_administration">Via d\'administració</string>
+    <string name="medication_stock">Stock</string>
+
+
     //MENU ALERT DIALOG DISCHARGE
     <string name="alert_dialog_discharge_title">Confirmació d\'alta</string>
     <string name="alert_dialog_discharge_text">Estàs segur que vols donar d\'alta aquest pacient?</string>
     <string name="alert_dialog_discharge_cancel">Cancel·lar</string>
     <string name="alert_dialog_discharge_ok">Si, donar d\'alta aquest pacient</string>
+
 
 </resources>

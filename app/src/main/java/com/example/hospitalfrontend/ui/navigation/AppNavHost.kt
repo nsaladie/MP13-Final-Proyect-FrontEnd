@@ -23,8 +23,8 @@ import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
 import com.example.hospitalfrontend.ui.medication.view.MedicationScreen
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import PersonalData
-import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListMedication
 import com.example.hospitalfrontend.ui.home.view.MenuScreen
+import com.example.hospitalfrontend.ui.medication.view.CreateMedicationScreen
 import com.example.hospitalfrontend.ui.medication.viewmodel.MedicationViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -87,6 +87,31 @@ fun AppNavHost(
 
         composable(BottomNavItem.Medication.route) {
             MedicationScreen(navController, medicationViewModel, medicationRemoteViewModel)
+        }
+        composable(
+            "createMedication/",
+        ) {
+            var isError = remember { mutableStateOf(false) }
+
+            CreateMedicationScreen(
+                navController = navController,
+                medicationViewModel = medicationViewModel,
+                medicationRemoteViewModel = medicationRemoteViewModel,
+                isError = isError,
+            )
+        }
+        // Rest of views of the applications
+        composable(
+            "diagnosis/{patientId}",
+            arguments = listOf(navArgument("patientId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getInt("patientId") ?: -1
+            DiagnosisScreen(
+                navController = navController,
+                diagnosisViewModel = diagnosisViewModel,
+                diagnosisRemoteViewModel = diagnosisRemoteViewModel,
+                patientId = patientId
+            )
         }
 
         composable(BottomNavItem.Configuration.route) {
