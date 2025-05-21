@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Hospital FrontEnd</string>
+    <string name="app_name">HealthNest</string>
     <string name="login_title">Iniciar Sessió</string>
     <string name="switch_language">Canvi de llengua</string>
     //Login
@@ -27,6 +27,7 @@
     <string name="menu_diagnosis">Diagnòstic d\'ingrés</string>
     <string name="menu_care_list">Llistat de cures</string>
     <string name="dades_button">Desar canvis</string>
+    <string name="menu_discharge_patient">Donar d\'alta un pacient</string>
     //Personal Data
     <string name="dades_title">DADES PERSONALS</string>
     <string name="patient_info">Informació del Pacient</string>
@@ -178,12 +179,20 @@
     //Medication View
     <string name="empty_medication">No hi ha medicaments disponibles</string>
 
+
     //create medication
     <string name="create_medication_title">CREAR MEDICINA</string>
     <string name="medication_name">Nombre</string>
     <string name="medication_dossage">Dosi</string>
     <string name="medication_administration">Via d\'administració</string>
     <string name="medication_stock">Stock</string>
+
+
+    //MENU ALERT DIALOG DISCHARGE
+    <string name="alert_dialog_discharge_title">Confirmació d\'alta</string>
+    <string name="alert_dialog_discharge_text">Estàs segur que vols donar d\'alta aquest pacient?</string>
+    <string name="alert_dialog_discharge_cancel">Cancel·lar</string>
+    <string name="alert_dialog_discharge_ok">Si, donar d\'alta aquest pacient</string>
 
 
 </resources>

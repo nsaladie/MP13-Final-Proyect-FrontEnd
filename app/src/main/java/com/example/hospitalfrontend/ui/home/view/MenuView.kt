@@ -1,5 +1,6 @@
 package com.example.hospitalfrontend.ui.home.view
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import com.example.hospitalfrontend.R
 import androidx.compose.animation.core.*
@@ -41,15 +42,20 @@ sealed class Screen(val route: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuScreen(
-    navController: NavController, patientId: Int, patientViewModel: PatientViewModel
+    navController: NavController,
+    patientId: Int,
+    patientViewModel: PatientViewModel,
+    patientRemoteViewModel: PatientRemoteViewModel
 ) {
     val primaryColor = Color(0xFFA9C7C7)
     val textColor = Color(0xFF2C3E50)
     val cardColor = Color(0xFFF5F7FA)
     val accentColor = Color(0xFF3498DB)
+    val dischargeColor = Color(0xFFF55753)
     val personalDataText = stringResource(id = R.string.menu_personal_data)
     val diagnosisText = stringResource(id = R.string.menu_diagnosis)
     val careListText = stringResource(id = R.string.menu_care_list)
+    val dischargeText = stringResource(id = R.string.menu_discharge_patient)
 
     val menuOptions = listOf(
         Triple(
@@ -63,9 +69,16 @@ fun MenuScreen(
         )
     )
 
+    val dischargeOption = Triple(
+        dischargeText,
+        Screen.ListRegister(patientId).route,
+        Icons.Outlined.DeleteForever
+    )
+
     val remote = PatientRemoteViewModel()
     var patientState by remember { mutableStateOf<PatientState?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    var showDischargeDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(patientViewModel.patientState) {
         remote.getPatientById(patientId, patientViewModel)
@@ -74,6 +87,50 @@ fun MenuScreen(
             isLoading = false
         }
     }
+
+    if (showDischargeDialog) {
+        AlertDialog(
+            onDismissRequest = { showDischargeDialog = false },
+            title = {
+                Text(
+                    stringResource(id = R.string.alert_dialog_discharge_title), style = TextStyle(
+                        fontFamily = NunitoFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
+                )
+            },
+            text = {
+                Text(
+                    stringResource(id = R.string.alert_dialog_discharge_text), style = TextStyle(
+                        fontFamily = LatoFontFamily, fontSize = 18.sp
+                    )
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        patientState?.let { patientRemoteViewModel.updatePatientDischarge(it) }
+                        showDischargeDialog = false
+                        navController.popBackStack()
+                    }, colors = ButtonDefaults.buttonColors(
+                        containerColor = dischargeColor
+                    )
+                ) {
+                    Text(stringResource(R.string.alert_dialog_discharge_ok))
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { showDischargeDialog = false }) {
+                    Text(stringResource(R.string.alert_dialog_discharge_cancel))
+                }
+            },
+            containerColor = Color.White,
+            titleContentColor = textColor,
+            textContentColor = textColor
+        )
+    }
+
     Scaffold(
         containerColor = primaryColor, topBar = {
             LanguageSwitcher()
@@ -152,6 +209,17 @@ fun MenuScreen(
                                     accentColor = accentColor
                                 )
                             }
+                            Spacer(modifier = Modifier.height(130.dp))
+
+                            DischargeMenuButton(
+                                onClick = { showDischargeDialog = true },
+                                text = dischargeOption.first,
+                                icon = dischargeOption.third,
+                                textColor = Color.White,
+                                cardColor = dischargeColor
+                            )
+
+
                         }
                     }
                 }
@@ -331,6 +399,84 @@ fun AnimatedMenuButton(
                     modifier = Modifier.size(20.dp)
                 )
 
+            }
+        }
+    }
+}
+
+@Composable
+fun DischargeMenuButton(
+    onClick: () -> Unit, text: String, icon: ImageVector, textColor: Color, cardColor: Color
+) {
+    var isPressed by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .shadow(
+                elevation = if (isPressed) 2.dp else 4.dp,
+                shape = RoundedCornerShape(20.dp),
+                ambientColor = Color.Black.copy(alpha = 0.1f),
+                spotColor = Color.Black.copy(alpha = 0.2f)
+            ), colors = CardDefaults.cardColors(
+            containerColor = cardColor
+        ), shape = RoundedCornerShape(20.dp)
+    ) {
+        Button(
+            onClick = {
+                isPressed = true
+                onClick()
+            },
+            modifier = Modifier.fillMaxSize(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = cardColor
+            ),
+            shape = RoundedCornerShape(20.dp),
+            contentPadding = PaddingValues(16.dp),
+            elevation = null
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.2f))
+                            .padding(8.dp)
+                    ) {
+                        Icon(
+                            icon,
+                            contentDescription = text,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Text(
+                        text = text, style = TextStyle(
+                            fontFamily = LatoFontFamily,
+                            fontSize = 20.sp,
+                            color = textColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+                Icon(
+                    Icons.Filled.ChevronRight,
+                    contentDescription = "Navegar",
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }

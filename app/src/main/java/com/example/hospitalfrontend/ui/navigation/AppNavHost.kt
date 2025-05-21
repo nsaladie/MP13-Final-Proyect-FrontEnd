@@ -191,7 +191,8 @@ fun AppNavHost(
             MenuScreen(
                 navController = navController,
                 patientId = patientId,
-                patientViewModel = patientViewModel
+                patientViewModel = patientViewModel,
+                patientRemoteViewModel = patientRemoteViewModel
             )
         }
 
