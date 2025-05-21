@@ -21,7 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
-import com.example.hospitalfrontend.domain.model.facility.RoomWithObservation
+import com.example.hospitalfrontend.domain.model.facility.RoomState
+import com.example.hospitalfrontend.domain.model.facility.RoomDTO
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -35,6 +36,7 @@ fun HomeScreen(
 ) {
     val rooms by patientViewModel.rooms.collectAsState()
     var isLoading by remember { mutableStateOf(true) }
+    val register by patientViewModel.registers.collectAsState()
 
     LaunchedEffect(rooms) {
         if (rooms.isNotEmpty()) {
@@ -103,16 +105,14 @@ fun HomeScreen(
 
 @Composable
 fun RoomListItem(
-    room: RoomWithObservation, navController: NavController
+    room: RoomDTO, navController: NavController
 ) {
     val latoFont = FontFamily(Font(R.font.lato_regular))
 
     // Specific colors as requested
-    val cardColor = if (room.room.patient != null) Color(169, 199, 199) else Color(200, 200, 200)
-    var showObservation by remember { mutableStateOf(false) }
-
+    val cardColor = if(room.patient!=null)Color(169, 199, 199)else Color(200,200,200)
     // Format date to dd/mm/yyyy if patient exists
-    val formattedDate = room.room.patient?.dateEntry?.let {
+    val formattedDate = room.assignmentDate?.let {
         try {
             val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             sdf.format(it)
@@ -129,12 +129,14 @@ fun RoomListItem(
             )
             .clip(RoundedCornerShape(8.dp))
             .clickable {
-                room.room.patient?.let { patient ->
+                room.patient?.let { patient ->
                     navController.navigate("menu/${patient.historialNumber}")
                 }
+                /*
                 if (!room.lastObservation.isNullOrBlank()) {
                     showObservation = true
                 }
+                 */
             },
 
         colors = CardDefaults.cardColors(containerColor = cardColor)
@@ -158,9 +160,9 @@ fun RoomListItem(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                if (room.room.patient != null) {
+                if (room.patient != null) {
                     Text(
-                        text = "Nom: ${room.room.patient.name} ${room.room.patient.surname}",
+                        text = "Nom: ${room.patient.name} ${room.patient.surname}",
                         style = TextStyle(
                             fontFamily = latoFont, fontSize = 18.sp
                         )
@@ -174,12 +176,14 @@ fun RoomListItem(
                         )
                     )
                     Spacer(modifier = Modifier.height(4.dp))
+
                     Text(
                         text = "Última observació: ${room.lastObservation ?: "No disponible"}",
                         style = TextStyle(
                             fontFamily = latoFont, fontSize = 18.sp, fontWeight = FontWeight.Medium
                         )
                     )
+
                 } else {
                     Spacer(modifier = Modifier.height(4.dp))
 

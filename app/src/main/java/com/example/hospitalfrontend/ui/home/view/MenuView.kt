@@ -1,5 +1,6 @@
 package com.example.hospitalfrontend.ui.home.view
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -38,12 +39,13 @@ sealed class Screen(val route: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuScreen(
-    navController: NavController, patientId: Int, patientViewModel: PatientViewModel
+    navController: NavController, patientId: Int, patientViewModel: PatientViewModel, patientRemoteViewModel: PatientRemoteViewModel
 ) {
     val primaryColor = Color(0xFFA9C7C7)
     val textColor = Color(0xFF2C3E50)
     val cardColor = Color(0xFFF5F7FA)
     val accentColor = Color(0xFF3498DB)
+    val dischargeColor = Color(0xFFF55753)
 
     val menuOptions = listOf(
         Triple(
@@ -57,9 +59,16 @@ fun MenuScreen(
         )
     )
 
+    val dischargeOption = Triple(
+        "Donar d'alta un pacient",
+        Screen.ListRegister(patientId).route,
+        Icons.Outlined.DeleteForever
+    )
+
     val remote = PatientRemoteViewModel()
     var patientState by remember { mutableStateOf<PatientState?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    var showDischargeDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(patientViewModel.patientState) {
         remote.getPatientById(patientId, patientViewModel)
@@ -69,29 +78,72 @@ fun MenuScreen(
         }
     }
 
+    if (showDischargeDialog) {
+        AlertDialog(
+            onDismissRequest = { showDischargeDialog = false },
+            title = {
+                Text(
+                    "Confirmació d'alta", style = TextStyle(
+                        fontFamily = NunitoFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
+                )
+            },
+            text = {
+                Text(
+                    "Estàs segur que vols donar d'alta aquest pacient?", style = TextStyle(
+                        fontFamily = LatoFontFamily, fontSize = 18.sp
+                    )
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        patientState?.let { patientRemoteViewModel.updatePatientDischarge(it) }
+                        showDischargeDialog = false
+                        navController.popBackStack()
+                    }, colors = ButtonDefaults.buttonColors(
+                        containerColor = dischargeColor
+                    )
+                ) {
+                    Text("Sí, donar d'alta")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { showDischargeDialog = false }) {
+                    Text("Cancel·lar")
+                }
+            },
+            containerColor = Color.White,
+            titleContentColor = textColor,
+            textContentColor = textColor
+        )
+    }
+
     Scaffold(
         containerColor = primaryColor, topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "MENÚ PACIENT", style = TextStyle(
-                            fontSize = 30.sp,
-                            fontFamily = NunitoFontFamily,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                        ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
-                    )
-                }, navigationIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() },
-                    ) {
-                        Icon(
-                            Icons.Filled.Close, contentDescription = "Tornar", tint = Color.Black
-                        )
-                    }
-                }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = primaryColor, navigationIconContentColor = Color.Black
+                Text(
+                    text = "MENÚ PACIENT", style = TextStyle(
+                        fontSize = 30.sp,
+                        fontFamily = NunitoFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                    ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
+            }, navigationIcon = {
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                ) {
+                    Icon(
+                        Icons.Filled.Close, contentDescription = "Tornar", tint = Color.Black
+                    )
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = primaryColor, navigationIconContentColor = Color.Black
+            )
             )
         }) { paddingValues ->
         Box(
@@ -146,6 +198,17 @@ fun MenuScreen(
                                     accentColor = accentColor
                                 )
                             }
+                            Spacer(modifier = Modifier.height(130.dp))
+
+                            DischargeMenuButton(
+                                onClick = { showDischargeDialog = true },
+                                text = dischargeOption.first,
+                                icon = dischargeOption.third,
+                                textColor = Color.White,
+                                cardColor = dischargeColor
+                            )
+
+
                         }
                     }
                 }
@@ -325,6 +388,84 @@ fun AnimatedMenuButton(
                     modifier = Modifier.size(20.dp)
                 )
 
+            }
+        }
+    }
+}
+
+@Composable
+fun DischargeMenuButton(
+    onClick: () -> Unit, text: String, icon: ImageVector, textColor: Color, cardColor: Color
+) {
+    var isPressed by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .shadow(
+                elevation = if (isPressed) 2.dp else 4.dp,
+                shape = RoundedCornerShape(20.dp),
+                ambientColor = Color.Black.copy(alpha = 0.1f),
+                spotColor = Color.Black.copy(alpha = 0.2f)
+            ), colors = CardDefaults.cardColors(
+            containerColor = cardColor
+        ), shape = RoundedCornerShape(20.dp)
+    ) {
+        Button(
+            onClick = {
+                isPressed = true
+                onClick()
+            },
+            modifier = Modifier.fillMaxSize(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = cardColor
+            ),
+            shape = RoundedCornerShape(20.dp),
+            contentPadding = PaddingValues(16.dp),
+            elevation = null
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.2f))
+                            .padding(8.dp)
+                    ) {
+                        Icon(
+                            icon,
+                            contentDescription = text,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Text(
+                        text = text, style = TextStyle(
+                            fontFamily = LatoFontFamily,
+                            fontSize = 20.sp,
+                            color = textColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+                Icon(
+                    Icons.Filled.ChevronRight,
+                    contentDescription = "Navegar",
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }
