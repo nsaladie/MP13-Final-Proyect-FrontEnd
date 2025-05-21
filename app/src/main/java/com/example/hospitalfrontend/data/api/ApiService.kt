@@ -6,7 +6,7 @@ import com.example.hospitalfrontend.domain.model.user.*
 import com.example.hospitalfrontend.domain.model.medical.*
 import com.example.hospitalfrontend.domain.model.patient.PatientState
 import com.example.hospitalfrontend.domain.model.medication.MedicationState
-import com.example.hospitalfrontend.domain.model.facility.RoomWithObservation
+import com.example.hospitalfrontend.domain.model.facility.*
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -45,7 +45,7 @@ interface ApiService {
 
     //Rooms
     @GET("room")
-    suspend fun getAllRooms(): List<RoomWithObservation>
+    suspend fun getAllRooms(): List<RoomDTO>
 
     //Auxiliary
     @POST("auxiliary/login")
@@ -94,4 +94,8 @@ interface ApiService {
     // List of Medication
     @GET("/medication")
     suspend fun getAllMedication(): List<MedicationState>
+
+    // Discharge a patient
+    @PUT("room/discharge")
+    suspend fun updatePatientDischarge(@Body patientState: PatientState): Boolean
 }
