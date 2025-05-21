@@ -26,6 +26,7 @@
     <string name="menu_personal_data">Datos personales del paciente</string>
     <string name="menu_diagnosis">Diagnóstico de ingreso</string>
     <string name="menu_care_list">Lista de curas</string>
+    <string name="menu_discharge_patient">Dar de alta un paciente</string>
     //Personal Data
     <string name="dades_title">DATOS PERSONALES</string>
     <string name="patient_info">Información del Paciente</string>
@@ -176,4 +177,10 @@
     <string name="drain">Drenaje</string>
     <string name="tolerance_level">Nivel de tolerancia</string>
     <string name="empty_medication">No hay medicamentos disponibles</string>
+    //MENU ALERT DIALOG DISCHARGE
+    <string name="alert_dialog_discharge_title">Confirmación del alta</string>
+    <string name="alert_dialog_discharge_text">¿Está seguro de que quiere dar de alta a este paciente?</string>
+    <string name="alert_dialog_discharge_cancel">Cancelar</string>
+    <string name="alert_dialog_discharge_ok">Sí, dar de alta este paciente</string>
+
 </resources>

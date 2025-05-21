@@ -55,6 +55,7 @@ fun MenuScreen(
     val personalDataText = stringResource(id = R.string.menu_personal_data)
     val diagnosisText = stringResource(id = R.string.menu_diagnosis)
     val careListText = stringResource(id = R.string.menu_care_list)
+    val dischargeText = stringResource(id = R.string.menu_discharge_patient)
 
     val menuOptions = listOf(
         Triple(
@@ -69,7 +70,7 @@ fun MenuScreen(
     )
 
     val dischargeOption = Triple(
-        "Donar d'alta un pacient",
+        dischargeText,
         Screen.ListRegister(patientId).route,
         Icons.Outlined.DeleteForever
     )
@@ -92,7 +93,7 @@ fun MenuScreen(
             onDismissRequest = { showDischargeDialog = false },
             title = {
                 Text(
-                    "Confirmació d'alta", style = TextStyle(
+                    stringResource(id = R.string.alert_dialog_discharge_title), style = TextStyle(
                         fontFamily = NunitoFontFamily,
                         fontWeight = FontWeight.Bold,
                         fontSize = 22.sp
@@ -101,7 +102,7 @@ fun MenuScreen(
             },
             text = {
                 Text(
-                    "Estàs segur que vols donar d'alta aquest pacient?", style = TextStyle(
+                    stringResource(id = R.string.alert_dialog_discharge_text), style = TextStyle(
                         fontFamily = LatoFontFamily, fontSize = 18.sp
                     )
                 )
@@ -116,12 +117,12 @@ fun MenuScreen(
                         containerColor = dischargeColor
                     )
                 ) {
-                    Text("Sí, donar d'alta")
+                    Text(stringResource(R.string.alert_dialog_discharge_ok))
                 }
             },
             dismissButton = {
                 OutlinedButton(onClick = { showDischargeDialog = false }) {
-                    Text("Cancel·lar")
+                    Text(stringResource(R.string.alert_dialog_discharge_cancel))
                 }
             },
             containerColor = Color.White,
