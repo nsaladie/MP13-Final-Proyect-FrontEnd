@@ -60,8 +60,7 @@ fun CreateMedicationScreen(
         dosageMedication.value,
         adminstrationRouteMedication.value,
         stockMedication.value,
-
-        ) {
+    ) {
         isFormValidState.value = isFormValid(
             nameMedication.value,
             dosageMedication.value,
@@ -96,45 +95,51 @@ fun CreateMedicationScreen(
             RemoteApiMessageCreateMedication.Idle -> {
                 isLoading = false
             }
-
         }
     }
+
     DisposableEffect(Unit) {
         onDispose {
             medicationRemoteViewModel.clearApiMessage()
         }
     }
+
     if (createMedicationError.value) {
-        AlertDialog(onDismissRequest = {
-            createMedicationError.value = false
-            medicationRemoteViewModel.clearApiMessage()
-        }, confirmButton = {
-            TextButton(onClick = {
+        AlertDialog(
+            onDismissRequest = {
                 createMedicationError.value = false
                 medicationRemoteViewModel.clearApiMessage()
-            }) {
-                Text("OK")
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    createMedicationError.value = false
+                    medicationRemoteViewModel.clearApiMessage()
+                }) {
+                    Text("OK")
+                }
+            },
+            title = {
+                Text(
+                    text = stringResource(id = R.string.diagnosis_create_error_title),
+                    color = Color.Red,
+                    style = TextStyle(
+                        fontFamily = NunitoFontFamily,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(id = R.string.diagnosis_create_error_message),
+                    style = TextStyle(fontFamily = LatoFontFamily)
+                )
             }
-        }, title = {
-            Text(
-                text = stringResource(id = R.string.diagnosis_create_error_title),
-                color = Color.Red,
-                style = TextStyle(
-                    fontFamily = NunitoFontFamily, fontWeight = FontWeight.Bold
-                )
-            )
-        }, text = {
-            Text(
-                text = stringResource(id = R.string.diagnosis_create_error_message),
-                style = TextStyle(
-                    fontFamily = LatoFontFamily
-                )
-            )
-        })
+        )
     }
 
     Scaffold(
-        containerColor = customPrimaryColor, topBar = {
+        containerColor = customPrimaryColor,
+        topBar = {
             TopAppBar(
                 title = {
                     Row(
@@ -142,7 +147,7 @@ fun CreateMedicationScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "CREAR MEDICINA",
+                            text = stringResource(id = R.string.create_medication_title),
                             style = TextStyle(
                                 fontSize = 25.sp,
                                 fontFamily = NunitoFontFamily,
@@ -154,23 +159,70 @@ fun CreateMedicationScreen(
                             textAlign = TextAlign.Center
                         )
                     }
-                }, navigationIcon = {
-
+                },
+                navigationIcon = {
                     IconButton(onClick = {
                         medicationRemoteViewModel.clearApiMessage()
                         isError.value = false
                         navController.popBackStack()
                     }) {
                         Icon(
-                            Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
+                            Icons.Filled.Close,
+                            contentDescription = "Close",
+                            tint = Color.Black
                         )
                     }
-                }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
-                ), actions = {
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = customPrimaryColor
+                )
+            )
+        },
+        bottomBar = {
+            Button(
+                onClick = {
+                    val stockValue = stockMedication.value.toIntOrNull() ?: 0
+                    val medicationState = MedicationState(
+                        id = 0,
+                        name = nameMedication.value,
+                        dosage = dosageMedication.value,
+                        adminstrationRoute = adminstrationRouteMedication.value,
+                        stock = stockValue,
+                    )
 
-                })
-        }) { paddingValues ->
+                    isError.value = false
+                    medicationRemoteViewModel.addMedicine(medicationState)
+                },
+                enabled = isFormValidState.value,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(28.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(151, 199, 150),
+                    disabledContainerColor = Color.LightGray
+                )
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Save,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                    Text(
+                        text = stringResource(id = R.string.button_save),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        fontFamily = latoLightFont,
+                    )
+                }
+            }
+        }
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -184,10 +236,10 @@ fun CreateMedicationScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
-                        color = Color.White, modifier = Modifier.size(50.dp)
+                        color = Color.White,
+                        modifier = Modifier.size(50.dp)
                     )
                 }
-
             }
 
             Column(
@@ -203,54 +255,12 @@ fun CreateMedicationScreen(
                     dosageInfo = dosageMedication,
                     adminstrationRouteInfo = adminstrationRouteMedication
                 )
-                Button(
-                    onClick = {
-                        val stockValue = stockMedication.value.toIntOrNull() ?: 0
-                        val medicationState = MedicationState(
-                            id = 0,
-                            name = nameMedication.value,
-                            dosage = dosageMedication.value,
-                            adminstrationRoute = adminstrationRouteMedication.value,
-                            stock = stockValue,
-                        )
-
-                        isError.value = false
-                        medicationRemoteViewModel.addMedicine(medicationState)
-                    },
-                    enabled = isFormValidState.value,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    shape = RoundedCornerShape(28.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(151, 199, 150),
-                        disabledContainerColor = Color.LightGray
-                    )
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-
-                        Icon(
-                            imageVector = Icons.Default.Save,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-
-                        Text(
-                            text = stringResource(id = R.string.button_save),
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            fontFamily = latoLightFont,
-                        )
-                    }
-                }
+                // Botón eliminado de aquí
             }
         }
     }
 }
+
 
 
 @Composable
