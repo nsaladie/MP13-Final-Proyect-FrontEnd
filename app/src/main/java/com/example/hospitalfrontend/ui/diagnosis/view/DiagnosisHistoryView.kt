@@ -126,7 +126,6 @@ fun DiagnosisHistoryScreen(
                         icon = Icons.Filled.NoteAlt
                     )
                 }
-
                 else -> {
                     Column(
                         modifier = Modifier
