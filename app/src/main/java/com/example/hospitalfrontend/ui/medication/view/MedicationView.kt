@@ -33,8 +33,8 @@ import com.example.hospitalfrontend.ui.medication.viewmodel.MedicationViewModel
 fun MedicationScreen(
     navController: NavController,
     medicationViewModel: MedicationViewModel,
-    medicationRemoteViewModel: MedicationRemoteViewModel
-) {
+    medicationRemoteViewModel: MedicationRemoteViewModel,
+    ) {
     val customPrimaryColor = Color(0xFFA9C7C7)
     var isLoading by remember { mutableStateOf(true) }
     val listMedication by medicationViewModel.listMedication.collectAsState()
@@ -91,10 +91,30 @@ fun MedicationScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
+                navigationIcon = {
+                    IconButton(onClick = {
+                        medicationRemoteViewModel.clearApiMessage()
+                        navController.popBackStack()
+                    }) {
+                        Icon(
+                            Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
+                        )
+                    }
+                }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
-                ),
-            )
+                ), actions = {
+                    IconButton(onClick = {
+                        medicationRemoteViewModel.clearApiMessage()
+                        navController.navigate("createMedication/")
+                    }) {
+                        Icon(
+                            Icons.Filled.LocalHospital,
+                            contentDescription = "Medication",
+                            tint = Color.Black,
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+                    }
+                })
         }) { paddingValues ->
         Box(
             modifier = Modifier

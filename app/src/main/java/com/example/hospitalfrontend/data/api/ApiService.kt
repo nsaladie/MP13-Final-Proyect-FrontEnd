@@ -94,4 +94,9 @@ interface ApiService {
     // List of Medication
     @GET("/medication")
     suspend fun getAllMedication(): List<MedicationState>
+
+    // Create Medication
+    @POST("/medication")
+    suspend fun addMedicine(@Body medicationState: MedicationState): Boolean
+
 }

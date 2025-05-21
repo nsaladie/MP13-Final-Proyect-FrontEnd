@@ -179,7 +179,12 @@
     <string name="drain">Drainage</string>
     <string name="tolerance_level">Tolerance level</string>
     <string name="empty_medication">No medications available</string>
-
+    //Create medication
+    <string name="create_medication_title">CREATE MEDICATION</string>
+    <string name="medication_name">Name</string>
+    <string name="medication_dossage">Dosage</string>
+    <string name="medication_administration">Route of administration</string>
+    <string name="medication_stock">Stock</string>
 </resources>
 
 

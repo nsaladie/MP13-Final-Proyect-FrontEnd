@@ -76,17 +76,14 @@ fun DiagnosisScreen(
                 isLoading = false
                 diagnosisScreenError.value = false
             }
-
             is RemoteApiMessageDiagnosis.NotFound -> {
                 isLoading = false
                 diagnosisScreenError.value = false
             }
-
             is RemoteApiMessageDiagnosis.Error -> {
                 isLoading = false
                 diagnosisScreenError.value = true
             }
-
             is RemoteApiMessageDiagnosis.Loading -> {
                 isLoading = true
             }
