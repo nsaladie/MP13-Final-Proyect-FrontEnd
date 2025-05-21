@@ -27,6 +27,7 @@
     <string name="menu_diagnosis">Diagnòstic d\'ingrés</string>
     <string name="menu_care_list">Llistat de cures</string>
     <string name="dades_button">Desar canvis</string>
+    <string name="menu_discharge_patient">Donar d\'alta un pacient</string>
     //Personal Data
     <string name="dades_title">DADES PERSONALS</string>
     <string name="patient_info">Informació del Pacient</string>
@@ -177,4 +178,10 @@
     <string name="tolerance_level">Nivell de tolerància</string>
     //Medication View
     <string name="empty_medication">No hi ha medicaments disponibles</string>
+    //MENU ALERT DIALOG DISCHARGE
+    <string name="alert_dialog_discharge_title">Confirmació d\'alta</string>
+    <string name="alert_dialog_discharge_text">Estàs segur que vols donar d\'alta aquest pacient?</string>
+    <string name="alert_dialog_discharge_cancel">Cancel·lar</string>
+    <string name="alert_dialog_discharge_ok">Si, donar d\'alta aquest pacient</string>
+
 </resources>
