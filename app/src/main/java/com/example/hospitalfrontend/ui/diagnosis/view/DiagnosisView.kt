@@ -85,66 +85,97 @@ fun DiagnosisScreen(
         }
     }
 
-    Scaffold(containerColor = customPrimaryColor, floatingActionButton = {
-        FloatingActionButton(
-            onClick = {
-                navController.navigate("diagnosisHistory/$patientId")
-            }, modifier = Modifier.padding(16.dp), shape = CircleShape
-        ) {
-            Icon(Icons.Sharp.AccessTime, contentDescription = "See diagnosis history")
-        }
-    }, topBar = {
-        TopAppBar(
-            title = {
-                Row(
-                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.diagnosis_title), style = TextStyle(
-                            fontSize = 30.sp,
-                            fontFamily = NunitoFontFamily,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
+    Scaffold(
+        containerColor = customPrimaryColor,
+        floatingActionButton = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Box(modifier = Modifier.padding(start = 30.dp)) {
+                    FloatingActionButton(
+                        onClick = {
+                            navController.navigate("diagnosisHistory/$patientId")
+                        },
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            Icons.Sharp.AccessTime,
+                            contentDescription = "Ver historial de diagnósticos"
+                        )
+                    }
+                }
+
+                Box(modifier = Modifier.padding(start = 13.dp)) {
+                    FloatingActionButton(
+                        onClick = {
+                            navController.navigate("createDiagnosis/$patientId")
+                        },
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = "Crear diagnóstico"
+                        )
+                    }
+                }
+            }
+        },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.diagnosis_title),
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = NunitoFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                                textAlign = TextAlign.Center
+                            ),
+                            modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center
-                        ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
-                    )
-                }
-            }, navigationIcon = {
-                IconButton(onClick = {
-                    diagnosisRemoteViewModel.clearApiMessage()
-                    navController.popBackStack()
-                }) {
-                    Icon(
-                        Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
-                    )
-                }
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
-            ), actions = {
-                IconButton(onClick = {
-                    diagnosisRemoteViewModel.clearApiMessage()
-                    navController.navigate("createDiagnosis/$patientId")
-                }) {
-                    Icon(
-                        Icons.Filled.LocalHospital,
-                        contentDescription = "Diagnòstic",
-                        tint = Color.Black,
-                        modifier = Modifier.padding(end = 16.dp)
-                    )
-                }
-            })
-    }) { paddingValues ->
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        diagnosisRemoteViewModel.clearApiMessage()
+                        navController.popBackStack()
+                    }) {
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = "Close",
+                            tint = Color.Black
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = customPrimaryColor,
+                    scrolledContainerColor = customPrimaryColor
+                ),
+                // Removemos el action del TopAppBar ya que ahora está en el FAB
+                actions = {}
+            )
+        }
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(customPrimaryColor),
             contentAlignment = Alignment.Center
-
         ) {
             when {
                 isLoading -> {
                     CircularProgressIndicator(
-                        color = Color.White, modifier = Modifier.size(50.dp)
+                        color = Color.White,
+                        modifier = Modifier.size(50.dp)
                     )
                 }
 

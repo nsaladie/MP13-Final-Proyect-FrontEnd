@@ -190,12 +190,6 @@ fun CreateDiagnosisScreen(
                 }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
                 ), actions = {
-                    Icon(
-                        Icons.Filled.LocalHospital,
-                        contentDescription = "Diagnòstic",
-                        tint = Color.Black,
-                        modifier = Modifier.padding(end = 16.dp)
-                    )
                 })
         }) { paddingValues ->
         Box(
