@@ -3,10 +3,12 @@ package com.example.hospitalfrontend.ui.medication.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.sharp.AccessTime
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,7 +36,7 @@ fun MedicationScreen(
     navController: NavController,
     medicationViewModel: MedicationViewModel,
     medicationRemoteViewModel: MedicationRemoteViewModel,
-    ) {
+) {
     val customPrimaryColor = Color(0xFFA9C7C7)
     var isLoading by remember { mutableStateOf(true) }
     val listMedication by medicationViewModel.listMedication.collectAsState()
@@ -73,7 +75,27 @@ fun MedicationScreen(
     }
 
     Scaffold(
-        containerColor = customPrimaryColor, topBar = {
+        containerColor = customPrimaryColor,
+        floatingActionButton = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate("createMedication/")
+                    },
+                    shape = CircleShape
+                ) {
+                    Icon(
+                        Icons.Filled.Add,
+                        contentDescription = "Create a new medication"
+                    )
+                }
+            }
+        }, topBar = {
             TopAppBar(
                 title = {
                     Row(
@@ -103,17 +125,7 @@ fun MedicationScreen(
                 }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
                 ), actions = {
-                    IconButton(onClick = {
-                        medicationRemoteViewModel.clearApiMessage()
-                        navController.navigate("createMedication/")
-                    }) {
-                        Icon(
-                            Icons.Filled.LocalHospital,
-                            contentDescription = "Medication",
-                            tint = Color.Black,
-                            modifier = Modifier.padding(end = 16.dp)
-                        )
-                    }
+
                 })
         }) { paddingValues ->
         Box(
