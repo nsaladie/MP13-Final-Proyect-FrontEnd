@@ -60,6 +60,8 @@
     <string name="data">Fecha</string>
     <string name="auxiliary_name">Auxiliar</string>
     <string name="bolquer">Pañal</string>
+    <string name="diagnosis_title_history">Diagnóstico %1$d</string>
+    <string name="title_history">HISTORIAL</string>
     //Create Diagnosis
     <string name="diagnosis_create_title">CREAR DIAGNÓSTICO</string>
     <string name="diagnosis_create_error_title">Error: Crear diagnóstico</string>

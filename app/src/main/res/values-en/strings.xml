@@ -60,6 +60,7 @@
     <string name="data">Date</string>
     <string name="auxiliary_name">Auxiliary</string>
     <string name="bolquer">Diaper</string>
+    <string name="title_history">HISTORY</string>
     //Create Diagnosis
     <string name="diagnosis_create_title">CREATE DIAGNOSIS</string>
     <string name="diagnosis_create_error_title">Error: Create Diagnosis</string>
@@ -77,6 +78,7 @@
     <string name="rectal_probe">Rectal Tube</string>
     <string name="nasogastric_probe">Nasogastric Tube</string>
     <string name="type_here">Type here</string>
+    <string name="diagnosis_title_history">Diagnosis %1$d</string>
     //Create care
     <string name="create_care_title">CREATE NEW CARE</string>
     <string name="success">CREATE NEW CARE</string>
@@ -107,7 +109,6 @@
     <string name="prosthesis">Wears prosthesis</string>
     <string name="shift_remarks">Shift remarks</string>
     <string name="quantity">Quantity</string>
-
     <string name="type_hygiene_required">Type of hygiene *</string>
     <string name="hygiene_option_bedridden">Bedridden</string>
     <string name="hygiene_option_partial_bed">Partial in bed</string>
@@ -140,7 +141,6 @@
     <string name="drain_type">Drain Type *</string>
     <string name="drain_type_ex">Ex: Penrose, Jackson-Pratt...</string>
     <string name="debit_quantity">Debit Quantity *</string>
-
     <string name="diet_date_label">Diet Date *</string>
     <string name="date_format_placeholder">dd-MM-YYYY</string>
     <string name="select_meal_label">Select meal *</string>
@@ -159,7 +159,6 @@
     <string name="autonomous">Autonomous</string>
     <string name="needs_help">Needs Help</string>
     <string name="prosthesis_carrier_label">Prosthesis Carrier *</string>
-
     //List care
     <string name="list_care_title">CARE LIST</string>
     <string name="care">Care</string>
@@ -180,7 +179,6 @@
     <string name="drain">Drainage</string>
     <string name="tolerance_level">Tolerance level</string>
     <string name="empty_medication">No medications available</string>
-
     //Create medication
     <string name="create_medication_title">CREATE MEDICATION</string>
     <string name="medication_name">Name</string>
