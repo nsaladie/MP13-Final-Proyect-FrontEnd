@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -20,17 +21,21 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageCreateMedication
 import com.example.hospitalfrontend.data.remote.viewmodel.MedicationRemoteViewModel
 import com.example.hospitalfrontend.domain.model.medication.MedicationState
-import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
 import com.example.hospitalfrontend.ui.diagnosis.view.NunitoFontFamily
 import com.example.hospitalfrontend.ui.medication.viewmodel.MedicationViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,19 +45,29 @@ fun CreateMedicationScreen(
     medicationRemoteViewModel: MedicationRemoteViewModel,
     isError: MutableState<Boolean>,
 ) {
+    val scope = rememberCoroutineScope()
 
+    // Form State
     val stockMedication = rememberSaveable { mutableStateOf("") }
     val nameMedication = rememberSaveable { mutableStateOf("") }
     val dosageMedication = rememberSaveable { mutableStateOf("") }
     val adminstrationRouteMedication = rememberSaveable { mutableStateOf("") }
+    var dropdownExpanded by remember { mutableStateOf(false) }
 
-    val customPrimaryColor = Color(0xFFA9C7C7)
-
+    // UI State
     var isLoading by remember { mutableStateOf(false) }
-    val createMedicationError = remember { mutableStateOf(false) }
-    val latoLightFont = FontFamily(Font(R.font.lato_light))
-    val messageApi = medicationRemoteViewModel.remoteCreateMedication.value
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
 
+    val administrationOptions = listOf(
+        stringResource(id = R.string.medication_route_oral),
+        stringResource(id = R.string.medication_route_injectable),
+        stringResource(id = R.string.medication_route_topical),
+        stringResource(id = R.string.medication_route_inhalation),
+        stringResource(id = R.string.medication_route_sublingual)
+    )
+
+    val messageApi = medicationRemoteViewModel.remoteCreateMedication.value
     val isFormValidState = remember { mutableStateOf(false) }
 
     LaunchedEffect(
@@ -70,7 +85,6 @@ fun CreateMedicationScreen(
     }
 
     LaunchedEffect(Unit) {
-        createMedicationError.value = false
         isError.value = false
         medicationRemoteViewModel.clearApiMessage()
     }
@@ -78,9 +92,8 @@ fun CreateMedicationScreen(
     LaunchedEffect(messageApi) {
         when (messageApi) {
             is RemoteApiMessageCreateMedication.Success -> {
+                showSuccessDialog = true
                 medicationRemoteViewModel.clearApiMessage()
-                isLoading = false
-                navController.popBackStack()
             }
 
             RemoteApiMessageCreateMedication.Loading -> {
@@ -88,8 +101,9 @@ fun CreateMedicationScreen(
             }
 
             RemoteApiMessageCreateMedication.Error -> {
-                createMedicationError.value = true
                 isLoading = false
+                showErrorDialog = true
+                medicationRemoteViewModel.clearApiMessage()
             }
 
             RemoteApiMessageCreateMedication.Idle -> {
@@ -104,273 +118,211 @@ fun CreateMedicationScreen(
         }
     }
 
-    if (createMedicationError.value) {
-        AlertDialog(
-            onDismissRequest = {
-                createMedicationError.value = false
-                medicationRemoteViewModel.clearApiMessage()
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    createMedicationError.value = false
-                    medicationRemoteViewModel.clearApiMessage()
-                }) {
-                    Text("OK")
+    // Success Dialog
+    if (showSuccessDialog) {
+        StatusDialog(
+            title = stringResource(R.string.dialog_create_medication_title_success),
+            message = stringResource(R.string.dialog_create_medication_text_success),
+            icon = Icons.Filled.CheckCircle,
+            iconTint = AppColors.Secondary,
+            onDismiss = {
+                showSuccessDialog = false
+                scope.launch {
+                    delay(300)
+                    navController.popBackStack()
                 }
-            },
-            title = {
-                Text(
-                    text = stringResource(id = R.string.diagnosis_create_error_title),
-                    color = Color.Red,
-                    style = TextStyle(
-                        fontFamily = NunitoFontFamily,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(id = R.string.diagnosis_create_error_message),
-                    style = TextStyle(fontFamily = LatoFontFamily)
-                )
+            }
+        )
+    }
+
+    // Error Dialog
+    if (showErrorDialog) {
+        StatusDialog(
+            title = stringResource(R.string.error_title),
+            message = stringResource(R.string.dialog_create_medication_text_fail),
+            icon = Icons.Filled.Error,
+            iconTint = Color.Red,
+            onDismiss = {
+                showErrorDialog = false
             }
         )
     }
 
     Scaffold(
-        containerColor = customPrimaryColor,
+        containerColor = AppColors.Primary,
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.create_medication_title),
-                            style = TextStyle(
-                                fontSize = 25.sp,
-                                fontFamily = NunitoFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center
-                            ),
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        medicationRemoteViewModel.clearApiMessage()
-                        isError.value = false
-                        navController.popBackStack()
-                    }) {
-                        Icon(
-                            Icons.Filled.Close,
-                            contentDescription = "Close",
-                            tint = Color.Black
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customPrimaryColor
-                )
-            )
-        },
-        bottomBar = {
-            Button(
-                onClick = {
-                    val stockValue = stockMedication.value.toIntOrNull() ?: 0
-                    val medicationState = MedicationState(
-                        id = 0,
-                        name = nameMedication.value,
-                        dosage = dosageMedication.value,
-                        adminstrationRoute = adminstrationRouteMedication.value,
-                        stock = stockValue,
-                    )
-
+            MedicationTopBar(
+                title = stringResource(id = R.string.create_medication_title),
+                onNavigateBack = {
+                    medicationRemoteViewModel.clearApiMessage()
                     isError.value = false
-                    medicationRemoteViewModel.addMedicine(medicationState)
-                },
-                enabled = isFormValidState.value,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(28.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(151, 199, 150),
-                    disabledContainerColor = Color.LightGray
-                )
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = null,
-                        tint = Color.White
-                    )
-                    Text(
-                        text = stringResource(id = R.string.button_save),
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        fontFamily = latoLightFont,
-                    )
+                    navController.popBackStack()
                 }
-            }
+            )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(customPrimaryColor)
+                .background(AppColors.Primary)
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
         ) {
             if (isLoading) {
-                Box(
+                CircularProgressIndicator(
+                    color = AppColors.White,
+                    modifier = Modifier.size(50.dp)
+                )
+            } else {
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                        .verticalScroll(rememberScrollState())
+                        .padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(18.dp)
                 ) {
-                    CircularProgressIndicator(
-                        color = Color.White,
-                        modifier = Modifier.size(50.dp)
+                    CreateMedicationForm(
+                        name = nameMedication.value,
+                        onNameChange = { nameMedication.value = it },
+                        dosage = dosageMedication.value,
+                        onDosageChange = { dosageMedication.value = it },
+                        administrationRoute = adminstrationRouteMedication.value,
+                        onRouteChange = { adminstrationRouteMedication.value = it },
+                        stock = stockMedication.value,
+                        onStockChange = { newValue ->
+                            if (newValue.isEmpty() || newValue.all { char -> char.isDigit() }) {
+                                stockMedication.value = newValue
+                            }
+                        },
+                        administrationOptions = administrationOptions,
+                        dropdownExpanded = dropdownExpanded,
+                        onDropdownExpandedChange = { dropdownExpanded = it },
+                        onCreateClick = {
+                            val stockValue = stockMedication.value.toIntOrNull() ?: 0
+                            val medicationState = MedicationState(
+                                id = 0,
+                                name = nameMedication.value,
+                                dosage = dosageMedication.value,
+                                adminstrationRoute = adminstrationRouteMedication.value,
+                                stock = stockValue,
+                            )
+                            isError.value = false
+                            medicationRemoteViewModel.addMedicine(medicationState)
+                        },
+                        isFormValid = isFormValidState.value
                     )
                 }
             }
+        }
+    }
+}
+@Composable
+fun CreateMedicationForm(
+    name: String,
+    onNameChange: (String) -> Unit,
+    dosage: String,
+    onDosageChange: (String) -> Unit,
+    administrationRoute: String,
+    onRouteChange: (String) -> Unit,
+    stock: String,
+    onStockChange: (String) -> Unit,
+    administrationOptions: List<String>,
+    dropdownExpanded: Boolean,
+    onDropdownExpandedChange: (Boolean) -> Unit,
+    onCreateClick: () -> Unit,
+    isFormValid: Boolean
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = AppColors.White
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        ),
+        shape = RoundedCornerShape(18.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            MedicationFormField(
+                value = name,
+                onValueChange = onNameChange,
+                label = stringResource(id = R.string.medication_name),
+                icon = Icons.Filled.Medication,
+                placeholder = stringResource(id = R.string.placeholder_medication_name),
+                keyboardType = KeyboardType.Text
+            )
 
-            Column(
+            MedicationFormField(
+                value = dosage,
+                onValueChange = onDosageChange,
+                label = stringResource(id = R.string.medication_dosage),
+                icon = Icons.Filled.Science,
+                placeholder = stringResource(id = R.string.placeholder_medication_dosage),
+                keyboardType = KeyboardType.Text
+            )
+
+            AdministrationRouteSelector(
+                selectedRoute = administrationRoute,
+                options = administrationOptions,
+                isExpanded = dropdownExpanded,
+                onExpandedChange = onDropdownExpandedChange,
+                onOptionSelected = onRouteChange
+            )
+
+            MedicationFormField(
+                value = stock,
+                onValueChange = onStockChange,
+                label = stringResource(id = R.string.medication_stock),
+                placeholder = stringResource(id = R.string.placeholder_medication_stock),
+                icon = Icons.Filled.Inventory,
+                keyboardType = KeyboardType.Number
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Create button
+            Button(
+                onClick = onCreateClick,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppColors.Secondary,
+                    disabledContainerColor = AppColors.Secondary.copy(alpha = 0.5f)
+                ),
+                shape = RoundedCornerShape(12.dp),
+                enabled = isFormValid
             ) {
-                CreateMedicationDetailsCard(
-                    nameInfo = nameMedication,
-                    stockInfo = stockMedication,
-                    dosageInfo = dosageMedication,
-                    adminstrationRouteInfo = adminstrationRouteMedication
-                )
-                // Botón eliminado de aquí
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.Save,
+                        contentDescription = null,
+                        tint = AppColors.White
+                    )
+                    Text(
+                        text = stringResource(id = R.string.button_save),
+                        style = TextStyle(
+                            fontFamily = NunitoFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = AppColors.White
+                        )
+                    )
+                }
             }
         }
     }
 }
 
-
-
-@Composable
-fun CreateMedicationDetailsCard(
-    stockInfo: MutableState<String>,
-    nameInfo: MutableState<String>,
-    dosageInfo: MutableState<String>,
-    adminstrationRouteInfo: MutableState<String>
-
-) {
-    val customIconColor = Color(0xFF505050)
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            ItemInfo(
-                labelResId = R.string.medication_name,
-                info = nameInfo.value,
-                onInfoChange = { nameInfo.value = it },
-                icon = Icons.Filled.Water,
-                iconColor = customIconColor
-            )
-            ItemInfo(
-                labelResId = R.string.medication_dossage,
-                info = dosageInfo.value,
-                onInfoChange = { dosageInfo.value = it },
-                icon = Icons.Filled.Medication,
-                iconColor = customIconColor
-            )
-            ItemInfo(
-                labelResId = R.string.medication_administration,
-                info = adminstrationRouteInfo.value,
-                onInfoChange = { adminstrationRouteInfo.value = it },
-                icon = Icons.Filled.HealthAndSafety,
-                iconColor = customIconColor
-            )
-            ItemInfo(
-                labelResId = R.string.medication_stock,
-                info = stockInfo.value,
-                onInfoChange = { stockInfo.value = it },
-                icon = Icons.Filled.HealthAndSafety,
-                iconColor = customIconColor
-            )
-        }
-    }
-}
-
-@Composable
-fun ItemInfo(
-    @StringRes labelResId: Int,
-    info: String,
-    onInfoChange: (String) -> Unit,
-    icon: ImageVector,
-    iconColor: Color = Color(0xFF505050),
-) {
-    val label = stringResource(id = labelResId)
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconColor,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Text(
-                text = label,
-                style = MaterialTheme.typography.titleMedium,
-                fontSize = 20.sp,
-                fontFamily = NunitoFontFamily,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF2C3E50)
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        ) {
-
-            TextField(
-                value = info,
-                onValueChange = onInfoChange,
-                label = { Text(stringResource(R.string.type_here)) },
-                modifier = Modifier.fillMaxWidth(),
-
-                )
-        }
-    }
-}
+// Función de validación existente
 fun isFormValid(
     nameInfo: String,
     dosageInfo: String,

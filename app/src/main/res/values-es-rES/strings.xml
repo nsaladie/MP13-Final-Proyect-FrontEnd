@@ -223,7 +223,9 @@
     <string name="medication_dossage">Dosis</string>
     <string name="medication_administration">Vía de administración</string>
     <string name="medication_stock">Stock</string>
-
+    <string name="dialog_create_medication_title_success">Éxito</string>
+    <string name="dialog_create_medication_text_success">Medicamento creado exitosamente</string>
+    <string name="dialog_create_medication_text_fail">Hubo un error al crear el medicamento</string>
     //MENU ALERT DIALOG DISCHARGE
     <string name="alert_dialog_discharge_title">Confirmación del alta</string>
     <string name="alert_dialog_discharge_text">¿Está seguro de que quiere dar de alta a este paciente?</string>

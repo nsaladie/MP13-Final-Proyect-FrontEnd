@@ -223,6 +223,10 @@
     <string name="medication_dossage">Dosage</string>
     <string name="medication_administration">Route of administration</string>
     <string name="medication_stock">Stock</string>
+    <string name="dialog_create_medication_title_success">Success</string>
+    <string name="dialog_create_medication_text_success">Medication created successfully</string>
+    <string name="dialog_create_medication_text_fail">An error occurred while creating the medication</string>
+
 
     //MENU ALERT DIALOG DISCHARGE
     <string name="alert_dialog_discharge_title">Discharge confirmation</string>
