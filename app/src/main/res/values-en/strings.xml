@@ -2,6 +2,10 @@
 <resources>
     <string name="app_name">HealthNest</string>
     <string name="switch_language">Switch Language</string>
+    // BOTTOM BAR
+    <string name="bottom_bar_home">Home</string>
+    <string name="bottom_bar_medication">Medication</string>
+    <string name="bottom_bar_configuration">Configuration</string>
     //Login
     <string name="login_title">Login</string>
     <string name="button_login">Sign In</string>
@@ -178,7 +182,41 @@
     <string name="observation_title">Observations</string>
     <string name="drain">Drainage</string>
     <string name="tolerance_level">Tolerance level</string>
+    // LIST MEDICATION
+    <string name="medication_list_title">LIST OF MEDICINES</string>
     <string name="empty_medication">No medications available</string>
+    <string name="create_medication">You can create a new medication using the floating button in the bottom right corner</string>
+    <string name="medication_list_search_title">No medications found</string>
+    <string name="medication_list_search_subtitle">Try another name</string>
+    <string name="medication_list_update">Update</string>
+    <string name="medication_list_dosage">Dosage</string>
+    <string name="medication_list_administration">Route of administration</string>
+    <string name="medication_list_stock">Stock available</string>
+    <string name="medication_list_stock_unity">Unity</string>
+    <string name="medication_list_search">Search for medicines...</string>
+    <!-- Medication Update -->
+    <string name="medication_update_title">UPDATE DATA</string>
+    <string name="medication_name">Medication Name</string>
+    <string name="medication_dosage">Dosage</string>
+    <string name="medication_administration_route">Administration Route</string>
+    <string name="medication_stock">Stock</string>
+    <string name="update_button">Update</string>
+    <string name="dialog_update_medication_title_success">UPDATED DATA</string>
+    <string name="dialog_update_medication_text_success">The medication information has been successfully updated</string>
+    <string name="dialog_update_medication_title_fail">FAIL UPDATING DATA</string>
+    <string name="dialog_update_medication_text_fail">An error occurred while updating the medication information. Please try again later</string>
+    <string name="close">Close</string>
+    <!-- Administration Routes -->
+    <string name="medication_route_oral">Oral</string>
+    <string name="medication_route_injectable">Injectable</string>
+    <string name="medication_route_topical">Topical</string>
+    <string name="medication_route_inhalation">Inhalation</string>
+    <string name="medication_route_sublingual">Sublingual</string>
+    <!-- Placeholder Medication -->
+    <string name="placeholder_medication_name">E.g.: Paracetamol</string>
+    <string name="placeholder_medication_dosage">E.g.: 500mg</string>
+    <string name="placeholder_medication_stock">E.g.: 20</string>
+
     //Create medication
     <string name="create_medication_title">CREATE MEDICATION</string>
     <string name="medication_name">Name</string>
@@ -190,7 +228,6 @@
     <string name="alert_dialog_discharge_text">Are you sure you want to discharge this patient?</string>
     <string name="alert_dialog_discharge_cancel">Cancel</string>
     <string name="alert_dialog_discharge_ok">Yes, discharge this patient</string>
-
 </resources>
 
 

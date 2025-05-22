@@ -24,6 +24,7 @@ import com.example.hospitalfrontend.ui.medication.view.MedicationScreen
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import PersonalData
 import com.example.hospitalfrontend.ui.home.view.MenuScreen
+import com.example.hospitalfrontend.ui.medication.view.UpdateMedicationScreen
 import com.example.hospitalfrontend.ui.medication.view.CreateMedicationScreen
 import com.example.hospitalfrontend.ui.medication.viewmodel.MedicationViewModel
 
@@ -119,6 +120,18 @@ fun AppNavHost(
         }
 
         // Rest of views of the applications
+        composable(
+            "medicationUpdate/{medicationId}",
+            arguments = listOf(navArgument("medicationId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val medicationId = backStackEntry.arguments?.getInt("medicationId") ?: -1
+            UpdateMedicationScreen(
+                navController = navController,
+                medicationId = medicationId,
+                medicationRemoteViewModel = medicationRemoteViewModel
+            )
+        }
+
         composable(
             "diagnosis/{patientId}",
             arguments = listOf(navArgument("patientId") { type = NavType.IntType })
