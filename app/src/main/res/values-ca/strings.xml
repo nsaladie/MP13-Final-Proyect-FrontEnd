@@ -61,6 +61,8 @@
     <string name="data">Data</string>
     <string name="auxiliary_name">Auxiliar</string>
     <string name="bolquer">Bolquer</string>
+    <string name="diagnosis_title_history">Diagnòstic %1$d</string>
+    <string name="title_history">HISTORIAL</string>
     //Create diagnosis
     <string name="diagnosis_create_title">CREAR DIAGNÓSTIC</string>
     <string name="diagnosis_create_error_title">Error: Create Diagnostic</string>

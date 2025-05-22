@@ -59,6 +59,8 @@
     <string name="data">Date</string>
     <string name="auxiliary_name">Auxiliary</string>
     <string name="bolquer">Diaper</string>
+    <string name="diagnosis_title_history">Diagnosis %1$d</string>
+    <string name="title_history">HISTORY</string>
     //Create Diagnosis
     <string name="diagnosis_create_title">CREATE DIAGNOSIS</string>
     <string name="diagnosis_create_error_title">Error: Create Diagnosis</string>
