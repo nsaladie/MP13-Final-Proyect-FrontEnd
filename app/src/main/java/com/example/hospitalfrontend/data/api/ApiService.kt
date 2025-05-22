@@ -94,4 +94,12 @@ interface ApiService {
     // List of Medication
     @GET("/medication")
     suspend fun getAllMedication(): List<MedicationState>
+
+    // Medication
+    @GET("/medication/{id}")
+    suspend fun getMedication(@Path("id") id: Int): MedicationState
+
+    // Medication
+    @PUT("/medication/{id}")
+    suspend fun updateMedication(@Path("id") id: Int, @Body request: MedicationState): Boolean
 }

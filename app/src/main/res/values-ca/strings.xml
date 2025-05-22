@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Hospital FrontEnd</string>
+    <string name="app_name">HealthNest</string>
     <string name="login_title">Iniciar Sessió</string>
     <string name="switch_language">Canvi de llengua</string>
+    // BOTTOM BAR
+    <string name="bottom_bar_home">Inici</string>
+    <string name="bottom_bar_medication">Medicaments</string>
+    <string name="bottom_bar_configuration">Configuració</string>
     //Login
     <string name="button_login">Accedir</string>
     <string name="dialog_ok">OK</string>
@@ -175,6 +179,38 @@
     <string name="observation_title">Observacions</string>
     <string name="drain">Drenatge</string>
     <string name="tolerance_level">Nivell de tolerància</string>
-    //Medication View
+    // LIST MEDICATION
+    <string name="medication_list_title">LLISTA DE MEDICAMENTS</string>
     <string name="empty_medication">No hi ha medicaments disponibles</string>
+    <string name="create_medication">Pots crear un nou medicament utilitzant el botó flotant a la cantonada inferior dreta</string>
+    <string name="medication_list_search_title">No s\'han trobat medicaments</string>
+    <string name="medication_list_search_subtitle">Prova amb un altre nom</string>
+    <string name="medication_list_update">Actualitzar</string>
+    <string name="medication_list_dosage">Dosi</string>
+    <string name="medication_list_administration">Via d\'administració</string>
+    <string name="medication_list_stock">Estoc disponible</string>
+    <string name="medication_list_stock_unity">Unitats</string>
+    <string name="medication_list_search">Cerca medicaments...</string>
+    <!-- Medication Update Strings -->
+    <string name="medication_update_title">ACTUALITZAR DADES</string>
+    <string name="medication_name">Nom del Medicament</string>
+    <string name="medication_dosage">Dosi</string>
+    <string name="medication_administration_route">Via d\'Administració</string>
+    <string name="medication_stock">Existències</string>
+    <string name="update_button">Actualitzar</string>
+    <string name="dialog_update_medication_title_success">DADES ACTUALITZADES</string>
+    <string name="dialog_update_medication_text_success">La informació del medicament s\'ha actualitzat correctament</string>
+    <string name="dialog_update_medication_title_fail">ERROR AL ACTUALIZAR DADES</string>
+    <string name="dialog_update_medication_text_fail">S\'ha produït un error en actualitzar la informació del medicament. Si us plau, intenta-ho més tard</string>
+    <string name="close">Tancar</string>
+    <!-- Administration Routes -->
+    <string name="medication_route_oral">Oral</string>
+    <string name="medication_route_injectable">Injectable</string>
+    <string name="medication_route_topical">Tòpica</string>
+    <string name="medication_route_inhalation">Inhalació</string>
+    <string name="medication_route_sublingual">Sublingual</string>
+    <!-- Placeholder Medication -->
+    <string name="placeholder_medication_name">Ex: Paracetamol</string>
+    <string name="placeholder_medication_dosage">Ex: 500mg</string>
+    <string name="placeholder_medication_stock">Ex: 20</string>
 </resources>

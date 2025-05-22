@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Hospital FrontEnd</string>
+    <string name="app_name">HealthNest</string>
     <string name="login_title">Iniciar Sesión</string>
     <string name="switch_language">Cambiar idioma</string>
+    // BOTTOM BAR
+    <string name="bottom_bar_home">Inicio</string>
+    <string name="bottom_bar_medication">Medicamentos</string>
+    <string name="bottom_bar_configuration">Configuración</string>
     //Login
     <string name="button_login">Acceder</string>
     <string name="dialog_ok">OK</string>
@@ -175,5 +179,38 @@
     <string name="observation_title">Observaciones</string>
     <string name="drain">Drenaje</string>
     <string name="tolerance_level">Nivel de tolerancia</string>
+    // LIST MEDICATION
     <string name="empty_medication">No hay medicamentos disponibles</string>
+    <string name="create_medication">Puedes crear un nuevo medicamento utilizando el botón flotante en la esquina inferior derecha</string>
+    <string name="medication_list_title">LISTA DE MEDICAMENTOS</string>
+    <string name="medication_list_search_title">No se encontraron medicamentos</string>
+    <string name="medication_list_search_subtitle">Prueba con otro nombre</string>
+    <string name="medication_list_update">Actualizar</string>
+    <string name="medication_list_dosage">Dosis</string>
+    <string name="medication_list_administration">Vía de administración</string>
+    <string name="medication_list_stock">Stock disponible</string>
+    <string name="medication_list_stock_unity">Unidades</string>
+    <string name="medication_list_search">Buscar medicamentos...</string>
+    <!-- Medication Update Strings -->
+    <string name="medication_update_title">ACTUALIZAR DATOS</string>
+    <string name="medication_name">Nombre del Medicamento</string>
+    <string name="medication_dosage">Dosis</string>
+    <string name="medication_administration_route">Vía de Administración</string>
+    <string name="medication_stock">Existencias</string>
+    <string name="update_button">Actualizar</string>
+    <string name="dialog_update_medication_title_success">DATOS ACTUALIZADOS</string>
+    <string name="dialog_update_medication_text_success">La información del medicamento se ha actualizado correctamente</string>
+    <string name="dialog_update_medication_title_fail">ERROR AL ACTUALIZAR DATOS</string>
+    <string name="dialog_update_medication_text_fail">Se ha producido un error al actualizar la información del medicamento. Por favor, inténtalo más tarde</string>
+    <string name="close">Cerrar</string>
+    <!-- Administration Routes -->
+    <string name="medication_route_oral">Oral</string>
+    <string name="medication_route_injectable">Inyectable</string>
+    <string name="medication_route_topical">Tópica</string>
+    <string name="medication_route_inhalation">Inhalación</string>
+    <string name="medication_route_sublingual">Sublingual</string>
+    <!-- Placeholder Medication -->
+    <string name="placeholder_medication_name">Ej: Paracetamol</string>
+    <string name="placeholder_medication_dosage">Ej: 500mg</string>
+    <string name="placeholder_medication_stock">Ej: 20</string>
 </resources>

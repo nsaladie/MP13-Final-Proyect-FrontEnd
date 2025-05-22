@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -81,13 +82,16 @@ fun MedicationScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "MEDICAMENTS", style = TextStyle(
+                            text = stringResource(id = R.string.medication_list_title),
+                            style = TextStyle(
                                 fontSize = 30.sp,
                                 fontFamily = NunitoFontFamily,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.Black,
                                 textAlign = TextAlign.Center
-                            ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                            ),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
                         )
                     }
                 },
@@ -124,7 +128,7 @@ fun MedicationScreen(
                 ) {
                     NoDataInformation(
                         labelRes = R.string.empty_medication,
-                        infoRes = R.string.create_diagnosis,
+                        infoRes = R.string.create_medication,
                         icon = Icons.Filled.Medication
                     )
                 }
@@ -158,12 +162,13 @@ fun MedicationScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.SearchOff,
-                                    contentDescription = "No se encontraron resultados",
+                                    contentDescription = "No found",
                                     tint = Color.White,
                                     modifier = Modifier.size(48.dp)
                                 )
                                 Text(
-                                    text = "No s'han trobat medicaments", style = TextStyle(
+                                    text = stringResource(id = R.string.medication_list_search_title),
+                                    style = TextStyle(
                                         fontFamily = NunitoFontFamily,
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold,
@@ -171,7 +176,8 @@ fun MedicationScreen(
                                     )
                                 )
                                 Text(
-                                    text = "Intenta amb un altre nom", style = TextStyle(
+                                    text = stringResource(id = R.string.medication_list_search_subtitle),
+                                    style = TextStyle(
                                         fontFamily = LatoFontFamily,
                                         fontSize = 16.sp,
                                         color = Color.White
@@ -234,7 +240,7 @@ fun MedicationDetailCard(medication: MedicationState, navController: NavControll
 
                 TextButton(
                     onClick = {
-                        navController.navigate("medicationDetail/${medication.id}")
+                        navController.navigate("medicationUpdate/${medication.id}")
                     }, colors = ButtonDefaults.textButtonColors(
                         containerColor = Color.Transparent
                     )
@@ -244,7 +250,9 @@ fun MedicationDetailCard(medication: MedicationState, navController: NavControll
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            "Actualizar", color = customIconColor, style = TextStyle(
+                            stringResource(id = R.string.medication_list_update),
+                            color = customIconColor,
+                            style = TextStyle(
                                 fontFamily = NunitoFontFamily,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp
@@ -252,7 +260,7 @@ fun MedicationDetailCard(medication: MedicationState, navController: NavControll
                         )
                         Icon(
                             imageVector = Icons.Filled.Edit,
-                            contentDescription = "Actualizar",
+                            contentDescription = "Update",
                             tint = customIconColor,
                             modifier = Modifier.size(22.dp)
                         )
@@ -261,7 +269,7 @@ fun MedicationDetailCard(medication: MedicationState, navController: NavControll
             }
 
             DetailItemWithIcon(
-                label = "Dosi",
+                label = stringResource(id = R.string.medication_list_dosage),
                 info = medication.dosage,
                 icon = Icons.Filled.Science,
                 iconColor = customIconColor,
@@ -269,7 +277,7 @@ fun MedicationDetailCard(medication: MedicationState, navController: NavControll
             )
 
             DetailItemWithIcon(
-                label = "Via d'administració",
+                label = stringResource(id = R.string.medication_list_administration),
                 info = medication.adminstrationRoute,
                 icon = getAdministrationRouteIcon(medication.adminstrationRoute),
                 iconColor = customIconColor,
@@ -277,8 +285,8 @@ fun MedicationDetailCard(medication: MedicationState, navController: NavControll
             )
 
             DetailItemWithIcon(
-                label = "Stock disponible",
-                info = "${medication.stock} unitats",
+                label = stringResource(id = R.string.medication_list_stock),
+                info = "${medication.stock} ${stringResource(id = R.string.medication_list_stock_unity)}",
                 icon = Icons.Filled.Inventory,
                 iconColor = stockColor,
                 infoColor = stockColor
@@ -333,7 +341,7 @@ fun SearchField(
         onValueChange = onValueChange,
         placeholder = {
             Text(
-                text = "Cerca medicaments...", style = TextStyle(
+                text = stringResource(id = R.string.medication_list_search), style = TextStyle(
                     fontFamily = LatoFontFamily, color = Color(0xFF7F8C8D)
                 )
             )
@@ -341,7 +349,7 @@ fun SearchField(
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
-                contentDescription = "Icona de cerca",
+                contentDescription = "Search",
                 tint = Color(0xFF505050)
             )
         },
@@ -350,7 +358,7 @@ fun SearchField(
                 IconButton(onClick = { onValueChange("") }) {
                     Icon(
                         imageVector = Icons.Filled.Clear,
-                        contentDescription = "Esborrar cerca",
+                        contentDescription = "Delete Search",
                         tint = Color(0xFF505050)
                     )
                 }
