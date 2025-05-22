@@ -35,7 +35,7 @@ fun MedicationScreen(
     navController: NavController,
     medicationViewModel: MedicationViewModel,
     medicationRemoteViewModel: MedicationRemoteViewModel,
-    ) {
+) {
     val customPrimaryColor = Color(0xFFA9C7C7)
     var isLoading by remember { mutableStateOf(true) }
     val listMedication by medicationViewModel.listMedication.collectAsState()
@@ -95,16 +95,7 @@ fun MedicationScreen(
                         )
                     }
                 },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        medicationRemoteViewModel.clearApiMessage()
-                        navController.popBackStack()
-                    }) {
-                        Icon(
-                            Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
-                        )
-                    }
-                }, colors = TopAppBarDefaults.topAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
                 ), actions = {
                     IconButton(onClick = {

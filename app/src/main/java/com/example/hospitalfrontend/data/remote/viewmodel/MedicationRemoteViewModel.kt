@@ -11,8 +11,6 @@ import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageBoolean
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListMedication
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageMedication
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageCreateMedication
-import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageDiagnosis
-import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListMedication
 import com.example.hospitalfrontend.domain.model.medication.MedicationState
 import kotlinx.coroutines.launch
 
