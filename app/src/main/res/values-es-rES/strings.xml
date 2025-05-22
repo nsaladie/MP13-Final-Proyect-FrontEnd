@@ -143,7 +143,7 @@
     <string name="oxygen_saturation_required">Saturación O₂ *</string>
     <string name="additional_measures">Medidas Adicionales</string>
     <string name="drain_type">Tipo de Drenaje *</string>
-    <string name="drain_type_ex">Ej: Penrose, Jackson-Pratt...</string>
+    <string name="drain_type_ex">Ej: Penrose, Jackson-Pratt…</string>
     <string name="debit_quantity">Cantidad de Débito *</string>
     <string name="diet_date_label">Fecha de la dieta *</string>
     <string name="date_format_placeholder">dd-MM-AAAA</string>
@@ -185,7 +185,7 @@
     // LIST MEDICATION
     <string name="empty_medication">No hay medicamentos disponibles</string>
     <string name="create_medication">Puedes crear un nuevo medicamento utilizando el botón flotante en la esquina inferior derecha</string>
-    <string name="medication_list_title">LISTA DE MEDICAMENTOS</string>
+    <string name="medication_list_title">MEDICAMENTOS</string>
     <string name="medication_list_search_title">No se encontraron medicamentos</string>
     <string name="medication_list_search_subtitle">Prueba con otro nombre</string>
     <string name="medication_list_update">Actualizar</string>
@@ -193,13 +193,13 @@
     <string name="medication_list_administration">Vía de administración</string>
     <string name="medication_list_stock">Stock disponible</string>
     <string name="medication_list_stock_unity">Unidades</string>
-    <string name="medication_list_search">Buscar medicamentos...</string>
+    <string name="medication_list_search">Buscar medicamentos…</string>
     <!-- Medication Update Strings -->
     <string name="medication_update_title">ACTUALIZAR DATOS</string>
-    <string name="medication_name">Nombre del Medicamento</string>
+    <string name="medication_update_name">Nombre del Medicamento</string>
     <string name="medication_dosage">Dosis</string>
     <string name="medication_administration_route">Vía de Administración</string>
-    <string name="medication_stock">Existencias</string>
+    <string name="medication_update_stock">Existencias</string>
     <string name="update_button">Actualizar</string>
     <string name="dialog_update_medication_title_success">DATOS ACTUALIZADOS</string>
     <string name="dialog_update_medication_text_success">La información del medicamento se ha actualizado correctamente</string>

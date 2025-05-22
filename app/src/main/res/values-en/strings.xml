@@ -4,7 +4,7 @@
     <string name="switch_language">Switch Language</string>
     // BOTTOM BAR
     <string name="bottom_bar_home">Home</string>
-    <string name="bottom_bar_medication">Medication</string>
+    <string name="bottom_bar_medication">Medicine</string>
     <string name="bottom_bar_configuration">Configuration</string>
     //Login
     <string name="login_title">Login</string>
@@ -143,7 +143,7 @@
     <string name="oxygen_saturation_required">O₂ Saturation *</string>
     <string name="additional_measures">Additional Measures</string>
     <string name="drain_type">Drain Type *</string>
-    <string name="drain_type_ex">Ex: Penrose, Jackson-Pratt...</string>
+    <string name="drain_type_ex">Ex: Penrose, Jackson-Pratt…</string>
     <string name="debit_quantity">Debit Quantity *</string>
     <string name="diet_date_label">Diet Date *</string>
     <string name="date_format_placeholder">dd-MM-YYYY</string>
@@ -183,7 +183,7 @@
     <string name="drain">Drainage</string>
     <string name="tolerance_level">Tolerance level</string>
     // LIST MEDICATION
-    <string name="medication_list_title">LIST OF MEDICINES</string>
+    <string name="medication_list_title">MEDICINES</string>
     <string name="empty_medication">No medications available</string>
     <string name="create_medication">You can create a new medication using the floating button in the bottom right corner</string>
     <string name="medication_list_search_title">No medications found</string>
@@ -193,13 +193,13 @@
     <string name="medication_list_administration">Route of administration</string>
     <string name="medication_list_stock">Stock available</string>
     <string name="medication_list_stock_unity">Unity</string>
-    <string name="medication_list_search">Search for medicines...</string>
+    <string name="medication_list_search">Search for medicines…</string>
     <!-- Medication Update -->
     <string name="medication_update_title">UPDATE DATA</string>
-    <string name="medication_name">Medication Name</string>
+    <string name="medication_update_name">Medication Name</string>
     <string name="medication_dosage">Dosage</string>
     <string name="medication_administration_route">Administration Route</string>
-    <string name="medication_stock">Stock</string>
+    <string name="medication_update_stock">Stock</string>
     <string name="update_button">Update</string>
     <string name="dialog_update_medication_title_success">UPDATED DATA</string>
     <string name="dialog_update_medication_text_success">The medication information has been successfully updated</string>
