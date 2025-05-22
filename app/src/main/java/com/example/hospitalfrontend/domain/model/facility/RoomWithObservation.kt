@@ -1,6 +1,13 @@
 package com.example.hospitalfrontend.domain.model.facility
 
-data class RoomWithObservation(
+import com.example.hospitalfrontend.domain.model.patient.PatientState
+import java.util.Date
+
+data class RoomDTO(
     val room: RoomState,
-    val lastObservation: String?
+    val patient: PatientState?,
+    val assignmentDate: Date?,
+    val releaseDate: Date,
+    val occupied: Boolean,
+    val lastObservation: String
 )

@@ -1,41 +1,31 @@
 package com.example.hospitalfrontend.ui.diagnosis.view
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.sharp.AccessTime
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.*
+import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.*
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.hospitalfrontend.R
-import com.example.hospitalfrontend.domain.model.medical.DiagnosisState
-import com.example.hospitalfrontend.data.remote.viewmodel.DiagnosisRemoteViewModel
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageDiagnosis
+import com.example.hospitalfrontend.data.remote.viewmodel.DiagnosisRemoteViewModel
+import com.example.hospitalfrontend.domain.model.medical.DiagnosisState
 import com.example.hospitalfrontend.ui.diagnosis.viewmodel.DiagnosisViewModel
-import com.example.hospitalfrontend.ui.theme.HospitalFrontEndTheme
-import com.example.hospitalfrontend.utils.toDiapersText
-import com.example.hospitalfrontend.utils.toOxygenLevelText
+import com.example.hospitalfrontend.utils.*
+
 
 val NunitoFontFamily = FontFamily(
     Font(R.font.nunito_medium), Font(R.font.nunito_bold, FontWeight.Bold)
@@ -64,7 +54,6 @@ fun DiagnosisScreen(
         diagnosisScreenError.value = false
     }
 
-
     LaunchedEffect(patientId) {
         diagnosisRemoteViewModel.getDiagnosisById(patientId, diagnosisViewModel)
     }
@@ -76,72 +65,75 @@ fun DiagnosisScreen(
                 isLoading = false
                 diagnosisScreenError.value = false
             }
-
             is RemoteApiMessageDiagnosis.NotFound -> {
                 isLoading = false
                 diagnosisScreenError.value = false
             }
-
             is RemoteApiMessageDiagnosis.Error -> {
                 isLoading = false
                 diagnosisScreenError.value = true
             }
-
             is RemoteApiMessageDiagnosis.Loading -> {
                 isLoading = true
             }
         }
     }
+
     LaunchedEffect(diagnosisViewModel.diagnosisDetail) {
         diagnosisViewModel.diagnosisDetail.collect { newState ->
             diagnosisState = newState
         }
     }
 
-
-    Scaffold(
-        containerColor = customPrimaryColor, topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.diagnosis_title), style = TextStyle(
-                                fontSize = 30.sp,
-                                fontFamily = NunitoFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center
-                            ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
-                        )
-                    }
-                }, navigationIcon = {
-                    IconButton(onClick = {
-                        diagnosisRemoteViewModel.clearApiMessage()
-                        navController.popBackStack()
-                    }) {
-                        Icon(
-                            Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
-                        )
-                    }
-                }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
-                ), actions = {
-                    IconButton(onClick = {
-                        diagnosisRemoteViewModel.clearApiMessage()
-                        navController.navigate("createDiagnosis/$patientId")
-                    }) {
-                        Icon(
-                            Icons.Filled.LocalHospital,
-                            contentDescription = "Diagnòstic",
-                            tint = Color.Black,
-                            modifier = Modifier.padding(end = 16.dp)
-                        )
-                    }
-                })
-        }) { paddingValues ->
+    Scaffold(containerColor = customPrimaryColor, floatingActionButton = {
+        FloatingActionButton(
+            onClick = {
+                navController.navigate("diagnosisHistory/$patientId")
+            }, modifier = Modifier.padding(16.dp), shape = CircleShape
+        ) {
+            Icon(Icons.Sharp.AccessTime, contentDescription = "See diagnosis history")
+        }
+    }, topBar = {
+        TopAppBar(
+            title = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.diagnosis_title), style = TextStyle(
+                            fontSize = 30.sp,
+                            fontFamily = NunitoFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        ), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    )
+                }
+            }, navigationIcon = {
+                IconButton(onClick = {
+                    diagnosisRemoteViewModel.clearApiMessage()
+                    navController.popBackStack()
+                }) {
+                    Icon(
+                        Icons.Filled.Close, contentDescription = "Close", tint = Color.Black
+                    )
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
+            ), actions = {
+                IconButton(onClick = {
+                    diagnosisRemoteViewModel.clearApiMessage()
+                    navController.navigate("createDiagnosis/$patientId")
+                }) {
+                    Icon(
+                        Icons.Filled.LocalHospital,
+                        contentDescription = "Diagnòstic",
+                        tint = Color.Black,
+                        modifier = Modifier.padding(end = 16.dp)
+                    )
+                }
+            })
+    }) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -217,7 +209,7 @@ fun DiagnosisDetailsCard(diagnosisState: DiagnosisState?) {
                 OxygenSection(diagnosisState, customPrimaryColor)
             }
 
-            diagnosisState?.diapers?.let { diaper ->
+            diagnosisState?.diapers?.let {
                 DiapersSection(diagnosisState, customPrimaryColor)
             }
 

@@ -24,6 +24,7 @@ import com.example.hospitalfrontend.data.remote.viewmodel.DiagnosisRemoteViewMod
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageDiagnosis
 import com.example.hospitalfrontend.ui.cure.view.FormSection
 import com.example.hospitalfrontend.ui.diagnosis.viewmodel.DiagnosisViewModel
+import com.example.hospitalfrontend.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +41,6 @@ fun DiagnosisHistoryScreen(
     var diagnosisList by remember { mutableStateOf<List<DiagnosisState>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        //diagnosisRemoteViewModel.clearApiMessage()
         diagnosisScreenError.value = false
     }
 
@@ -73,8 +73,6 @@ fun DiagnosisHistoryScreen(
             }
         }
     }
-
-
     Scaffold(containerColor = customPrimaryColor, topBar = {
         TopAppBar(
             title = {
@@ -82,7 +80,7 @@ fun DiagnosisHistoryScreen(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "HISTORIAL", style = TextStyle(
+                    text = stringResource(id = R.string.title_history), style = TextStyle(
                         fontSize = 30.sp,
                         fontFamily = NunitoFontFamily,
                         fontWeight = FontWeight.Bold,
@@ -93,7 +91,6 @@ fun DiagnosisHistoryScreen(
             }
         }, navigationIcon = {
             IconButton(onClick = {
-                //diagnosisRemoteViewModel.clearApiMessage()
                 navController.popBackStack()
             }) {
                 Icon(
@@ -121,8 +118,8 @@ fun DiagnosisHistoryScreen(
 
                 diagnosisList.isEmpty() -> {
                     NoDataInformation(
-                        labelRes = com.example.hospitalfrontend.R.string.empty_diagnosis,
-                        infoRes = com.example.hospitalfrontend.R.string.create_diagnosis,
+                        labelRes = R.string.empty_diagnosis,
+                        infoRes = R.string.create_diagnosis,
                         icon = Icons.Filled.NoteAlt
                     )
                 }
@@ -137,8 +134,8 @@ fun DiagnosisHistoryScreen(
                     ) {
                         diagnosisList.forEachIndexed { index, diagnosis ->
                             FormSection(
-                                title = "Diagnòstic ${diagnosisList.size - index}",
-                                icon = Icons.Outlined.DisplaySettings
+                                title = stringResource(R.string.diagnosis_title_history, diagnosisList.size - index)
+                                , icon = Icons.Outlined.DisplaySettings
                             ) {
                                 DiagnosisDetailsCard(diagnosis)
                             }

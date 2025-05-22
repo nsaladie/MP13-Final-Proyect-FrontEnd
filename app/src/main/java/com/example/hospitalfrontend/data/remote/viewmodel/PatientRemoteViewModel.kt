@@ -13,6 +13,7 @@ import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListCur
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListRoom
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageNurse
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessagePatient
+import com.example.hospitalfrontend.data.remote.response.RemoteApiMessagePatientUpdate
 import com.example.hospitalfrontend.domain.model.auth.RegisterState
 import com.example.hospitalfrontend.domain.model.patient.PatientState
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
@@ -35,6 +36,10 @@ class PatientRemoteViewModel : ViewModel() {
 
     var remoteApiCureDetail =
         mutableStateOf<RemoteApiMessageCureDetail>(RemoteApiMessageCureDetail.Loading)
+
+    var remoteApiUpdatePatient =
+        mutableStateOf<RemoteApiMessagePatientUpdate>(RemoteApiMessagePatientUpdate.Loading)
+
 
     // Clear the API message
     fun clearApiMessage() {
@@ -136,6 +141,20 @@ class PatientRemoteViewModel : ViewModel() {
                 remoteApiMessage.value = RemoteApiMessagePatient.Success(response)
             } catch (e: Exception) {
                 remoteApiMessage.value = RemoteApiMessagePatient.Error
+            }
+        }
+    }
+
+    fun updatePatientDischarge(updatePatient:PatientState){
+        viewModelScope.launch {
+            remoteApiUpdatePatient.value = RemoteApiMessagePatientUpdate.Loading
+            try {
+                val response = apiService.updatePatientDischarge(updatePatient)
+                remoteApiUpdatePatient.value = RemoteApiMessagePatientUpdate.Success(response)
+            } catch (e: Exception) {
+                Log.d("Discharge", e.toString())
+
+                remoteApiUpdatePatient.value = RemoteApiMessagePatientUpdate.Error
             }
         }
     }

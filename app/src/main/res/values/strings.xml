@@ -29,6 +29,7 @@
     <string name="menu_personal_data">Patient Personal Data</string>
     <string name="menu_diagnosis">Admission Diagnosis</string>
     <string name="menu_care_list">Care List</string>
+    <string name="menu_discharge_patient">Discharge Patient</string>
     //Dades Personals
     <string name="dades_title">PERSONAL DATA</string>
     <string name="patient_info">Patient Information</string>
@@ -62,6 +63,8 @@
     <string name="data">Date</string>
     <string name="auxiliary_name">Auxiliary</string>
     <string name="bolquer">Diaper</string>
+    <string name="diagnosis_title_history">Diagnosis %1$d</string>
+    <string name="title_history">HISTORY</string>
     //Create Diagnosis
     <string name="diagnosis_create_title">CREATE DIAGNOSIS</string>
     <string name="diagnosis_create_error_title">Error: Create Diagnosis</string>
@@ -160,7 +163,6 @@
     <string name="autonomous">Autonomous</string>
     <string name="needs_help">Needs Help</string>
     <string name="prosthesis_carrier_label">Prosthesis Carrier *</string>
-
     //List care
     <string name="list_care_title">CARE LIST</string>
     <string name="care">Care</string>
@@ -214,4 +216,17 @@
     <string name="placeholder_medication_name">E.g.: Paracetamol</string>
     <string name="placeholder_medication_dosage">E.g.: 500mg</string>
     <string name="placeholder_medication_stock">E.g.: 20</string>
+
+    //Create medication
+    <string name="create_medication_title">CREATE MEDICATION</string>
+    <string name="medication_name">Name</string>
+    <string name="medication_dossage">Dosage</string>
+    <string name="medication_administration">Route of administration</string>
+    <string name="medication_stock">Stock</string>
+
+    //MENU ALERT DIALOG DISCHARGE
+    <string name="alert_dialog_discharge_title">Discharge confirmation</string>
+    <string name="alert_dialog_discharge_text">Are you sure you want to discharge this patient?</string>
+    <string name="alert_dialog_discharge_cancel">Cancel</string>
+    <string name="alert_dialog_discharge_ok">Yes, discharge this patient</string>
 </resources>

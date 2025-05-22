@@ -30,6 +30,7 @@
     <string name="menu_personal_data">Datos personales del paciente</string>
     <string name="menu_diagnosis">Diagnóstico de ingreso</string>
     <string name="menu_care_list">Lista de curas</string>
+    <string name="menu_discharge_patient">Dar de alta un paciente</string>
     //Personal Data
     <string name="dades_title">DATOS PERSONALES</string>
     <string name="patient_info">Información del Paciente</string>
@@ -63,6 +64,8 @@
     <string name="data">Fecha</string>
     <string name="auxiliary_name">Auxiliar</string>
     <string name="bolquer">Pañal</string>
+    <string name="diagnosis_title_history">Diagnóstico %1$d</string>
+    <string name="title_history">HISTORIAL</string>
     //Create Diagnosis
     <string name="diagnosis_create_title">CREAR DIAGNÓSTICO</string>
     <string name="diagnosis_create_error_title">Error: Crear diagnóstico</string>
@@ -213,4 +216,17 @@
     <string name="placeholder_medication_name">Ej: Paracetamol</string>
     <string name="placeholder_medication_dosage">Ej: 500mg</string>
     <string name="placeholder_medication_stock">Ej: 20</string>
+
+    //create medication
+    <string name="create_medication_title">CREAR MEDICINA</string>
+    <string name="medication_name">Nombre</string>
+    <string name="medication_dossage">Dosis</string>
+    <string name="medication_administration">Vía de administración</string>
+    <string name="medication_stock">Stock</string>
+
+    //MENU ALERT DIALOG DISCHARGE
+    <string name="alert_dialog_discharge_title">Confirmación del alta</string>
+    <string name="alert_dialog_discharge_text">¿Está seguro de que quiere dar de alta a este paciente?</string>
+    <string name="alert_dialog_discharge_cancel">Cancelar</string>
+    <string name="alert_dialog_discharge_ok">Sí, dar de alta este paciente</string>
 </resources>

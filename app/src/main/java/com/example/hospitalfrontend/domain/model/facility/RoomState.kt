@@ -7,5 +7,5 @@ data class RoomState(
     val roomId: String,
     val roomNumber: Int,
     val timeInRoom: Date,
-    val patient: PatientState?
+    val currentPatient: PatientState?
 )

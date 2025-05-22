@@ -31,13 +31,14 @@
     <string name="menu_diagnosis">Diagnòstic d\'ingrés</string>
     <string name="menu_care_list">Llistat de cures</string>
     <string name="dades_button">Desar canvis</string>
+    <string name="menu_discharge_patient">Donar d\'alta un pacient</string>
     //Personal Data
     <string name="dades_title">DADES PERSONALS</string>
     <string name="patient_info">Informació del Pacient</string>
     <string name="medic_info">Informació Mèdica</string>
     <string name="info_caragiver">Informació del Cuidador</string>
     <string name="button_save_changes">Desar canvis</string>
-    <string name="success_title">Dates Modificats</string>
+    <string name="success_title">Dades Modificats</string>
     <string name="error_title">Error</string>
     <string name="success_message">S\'han modificat les dades del pacient</string>
     <string name="error_message">No s\'han modificat les dades del pacient</string>
@@ -64,6 +65,8 @@
     <string name="data">Data</string>
     <string name="auxiliary_name">Auxiliar</string>
     <string name="bolquer">Bolquer</string>
+    <string name="diagnosis_title_history">Diagnòstic %1$d</string>
+    <string name="title_history">HISTORIAL</string>
     //Create diagnosis
     <string name="diagnosis_create_title">CREAR DIAGNÓSTIC</string>
     <string name="diagnosis_create_error_title">Error: Create Diagnostic</string>
@@ -213,4 +216,17 @@
     <string name="placeholder_medication_name">Ex: Paracetamol</string>
     <string name="placeholder_medication_dosage">Ex: 500mg</string>
     <string name="placeholder_medication_stock">Ex: 20</string>
+
+    //create medication
+    <string name="create_medication_title">CREAR MEDICINA</string>
+    <string name="medication_name">Nombre</string>
+    <string name="medication_dossage">Dosi</string>
+    <string name="medication_administration">Via d\'administració</string>
+    <string name="medication_stock">Stock</string>
+
+    //MENU ALERT DIALOG DISCHARGE
+    <string name="alert_dialog_discharge_title">Confirmació d\'alta</string>
+    <string name="alert_dialog_discharge_text">Estàs segur que vols donar d\'alta aquest pacient?</string>
+    <string name="alert_dialog_discharge_cancel">Cancel·lar</string>
+    <string name="alert_dialog_discharge_ok">Si, donar d\'alta aquest pacient</string>
 </resources>

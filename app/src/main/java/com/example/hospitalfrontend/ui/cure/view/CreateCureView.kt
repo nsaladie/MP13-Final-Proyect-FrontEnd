@@ -380,7 +380,6 @@ fun ObservationsField(value: String, onValueChange: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .imePadding()
     ) {
         OutlinedTextField(
             value = value,
