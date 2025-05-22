@@ -223,7 +223,9 @@
     <string name="medication_dossage">Dosi</string>
     <string name="medication_administration">Via d\'administració</string>
     <string name="medication_stock">Stock</string>
-
+    <string name="dialog_create_medication_title_success">Èxit</string>
+    <string name="dialog_create_medication_text_success">Medicament creat amb èxit</string>
+    <string name="dialog_create_medication_text_fail">S\'ha produït un error en crear el medicament</string>
     //MENU ALERT DIALOG DISCHARGE
     <string name="alert_dialog_discharge_title">Confirmació d\'alta</string>
     <string name="alert_dialog_discharge_text">Estàs segur que vols donar d\'alta aquest pacient?</string>
