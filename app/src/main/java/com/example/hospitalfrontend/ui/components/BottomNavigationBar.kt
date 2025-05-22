@@ -20,10 +20,9 @@ fun BottomNavigationBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Lista de rutas principales del bottom navigation
+    // List of principals routes
     val bottomNavRoutes = items.map { it.route }
 
-    // Verificar si la ruta actual es una subruta (no está en las rutas principales)
     val isInSubRoute = currentRoute != null && !bottomNavRoutes.contains(currentRoute)
 
     NavigationBar {
@@ -40,7 +39,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                         (item.route == "home" && currentRoute?.startsWith("home") == true),
                 onClick = {
                     if (isInSubRoute) {
-                        // Si estamos en una subruta, limpiar todo el stack y navegar a la ruta seleccionada
+                        // If is a sub-route, clean all navigation
                         navController.navigate(item.route) {
                             popUpTo(0) {
                                 inclusive = true
@@ -48,7 +47,6 @@ fun BottomNavigationBar(navController: NavHostController) {
                             launchSingleTop = true
                         }
                     } else {
-                        // Comportamiento normal para navegación entre pestañas principales
                         navController.navigate(item.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
