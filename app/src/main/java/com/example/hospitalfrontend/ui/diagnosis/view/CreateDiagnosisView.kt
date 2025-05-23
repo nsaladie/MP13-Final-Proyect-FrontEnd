@@ -33,7 +33,6 @@ import com.example.hospitalfrontend.domain.model.patient.PatientState
 import com.example.hospitalfrontend.data.remote.viewmodel.DiagnosisRemoteViewModel
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageDiagnosis
 import com.example.hospitalfrontend.ui.auxiliary.viewmodel.AuxiliaryViewModel
-import com.example.hospitalfrontend.ui.medication.view.ItemInfo
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -190,12 +189,6 @@ fun CreateDiagnosisScreen(
                 }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
                 ), actions = {
-                    Icon(
-                        Icons.Filled.LocalHospital,
-                        contentDescription = "Diagnòstic",
-                        tint = Color.Black,
-                        modifier = Modifier.padding(end = 16.dp)
-                    )
                 })
         }) { paddingValues ->
         Box(

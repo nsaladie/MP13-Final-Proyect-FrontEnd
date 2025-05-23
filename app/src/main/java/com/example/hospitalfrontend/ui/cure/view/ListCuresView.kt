@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -70,7 +71,27 @@ fun ListCuresScreen(
     }
 
     Scaffold(
-        containerColor = customPrimaryColor, topBar = {
+        containerColor = customPrimaryColor,
+        floatingActionButton = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate("createCure/${patientId}")
+                    },
+                    shape = CircleShape
+                ) {
+                    Icon(
+                        Icons.Filled.Add,
+                        contentDescription = "Create a new medication"
+                    )
+                }
+            }
+        },topBar = {
             TopAppBar(
                 title = {
                     Row(
@@ -96,14 +117,6 @@ fun ListCuresScreen(
                 }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
                 ), actions = {
-                    IconButton(onClick = { navController.navigate("createCure/${patientId}") }) {
-                        Icon(
-                            Icons.Filled.MedicalServices,
-                            contentDescription = "Cures",
-                            tint = Color.Black,
-                            modifier = Modifier.padding(end = 16.dp)
-                        )
-                    }
                 })
         }) { paddingValues ->
         Box(
