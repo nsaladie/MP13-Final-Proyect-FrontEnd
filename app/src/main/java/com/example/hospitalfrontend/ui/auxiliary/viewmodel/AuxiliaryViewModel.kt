@@ -16,10 +16,6 @@ class AuxiliaryViewModel : ViewModel() {
     private val _auxiliaryState = MutableStateFlow<AuxiliaryState?>(null)
     val auxiliaryState: StateFlow<AuxiliaryState?> get() = _auxiliaryState.asStateFlow()
 
-    // Variable for searching a nurse
-    private val _currentSearchName = MutableStateFlow("")
-    val currentSearchName: StateFlow<String> get() = _currentSearchName.asStateFlow()
-
     // Update login state
     private fun setLoginState(isLogin: Boolean) {
         _loginState.update { currentState ->
@@ -39,7 +35,6 @@ class AuxiliaryViewModel : ViewModel() {
     fun disconnectAuxiliary() {
         setLoginState(false)
         _auxiliaryState.value = null
-        _currentSearchName.value = ""
     }
 
     // If the data is on data base save the data of response in a variable
@@ -47,6 +42,5 @@ class AuxiliaryViewModel : ViewModel() {
         setLoginState(true)
         _auxiliaryState.value = auxiliary
     }
-
 
 }

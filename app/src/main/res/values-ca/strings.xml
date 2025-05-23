@@ -231,4 +231,39 @@
     <string name="alert_dialog_discharge_text">Estàs segur que vols donar d\'alta aquest pacient?</string>
     <string name="alert_dialog_discharge_cancel">Cancel·lar</string>
     <string name="alert_dialog_discharge_ok">Si, donar d\'alta aquest pacient</string>
+    <!-- Settings Screen -->
+    <string name="settings_title">CONFIGURACIÓ</string>
+    <!-- Diet Type/Texture -->
+    <string name="setting_diet_type_title">Tipus de dieta</string>
+    <string name="setting_diet_type_text">Afegir un nou tipus de dieta</string>
+    <string name="setting_diet_texture_title">Tipus de textura</string>
+    <string name="setting_diet_texture_text">Afegir un nou tipus de textura</string>
+    <!-- Diet Type/Texture INPUT -->
+    <string name="setting_diet_input">Aquest camp és obligatori i només permetre lletres</string>
+    <!-- Language Settings -->
+    <string name="settings_language_title">Idioma</string>
+    <string name="settings_language_subtitle">Canviar l\'idioma de l\'aplicació</string>
+    <string name="settings_language_dialog_title">Seleccionar idioma</string>
+    <!-- Language Options -->
+    <string name="language_spanish">Castellà</string>
+    <string name="language_catalan">Català</string>
+    <string name="language_english">Anglès</string>
+    <!-- Logout Settings -->
+    <string name="settings_logout_title">Tancar sessió</string>
+    <string name="settings_logout_subtitle">Sortir del teu compte actual</string>
+    <string name="settings_logout_dialog_title">Tancar sessió?</string>
+    <string name="settings_logout_dialog_message">Estàs segur que vols tancar la teva sessió? Hauràs de tornar a iniciar sessió per accedir a l\'aplicació.</string>
+    <string name="settings_logout_confirm">Tancar sessió</string>
+    <!-- App Info -->
+    <string name="settings_app_version">Versió 1.0.0</string>
+    <!-- Actions ERROR/SUCCESS -->
+    <string name="settings_error_title">Error en afegir</string>
+    <string name="settings_error_text">Si us plau, torna-ho a intentar</string>
+    <string name="setting_success">agregat amb èxit</string>
+    <!-- Dialog Actions -->
+    <string name="dialog_close">Tancar</string>
+    <string name="dialog_error_title">Error</string>
+    <string name="dialog_success">Èxit</string>
+    <string name="dialog_cancel">Cancel·lar</string>
+    <string name="dialog_confirm">Confirmar</string>
 </resources>

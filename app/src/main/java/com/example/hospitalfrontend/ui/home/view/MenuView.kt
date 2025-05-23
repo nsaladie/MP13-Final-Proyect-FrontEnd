@@ -30,7 +30,6 @@ import com.example.hospitalfrontend.domain.model.patient.PatientState
 import com.example.hospitalfrontend.data.remote.viewmodel.PatientRemoteViewModel
 import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
 import com.example.hospitalfrontend.ui.diagnosis.view.NunitoFontFamily
-import com.example.hospitalfrontend.ui.login.LanguageSwitcher
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 
 sealed class Screen(val route: String) {
@@ -133,7 +132,6 @@ fun MenuScreen(
 
     Scaffold(
         containerColor = primaryColor, topBar = {
-            LanguageSwitcher()
             TopAppBar(
                 title = {
                     Text(

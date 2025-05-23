@@ -14,7 +14,6 @@ import androidx.navigation.navArgument
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListRoom
 import com.example.hospitalfrontend.data.remote.viewmodel.*
 import com.example.hospitalfrontend.ui.auxiliary.viewmodel.AuxiliaryViewModel
-import com.example.hospitalfrontend.ui.configuration.ConfigurationScreen
 import com.example.hospitalfrontend.ui.cure.view.*
 import com.example.hospitalfrontend.ui.diagnosis.view.*
 import com.example.hospitalfrontend.ui.diagnosis.viewmodel.DiagnosisViewModel
@@ -23,6 +22,7 @@ import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
 import com.example.hospitalfrontend.ui.medication.view.MedicationScreen
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import PersonalData
+import com.example.hospitalfrontend.ui.auxiliary.view.SettingsScreen
 import com.example.hospitalfrontend.ui.home.view.MenuScreen
 import com.example.hospitalfrontend.ui.medication.view.UpdateMedicationScreen
 import com.example.hospitalfrontend.ui.medication.view.CreateMedicationScreen
@@ -89,19 +89,21 @@ fun AppNavHost(
         composable(BottomNavItem.Medication.route) {
             MedicationScreen(navController, medicationViewModel, medicationRemoteViewModel)
         }
-        composable(
-            "createMedication/",
-        ) {
-            var isError = remember { mutableStateOf(false) }
 
+        composable(BottomNavItem.Configuration.route) {
+            SettingsScreen(navController, auxiliaryViewModel)
+        }
+
+        // Rest of views of the applications
+        composable(
+            "createMedication",
+        ) {
             CreateMedicationScreen(
                 navController = navController,
-                medicationViewModel = medicationViewModel,
                 medicationRemoteViewModel = medicationRemoteViewModel,
-                isError = isError,
             )
         }
-        // Rest of views of the applications
+
         composable(
             "diagnosis/{patientId}",
             arguments = listOf(navArgument("patientId") { type = NavType.IntType })
@@ -115,11 +117,6 @@ fun AppNavHost(
             )
         }
 
-        composable(BottomNavItem.Configuration.route) {
-            ConfigurationScreen(navController, auxiliaryViewModel)
-        }
-
-        // Rest of views of the applications
         composable(
             "medicationUpdate/{medicationId}",
             arguments = listOf(navArgument("medicationId") { type = NavType.IntType })

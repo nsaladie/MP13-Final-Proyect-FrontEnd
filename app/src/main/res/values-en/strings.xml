@@ -231,6 +231,41 @@
     <string name="alert_dialog_discharge_text">Are you sure you want to discharge this patient?</string>
     <string name="alert_dialog_discharge_cancel">Cancel</string>
     <string name="alert_dialog_discharge_ok">Yes, discharge this patient</string>
+    <!-- Settings Screen -->
+    <string name="settings_title">SETTINGS</string>
+    <!-- Diet Type/Texture -->
+    <string name="setting_diet_type_title">Diet Type</string>
+    <string name="setting_diet_type_text">Add new diet type</string>
+    <string name="setting_diet_texture_title">Texture Type</string>
+    <string name="setting_diet_texture_text">Add new diet texture type</string>
+    <!-- Diet Type/Texture INPUT -->
+    <string name="setting_diet_input">This field is mandatory and only accepts letters</string>
+    <!-- Language Settings -->
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_subtitle">Change application language</string>
+    <string name="settings_language_dialog_title">Select language</string>
+    <!-- Language Options -->
+    <string name="language_spanish">Spanish</string>
+    <string name="language_catalan">Catalan</string>
+    <string name="language_english">English</string>
+    <!-- Logout Settings -->
+    <string name="settings_logout_title">Log out</string>
+    <string name="settings_logout_subtitle">Sign out of your current account</string>
+    <string name="settings_logout_dialog_title">Log out?</string>
+    <string name="settings_logout_dialog_message">Are you sure you want to log out? You will need to sign in again to access the application.</string>
+    <string name="settings_logout_confirm">Log out</string>
+    <!-- App Info -->
+    <string name="settings_app_version">Version 1.0.0</string>
+    <!-- Actions ERROR/SUCCESS -->
+    <string name="settings_error_title">Error adding</string>
+    <string name="settings_error_text">Please try again</string>
+    <string name="setting_success">added successfully</string>
+    <!-- Dialog Actions -->
+    <string name="dialog_close">Close</string>
+    <string name="dialog_error_title">Error</string>
+    <string name="dialog_success">Success</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_confirm">Confirm</string>
 </resources>
 
 

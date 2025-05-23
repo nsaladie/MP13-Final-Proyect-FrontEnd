@@ -41,12 +41,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateMedicationScreen(
     navController: NavHostController,
-    medicationViewModel: MedicationViewModel,
     medicationRemoteViewModel: MedicationRemoteViewModel,
-    isError: MutableState<Boolean>,
 ) {
+    var isError = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-
     // Form State
     val stockMedication = rememberSaveable { mutableStateOf("") }
     val nameMedication = rememberSaveable { mutableStateOf("") }
