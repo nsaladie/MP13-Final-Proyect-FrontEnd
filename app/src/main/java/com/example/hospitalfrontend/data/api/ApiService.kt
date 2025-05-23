@@ -110,4 +110,12 @@ interface ApiService {
     // Discharge a patient
     @PUT("room/discharge")
     suspend fun updatePatientDischarge(@Body patientState: PatientState): Boolean
+
+    // Add new Diet Type
+    @POST("/diet/type")
+    suspend fun createNewDietType(@Body type: List<DietTypeState>): Boolean
+
+    // Add new Diet Texture
+    @POST("/diet/texture")
+    suspend fun createNewDietTexture(@Body texture: List<DietTextureTypeState>): Boolean
 }
