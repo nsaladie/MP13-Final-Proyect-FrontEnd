@@ -36,11 +36,9 @@ import com.example.hospitalfrontend.ui.medication.viewmodel.MedicationViewModel
 @Composable
 fun CreateMedicationScreen(
     navController: NavHostController,
-    medicationViewModel: MedicationViewModel,
     medicationRemoteViewModel: MedicationRemoteViewModel,
-    isError: MutableState<Boolean>,
 ) {
-
+    var isError = remember { mutableStateOf(false) }
     val stockMedication = rememberSaveable { mutableStateOf("") }
     val nameMedication = rememberSaveable { mutableStateOf("") }
     val dosageMedication = rememberSaveable { mutableStateOf("") }

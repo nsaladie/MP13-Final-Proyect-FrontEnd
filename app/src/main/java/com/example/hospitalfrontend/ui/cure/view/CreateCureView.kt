@@ -60,7 +60,6 @@ object HospitalTheme {
 fun CreateCureScreen(
     navController: NavController,
     patientRemoteViewModel: PatientRemoteViewModel,
-
     patientId: Int,
     auxiliaryViewModel: AuxiliaryViewModel,
     dietRemoteViewModel: DietRemoteViewModel = viewModel()

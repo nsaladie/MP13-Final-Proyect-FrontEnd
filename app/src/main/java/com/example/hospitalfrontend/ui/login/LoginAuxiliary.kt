@@ -1,17 +1,10 @@
 package com.example.hospitalfrontend.ui.login
 
-import android.app.Activity
-import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.background
-
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -20,10 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.*
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -40,7 +30,6 @@ import com.example.hospitalfrontend.data.remote.viewmodel.AuxiliaryRemoteViewMod
 import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
 import com.example.hospitalfrontend.ui.auxiliary.viewmodel.AuxiliaryViewModel
 import com.example.hospitalfrontend.ui.theme.Primary
-import com.example.hospitalfrontend.utils.LanguageManager
 
 @Composable
 fun LoginScreenAuxiliary(
@@ -213,99 +202,6 @@ fun AuxiliaryForm(
             }
         }
     }
-}
-
-
-@Composable
-fun LanguageSwitcher() {
-    val context = LocalContext.current
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier
-        .wrapContentSize(Alignment.TopEnd)
-        .padding(4.dp)
-    ) {
-        IconButton(
-            onClick = { expanded = true },
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color.LightGray.copy(alpha = 0.2f))
-        ) {
-            Icon(
-                imageVector = Icons.Default.Language,
-                contentDescription = stringResource(id = R.string.switch_language),
-                tint = colorResource(id = colorText)
-            )
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .background(Color.White)
-                .width(150.dp)
-        ) {
-            // Obtenemos el idioma actual del sistema
-            val currentLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                context.resources.configuration.locales.get(0)
-            } else {
-                context.resources.configuration.locale
-            }
-            val currentLanguage = currentLocale.language
-
-            LanguageMenuItem("Català", "ca", currentLanguage) {
-                LanguageManager.setLanguage(context, "ca")
-                expanded = false
-                (context as? Activity)?.recreate()
-            }
-
-            LanguageMenuItem("English", "en", currentLanguage) {
-                LanguageManager.setLanguage(context, "en")
-                expanded = false
-                (context as? Activity)?.recreate()
-            }
-
-            LanguageMenuItem("Español", "es", currentLanguage) {
-                LanguageManager.setLanguage(context, "es")
-                expanded = false
-                (context as? Activity)?.recreate()
-            }
-        }
-    }
-}
-@Composable
-fun LanguageMenuItem(
-    text: String,
-    languageCode: String,
-    currentLanguage: String,
-    onClick: () -> Unit
-) {
-    val isSelected = currentLanguage == languageCode
-
-    DropdownMenuItem(
-        text = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = text,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isSelected) Primary else colorResource(id = colorText)
-                )
-                if (isSelected) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = Primary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-        },
-        onClick = onClick
-    )
 }
 
 @Composable

@@ -22,9 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
-import com.example.hospitalfrontend.domain.model.facility.RoomState
 import com.example.hospitalfrontend.domain.model.facility.RoomDTO
-import com.example.hospitalfrontend.ui.login.LanguageSwitcher
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -38,7 +36,6 @@ fun HomeScreen(
 ) {
     val rooms by patientViewModel.rooms.collectAsState()
     var isLoading by remember { mutableStateOf(true) }
-    val register by patientViewModel.registers.collectAsState()
 
     LaunchedEffect(rooms) {
         if (rooms.isNotEmpty()) {
@@ -47,25 +44,20 @@ fun HomeScreen(
     }
 
     if (isError.value) {
-        AlertDialog(
-            onDismissRequest = { isError.value = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    isError.value = false
-                    navController.navigate("login") {
-                        popUpTo("home") { inclusive = true }
-                    }
-                }) {
-                    Text(text = stringResource(id = R.string.dialog_ok))
+        AlertDialog(onDismissRequest = { isError.value = false }, confirmButton = {
+            TextButton(onClick = {
+                isError.value = false
+                navController.navigate("login") {
+                    popUpTo("home") { inclusive = true }
                 }
-            },
-            title = {
-                Text(
-                    text = stringResource(id = R.string.error_list_title),
-                    color = Color.Red
-                )
-            },
-            text = { Text(text = stringResource(id = R.string.error_list_text)) })
+            }) {
+                Text(text = stringResource(id = R.string.dialog_ok))
+            }
+        }, title = {
+            Text(
+                text = stringResource(id = R.string.error_list_title), color = Color.Red
+            )
+        }, text = { Text(text = stringResource(id = R.string.error_list_text)) })
     }
 
     val nunitoFont = FontFamily(Font(R.font.nunito_bold))
@@ -95,7 +87,6 @@ fun HomeScreen(
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             } else {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    LanguageSwitcher()
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
@@ -110,14 +101,14 @@ fun HomeScreen(
         }
     }
 }
+
 @Composable
 fun RoomListItem(
     room: RoomDTO, navController: NavController
 ) {
     val latoFont = FontFamily(Font(R.font.lato_regular))
     // Specific colors as requested
-    val cardColor = if(room.patient!=null)Color(169, 199, 199)else Color(200,200,200)
-    var showObservation by remember { mutableStateOf(false) }
+    val cardColor = if (room.patient != null) Color(169, 199, 199) else Color(200, 200, 200)
 
     // Format date to dd/mm/yyyy if patient exists
     val formattedDate = room.assignmentDate?.let {
@@ -138,14 +129,12 @@ fun RoomListItem(
             .clickable {
                 room.patient?.let { patient ->
                     navController.navigate("menu/${patient.historialNumber}")
-                }
-                /*
+                }/*
                 if (!room.lastObservation.isNullOrBlank()) {
                     showObservation = true
                 }
                  */
-            },
-        colors = CardDefaults.cardColors(containerColor = cardColor)
+            }, colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Row(
             modifier = Modifier
@@ -161,9 +150,7 @@ fun RoomListItem(
                 Text(
                     text = "${stringResource(id = R.string.num_hab)}: ${room.room.roomNumber}",
                     style = TextStyle(
-                        fontFamily = latoFont,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = latoFont, fontSize = 20.sp, fontWeight = FontWeight.Bold
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -189,8 +176,7 @@ fun RoomListItem(
                         "${stringResource(id = R.string.observation)}: ${room.lastObservation ?: unavailable}"
 
                     Text(
-                        text = text,
-                        style = TextStyle(
+                        text = text, style = TextStyle(
                             fontFamily = latoFont, fontSize = 18.sp, fontWeight = FontWeight.Medium
                         )
                     )
