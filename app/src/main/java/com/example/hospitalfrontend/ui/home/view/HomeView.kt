@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.domain.model.facility.RoomDTO
-import com.example.hospitalfrontend.ui.login.LanguageSwitcher
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientSharedViewModel
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import java.text.SimpleDateFormat
