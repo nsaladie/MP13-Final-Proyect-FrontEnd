@@ -460,7 +460,7 @@ fun PatientDetailCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = patient.name,
+                    text = "${patient.name} ${patient.surname}",
                     style = TextStyle(
                         fontFamily = NunitoFontFamily,
                         fontSize = 22.sp,

@@ -29,7 +29,6 @@ import androidx.navigation.NavController
 import com.example.hospitalfrontend.data.remote.viewmodel.PatientRemoteViewModel
 import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
 import com.example.hospitalfrontend.ui.diagnosis.view.NunitoFontFamily
-import com.example.hospitalfrontend.ui.login.LanguageSwitcher
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientSharedViewModel
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 
@@ -72,7 +71,6 @@ fun PatientRoomAssignmentView(
     Scaffold(
         containerColor = primaryColor,
         topBar = {
-            LanguageSwitcher()
             TopAppBar(
                 title = {
                     Text(

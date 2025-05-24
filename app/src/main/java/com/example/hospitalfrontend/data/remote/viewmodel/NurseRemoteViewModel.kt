@@ -1,6 +1,5 @@
 package com.example.hospitalfrontend.data.remote.viewmodel
 
-import RemoteApiMessageAuxiliary
 import android.net.Uri
 import android.graphics.*
 import android.util.Log
@@ -11,6 +10,7 @@ import android.content.Context
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.*
 import com.example.hospitalfrontend.data.api.ApiService
+import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageAuxiliary
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageBoolean
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListNurse
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageNurse
