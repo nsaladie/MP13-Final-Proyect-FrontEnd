@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">HealthNest</string>
-    <string name="login_title">Iniciar Sessió</string>
+    <string name="login_title">INICIAR SESSIÓ</string>
     <string name="switch_language">Canvi de llengua</string>
     // BOTTOM BAR
     <string name="bottom_bar_home">Inici</string>
@@ -53,7 +53,7 @@
     //Diagnosis
     <string name="diagnosis_title">DIAGNÒSTIC</string>
     <string name="empty_diagnosis">No hi ha cap diagnòstic disponible</string>
-    <string name="create_diagnosis">Pots crear-ne un amb el botó a la part superior dreta</string>
+    <string name="create_diagnosis">Pots crear-ne un amb el botó de la part inferior a la dreta</string>
     <string name="dependency_level">Grau de dependència</string>
     <string name="urinary">Vesical</string>
     <string name="rectal">Rectal</string>
@@ -67,6 +67,7 @@
     <string name="bolquer">Bolquer</string>
     <string name="diagnosis_title_history">Diagnòstic %1$d</string>
     <string name="title_history">HISTORIAL</string>
+    <string name="empty_historial_diagnosis">Pots crear-ne un anant a la pantalla de diagnòstic</string>
     //Create diagnosis
     <string name="diagnosis_create_title">CREAR DIAGNÓSTIC</string>
     <string name="diagnosis_create_error_title">Error: Create Diagnostic</string>
@@ -266,4 +267,5 @@
     <string name="dialog_success">Èxit</string>
     <string name="dialog_cancel">Cancel·lar</string>
     <string name="dialog_confirm">Confirmar</string>
+    <string name="invalid_auxiliary_number">Número d\'auxiliar incorrecte</string>
 </resources>

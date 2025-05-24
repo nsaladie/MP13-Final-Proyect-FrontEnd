@@ -86,7 +86,7 @@ fun MedicationScreen(
             ) {
                 FloatingActionButton(
                     onClick = {
-                        navController.navigate("createMedication/")
+                        navController.navigate("createMedication")
                     },
                     shape = CircleShape
                 ) {

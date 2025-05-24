@@ -1,11 +1,9 @@
 package com.example.hospitalfrontend.ui.medication.view
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -15,35 +13,28 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageCreateMedication
 import com.example.hospitalfrontend.data.remote.viewmodel.MedicationRemoteViewModel
 import com.example.hospitalfrontend.domain.model.medication.MedicationState
 import com.example.hospitalfrontend.ui.diagnosis.view.NunitoFontFamily
-import com.example.hospitalfrontend.ui.medication.viewmodel.MedicationViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateMedicationScreen(
     navController: NavHostController,
     medicationRemoteViewModel: MedicationRemoteViewModel,
 ) {
-    var isError = remember { mutableStateOf(false) }
+    val isError = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     // Form State
     val stockMedication = rememberSaveable { mutableStateOf("") }
@@ -214,6 +205,7 @@ fun CreateMedicationScreen(
         }
     }
 }
+
 @Composable
 fun CreateMedicationForm(
     name: String,
@@ -320,7 +312,6 @@ fun CreateMedicationForm(
     }
 }
 
-// Función de validación existente
 fun isFormValid(
     nameInfo: String,
     dosageInfo: String,

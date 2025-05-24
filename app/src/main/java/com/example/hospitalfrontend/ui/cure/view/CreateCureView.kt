@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
@@ -36,6 +37,7 @@ import com.example.hospitalfrontend.domain.model.patient.*
 import com.example.hospitalfrontend.ui.auxiliary.viewmodel.AuxiliaryViewModel
 import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
 import com.example.hospitalfrontend.ui.diagnosis.view.NunitoFontFamily
+import com.example.hospitalfrontend.ui.medication.view.StatusDialog
 import com.example.hospitalfrontend.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -55,7 +57,6 @@ object HospitalTheme {
     val latoBoldFont = FontFamily(Font(R.font.lato_regular))
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCureScreen(
     navController: NavController,
@@ -264,68 +265,159 @@ fun CreateCureScreen(
 
         // Dialog management
         if (showSuccessDialog) {
-            HospitalAlertDialog(
-                onDismissRequest = { showSuccessDialog = false },
-                title = stringResource(id = R.string.success),
-                text = dialogMessage,
-                confirmButton = {
-                    Button(onClick = {
-                        showSuccessDialog = false
-                        navController.popBackStack()
-                    }) {
-                        Text(stringResource(id = R.string.accept))
-                    }
-                })
+            StatusDialog(
+                title = stringResource(R.string.success),
+                message = dialogMessage,
+                icon = Icons.Filled.CheckCircle,
+                iconTint = Color.Green,
+                onDismiss = {
+                    showErrorDialog = false
+                    navController.popBackStack()
+                }
+            )
         }
 
         if (showErrorDialog) {
-            HospitalAlertDialog(
-                onDismissRequest = { showErrorDialog = false },
-                title = stringResource(id = R.string.error_title),
-                text = dialogMessage,
-                confirmButton = {
-                    Button(onClick = { showErrorDialog = false }) {
-                        Text(stringResource(id = R.string.accept))
-                    }
-                })
-        }
-        if (showOutOfRangeDialog) {
-            HospitalAlertDialog(
-                onDismissRequest = { showOutOfRangeDialog = false },
-                title = stringResource(id = R.string.dialog_title_range),
-                text = outOfRangeMessages.joinToString("\n"),
-                confirmButton = {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = {
-                            showOutOfRangeDialog = false
-                            val register = RegisterState(
-                                id = 0,
-                                date = null,
-                                auxiliary = auxiliary!!,
-                                patient = patient,
-                                hygieneType = hygieneState.takeIf { it.description.isNotBlank() },
-                                diet = dietState.takeIf {
-                                    it.date != null || it.takeData != null || it.dietTypes.isNotEmpty() ||
-                                            it.dietTypeTexture != null || it.independent != null || it.prosthesis != null
-                                },
-                                drain = drainState.takeIf { it.output.isNotBlank() || it.type.isNotBlank() },
-                                mobilization = mobilizationState.takeIf {
-                                    it.sedestation != null || it.walkingAssis != null ||
-                                            it.assisDesc != null || it.changes.isNotBlank() || it.decubitus.isNotBlank()
-                                },
-                                vitalSign = vitalSignState,
-                                observation = observation.takeIf { it.isNotBlank() }
-                            )
-                            patientRemoteViewModel.createCure(register)
-                        }) {
-                            Text(stringResource(id = R.string.button_continue))
-                        }
-                        TextButton(onClick = { showOutOfRangeDialog = false }) {
-                            Text(stringResource(id = R.string.button_cancel))
-                        }
-                    }
+            StatusDialog(
+                title = stringResource(R.string.error_title),
+                message = dialogMessage,
+                icon = Icons.Filled.Error,
+                iconTint = Color.Red,
+                onDismiss = {
+                    showErrorDialog = false
                 }
             )
+        }
+        if (showOutOfRangeDialog) {
+            OutOfRangeDialog(
+                title = stringResource(id = R.string.dialog_title_range),
+                message = outOfRangeMessages.joinToString("\n"),
+                icon = Icons.Outlined.Warning,
+                iconTint = Color(0xFFFF9800),
+                onConfirm = {
+                    showOutOfRangeDialog = false
+                    val register = RegisterState(
+                        id = 0,
+                        date = null,
+                        auxiliary = auxiliary!!,
+                        patient = patient,
+                        hygieneType = hygieneState.takeIf { it.description.isNotBlank() },
+                        diet = dietState.takeIf {
+                            it.date != null || it.takeData != null || it.dietTypes.isNotEmpty() ||
+                                    it.dietTypeTexture != null || it.independent != null || it.prosthesis != null
+                        },
+                        drain = drainState.takeIf { it.output.isNotBlank() || it.type.isNotBlank() },
+                        mobilization = mobilizationState.takeIf {
+                            it.sedestation != null || it.walkingAssis != null ||
+                                    it.assisDesc != null || it.changes.isNotBlank() || it.decubitus.isNotBlank()
+                        },
+                        vitalSign = vitalSignState,
+                        observation = observation.takeIf { it.isNotBlank() }
+                    )
+                    patientRemoteViewModel.createCure(register)
+                },
+                onCancel = {
+                    showOutOfRangeDialog = false
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun OutOfRangeDialog(
+    title: String,
+    message: String,
+    icon: ImageVector,
+    iconTint: Color,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    Dialog(onDismissRequest = {}) {
+        Card(
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .width(280.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(18.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconTint,
+                    modifier = Modifier.size(48.dp)
+                )
+
+                Text(
+                    text = title,
+                    style = TextStyle(
+                        fontFamily = NunitoFontFamily,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = HospitalTheme.TextPrimary
+                    ),
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = message,
+                    style = TextStyle(
+                        fontFamily = LatoFontFamily,
+                        fontSize = 18.sp,
+                        color = HospitalTheme.TextPrimary
+                    ),
+                    textAlign = TextAlign.Center
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Cancel Button
+                    OutlinedButton(
+                        onClick = onCancel,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = HospitalTheme.Primary
+                        ),
+                        border = BorderStroke(1.dp, HospitalTheme.Primary),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.button_cancel),
+                            style = TextStyle(
+                                fontFamily = LatoFontFamily,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 16.sp
+                            )
+                        )
+                    }
+
+                    // Continue Button
+                    Button(
+                        onClick = onConfirm,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = HospitalTheme.Primary
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.button_continue),
+                            style = TextStyle(
+                                fontFamily = LatoFontFamily,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 16.sp
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -442,19 +534,6 @@ fun HospitalBottomBar(
             text = text, isEnabled = isEnabled, fontFamily = fontFamily, onClick = onClick
         )
     }
-}
-
-@Composable
-fun HospitalAlertDialog(
-    onDismissRequest: () -> Unit, title: String, text: String, confirmButton: @Composable () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = { Text(title) },
-        text = { Text(text) },
-        confirmButton = confirmButton,
-        containerColor = HospitalTheme.Surface
-    )
 }
 
 @Composable
@@ -1268,7 +1347,7 @@ fun DietSection(
 
         // Diet texture selection
         Text(
-            text =  stringResource(id = R.string.texture_type_label), style = TextStyle(
+            text = stringResource(id = R.string.texture_type_label), style = TextStyle(
                 fontSize = 20.sp,
                 fontFamily = NunitoFontFamily,
                 fontWeight = FontWeight.Medium,
@@ -1449,7 +1528,7 @@ fun DietSection(
                         .padding(16.dp), contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text =  stringResource(id = R.string.diet_types_not_available),
+                        text = stringResource(id = R.string.diet_types_not_available),
                         style = TextStyle(color = HospitalTheme.Error)
                     )
                 }
@@ -1600,8 +1679,10 @@ fun DietSection(
 
         EnhancedRadioGroup(
             title = stringResource(id = R.string.patient_autonomy_label),
-            options = listOf( stringResource(id = R.string.autonomous),
-                stringResource(id = R.string.needs_help)),
+            options = listOf(
+                stringResource(id = R.string.autonomous),
+                stringResource(id = R.string.needs_help)
+            ),
             selectedOption = selectIndependent,
             onOptionSelected = { selectIndependent = it })
 
@@ -1609,8 +1690,10 @@ fun DietSection(
 
         EnhancedRadioGroup(
             title = stringResource(id = R.string.prosthesis_carrier_label),
-            options = listOf( stringResource(id = R.string.yes),
-                stringResource(id = R.string.no)),
+            options = listOf(
+                stringResource(id = R.string.yes),
+                stringResource(id = R.string.no)
+            ),
             selectedOption = selectedProsthesis,
             onOptionSelected = { selectedProsthesis = it })
         val needHelp = stringResource(R.string.needs_help)

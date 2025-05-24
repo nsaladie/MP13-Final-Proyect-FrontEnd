@@ -7,7 +7,7 @@
     <string name="bottom_bar_medication">Medicine</string>
     <string name="bottom_bar_configuration">Configuration</string>
     //Login
-    <string name="login_title">Login</string>
+    <string name="login_title">LOGIN</string>
     <string name="button_login">Sign In</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_error">ERROR: Login</string>
@@ -52,7 +52,7 @@
     //Diagnosis
     <string name="diagnosis_title">DIAGNOSIS</string>
     <string name="empty_diagnosis">No diagnosis available</string>
-    <string name="create_diagnosis">You can create one using the button at the top right</string>
+    <string name="create_diagnosis">You can create one using the button at the bottom right</string>
     <string name="dependency_level">Dependency level</string>
     <string name="urinary">Urinary</string>
     <string name="rectal">Rectal</string>
@@ -65,6 +65,7 @@
     <string name="auxiliary_name">Auxiliary</string>
     <string name="bolquer">Diaper</string>
     <string name="title_history">HISTORY</string>
+    <string name="empty_historial_diagnosis">You can create one by going to the diagnostic screen</string>
     //Create Diagnosis
     <string name="diagnosis_create_title">CREATE DIAGNOSIS</string>
     <string name="diagnosis_create_error_title">Error: Create Diagnosis</string>
@@ -266,6 +267,7 @@
     <string name="dialog_success">Success</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_confirm">Confirm</string>
+    <string name="invalid_auxiliary_number">Incorrect auxiliary number</string>
 </resources>
 
 

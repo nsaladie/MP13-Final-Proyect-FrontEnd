@@ -119,7 +119,7 @@ fun DiagnosisHistoryScreen(
                 diagnosisList.isEmpty() -> {
                     NoDataInformation(
                         labelRes = R.string.empty_diagnosis,
-                        infoRes = R.string.create_diagnosis,
+                        infoRes = R.string.empty_historial_diagnosis,
                         icon = Icons.Filled.NoteAlt
                     )
                 }
