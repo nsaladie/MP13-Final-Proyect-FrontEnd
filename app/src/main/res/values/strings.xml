@@ -234,6 +234,26 @@
     <string name="alert_dialog_discharge_text">Are you sure you want to discharge this patient?</string>
     <string name="alert_dialog_discharge_cancel">Cancel</string>
     <string name="alert_dialog_discharge_ok">Yes, discharge this patient</string>
+
+    //MENU ASSIGN PATIENT
+    <string name="menu_assign_title">PATIENT ADMISSION</string>
+    <string name="menu_assign_searchPatient">Find existing patient</string>
+    <string name="menu_assign_createPatient">Create new patient</string>
+    //SEARCH PATIENT VIEW
+    <string name="assign_search_title">SEARCH PATIENT</string>
+    <string name="assign_search_placeholder">Find a patient</string>
+    <string name="assign_search_notFoundTitle">The patient was not found</string>
+    <string name="assign_search_notFoundText">Try with another name</string>
+    <string name="assign_search_emptyPatients">No patients available</string>
+    <string name="assign_search_emptyPatientsCreate">Create a new patient</string>
+    <string name="assign_search_choose">Select</string>
+    //CREATE PATIENT VIEW
+    <string name="assign_create_title">CREATE PATIENT</string>
+    <string name="assign_create_success">Patient successfully created</string>
+    <string name="assign_create_successAlert">Patient data has been uploaded</string>
+    <string name="assign_create_successError">Patient data has not been uploaded</string>
+
+
     <!-- Settings Screen -->
     <string name="settings_title">SETTINGS</string>
     <!-- Language Settings -->

@@ -1,5 +1,6 @@
 package com.example.hospitalfrontend.ui.home.view
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,6 +24,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.domain.model.facility.RoomDTO
+import com.example.hospitalfrontend.ui.login.LanguageSwitcher
+import com.example.hospitalfrontend.ui.patients.viewmodel.PatientSharedViewModel
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -33,14 +36,24 @@ fun HomeScreen(
     navController: NavController,
     patientViewModel: PatientViewModel,
     isError: MutableState<Boolean>,
+    sharedViewModel: PatientSharedViewModel
 ) {
     val rooms by patientViewModel.rooms.collectAsState()
     var isLoading by remember { mutableStateOf(true) }
+    val register by patientViewModel.registers.collectAsState()
+    var idsAsignados = rooms.mapNotNull { it.patient?.historialNumber }
 
     LaunchedEffect(rooms) {
         if (rooms.isNotEmpty()) {
             isLoading = false
+            sharedViewModel.updateIdsFromRooms(rooms)
         }
+    }
+
+
+    LaunchedEffect(idsAsignados) {
+        idsAsignados = rooms.mapNotNull { it.patient?.historialNumber }
+        sharedViewModel.setIdsAsignados(idsAsignados)
     }
 
     if (isError.value) {
@@ -93,7 +106,7 @@ fun HomeScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(items = rooms) { room ->
-                            RoomListItem(room, navController)
+                            RoomListItem(room, navController, idsAsignados)
                         }
                     }
                 }
@@ -104,11 +117,13 @@ fun HomeScreen(
 
 @Composable
 fun RoomListItem(
-    room: RoomDTO, navController: NavController
+    room: RoomDTO, navController: NavController, idsAsignados: List<Int>
+
 ) {
     val latoFont = FontFamily(Font(R.font.lato_regular))
     // Specific colors as requested
     val cardColor = if (room.patient != null) Color(169, 199, 199) else Color(200, 200, 200)
+    var showObservation by remember { mutableStateOf(false) }
 
     // Format date to dd/mm/yyyy if patient exists
     val formattedDate = room.assignmentDate?.let {
@@ -127,13 +142,11 @@ fun RoomListItem(
             )
             .clip(RoundedCornerShape(8.dp))
             .clickable {
-                room.patient?.let { patient ->
-                    navController.navigate("menu/${patient.historialNumber}")
-                }/*
-                if (!room.lastObservation.isNullOrBlank()) {
-                    showObservation = true
+                if (room.patient != null) {
+                    navController.navigate("menu/${room.patient.historialNumber}")
+                } else {
+                    navController.navigate("assignPatient/${room.room?.roomId}")
                 }
-                 */
             }, colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Row(
@@ -148,7 +161,7 @@ fun RoomListItem(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "${stringResource(id = R.string.num_hab)}: ${room.room.roomNumber}",
+                    text = "${stringResource(id = R.string.num_hab)}: ${room.room?.roomNumber}",
                     style = TextStyle(
                         fontFamily = latoFont, fontSize = 20.sp, fontWeight = FontWeight.Bold
                     )

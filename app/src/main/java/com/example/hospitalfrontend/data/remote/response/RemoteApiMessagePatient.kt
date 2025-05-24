@@ -1,5 +1,6 @@
 package com.example.hospitalfrontend.data.remote.response
 
+import com.example.hospitalfrontend.domain.model.facility.RoomDTO
 import com.example.hospitalfrontend.domain.model.patient.PatientState
 
 sealed interface RemoteApiMessagePatient {
