@@ -1,10 +1,13 @@
 package com.example.hospitalfrontend.ui.login
 
-import android.util.Log
+import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageAuxiliary
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -15,9 +18,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,10 +26,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.R.color.colorText
-import com.example.hospitalfrontend.domain.model.user.AuxiliaryState
 import com.example.hospitalfrontend.data.remote.viewmodel.AuxiliaryRemoteViewModel
-import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
+import com.example.hospitalfrontend.domain.model.user.AuxiliaryState
 import com.example.hospitalfrontend.ui.auxiliary.viewmodel.AuxiliaryViewModel
+import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
+import com.example.hospitalfrontend.ui.medication.view.StatusDialog
 import com.example.hospitalfrontend.ui.theme.Primary
 
 @Composable
@@ -135,14 +137,13 @@ fun AuxiliaryForm(
     auxiliaryRemoteViewModel: AuxiliaryRemoteViewModel,
     auxiliaryViewModel: AuxiliaryViewModel
 ) {
-    var auxiliar = AuxiliaryState()
+    val auxiliary = AuxiliaryState()
     //Create variables for the form
     val auxiliaryId = rememberSaveable { mutableStateOf("") }
     val messageApi = auxiliaryRemoteViewModel.remoteApiMessageAuxiliary.value
     // State for controller of dialog visibility
-    var showDialog by rememberSaveable { mutableStateOf(false) }
-    var dialogMessage by rememberSaveable { mutableStateOf("") }
-    var dialogMessageResId by remember { mutableStateOf<Int?>(null) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var showInvalidCredentialsDialog by remember { mutableStateOf(false) }
 
     //To hide the login button
     val isValid = rememberSaveable(auxiliaryId.value) {
@@ -163,27 +164,34 @@ fun AuxiliaryForm(
             val id = auxiliaryId.value.trim().toIntOrNull()
             if (id != null) {
                 auxiliaryRemoteViewModel.loginAuxiliary(id)
-                auxiliar.id = id
+                auxiliary.id = id
             }
         }
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                confirmButton = {
-                    TextButton(onClick = { showDialog = false }) {
-                        Text(text = stringResource(id = R.string.dialog_ok)) //'OK'
-                    }
-                },
-                title = {
-                    Text(text = stringResource(id = R.string.dialog_error)) //text = "ERROR: Login"
-                },
-                text = {
-                    dialogMessageResId?.let {
-                        Text(text = stringResource(id = it))
-                    } ?: Text(text = dialogMessage)
+        // Dialog error connection
+        if (showErrorDialog) {
+            StatusDialog(
+                title = stringResource(R.string.dialog_error),
+                message = stringResource(R.string.connection_error),
+                icon = Icons.Filled.Error,
+                iconTint = Color.Red,
+                onDismiss = {
+                    showErrorDialog = false
                 }
             )
         }
+        // Dialog error credential
+        if (showInvalidCredentialsDialog) {
+            StatusDialog(
+                title = stringResource(R.string.dialog_error),
+                message = stringResource(R.string.invalid_auxiliary_number),
+                icon = Icons.Filled.Warning,
+                iconTint = Color.Yellow,
+                onDismiss = {
+                    showInvalidCredentialsDialog = false
+                }
+            )
+        }
+
         LaunchedEffect(messageApi) {
             when (messageApi) {
                 is RemoteApiMessageAuxiliary.Success -> {
@@ -193,12 +201,16 @@ fun AuxiliaryForm(
                 }
 
                 is RemoteApiMessageAuxiliary.Error -> {
-                    dialogMessageResId = R.string.connection_error
-                    showDialog = true
+                    showErrorDialog = true
+                    auxiliaryRemoteViewModel.clearApiMessage()
                 }
 
-                RemoteApiMessageAuxiliary.Loading -> Log.d("Loading", "Cargando...")
-                else -> {}
+                is RemoteApiMessageAuxiliary.InvalidCredentials -> {
+                    showInvalidCredentialsDialog = true
+                    auxiliaryRemoteViewModel.clearApiMessage()
+                }
+
+                is RemoteApiMessageAuxiliary.Loading -> {}
             }
         }
     }
@@ -249,7 +261,7 @@ fun AuxiliaryNumberInput(
 ) {
     val latoFont = FontFamily(Font(R.font.lato_regular))
     val labelText = stringResource(id = R.string.aux_number_label)
-    InputFieldAuxiliar(
+    InputFieldAuxiliary(
         valueState = auxiliaryId,
         labelId = labelText,
         keyboardType = KeyboardType.Number,
@@ -260,7 +272,7 @@ fun AuxiliaryNumberInput(
 }
 
 @Composable
-fun InputFieldAuxiliar(
+fun InputFieldAuxiliary(
     valueState: MutableState<String>,
     labelId: String,
     isSingleLine: Boolean = true,
