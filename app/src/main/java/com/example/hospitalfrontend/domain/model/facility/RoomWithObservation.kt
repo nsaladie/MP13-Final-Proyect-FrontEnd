@@ -4,10 +4,10 @@ import com.example.hospitalfrontend.domain.model.patient.PatientState
 import java.util.Date
 
 data class RoomDTO(
-    val room: RoomState,
-    val patient: PatientState?,
-    val assignmentDate: Date?,
-    val releaseDate: Date,
-    val occupied: Boolean,
-    val lastObservation: String
+    val room: RoomState? = null,
+    val patient: PatientState? = null,
+    val assignmentDate: Date? = null,
+    val releaseDate: Date? = null,
+    val occupied: Boolean? = null,
+    val lastObservation: String? = null
 )

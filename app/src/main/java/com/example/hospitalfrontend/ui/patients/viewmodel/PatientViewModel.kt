@@ -28,8 +28,9 @@
         private val _cures = MutableStateFlow<List<VitalSignState>>(listOf())
         val cures: MutableStateFlow<List<VitalSignState>> = _cures
 
-        private val _remoteApiUpdatePatient = MutableStateFlow<RemoteApiMessagePatientUpdate>(RemoteApiMessagePatientUpdate.Loading)
-        val remoteApiUpdatePatient: StateFlow<RemoteApiMessagePatientUpdate> = _remoteApiUpdatePatient
+        private val _patients = MutableStateFlow<List<PatientState>>(listOf())
+        val patients: MutableStateFlow<List<PatientState>> = _patients
+
 
         // Load the list of cures
         fun loadCures(cure: List<VitalSignState>) {
@@ -45,9 +46,17 @@
             _patientState.value = patient
         }
 
-        fun updatePatientDischarge(patient: PatientState){
-            _remoteApiUpdatePatient.value = RemoteApiMessagePatientUpdate.Success(true)
-
+        fun resetPatientData(){
+            _patientState.value = null
         }
+
+        fun loadPatient(patient: List<PatientState>){
+            _patients.value = patient
+        }
+
+        fun createPatient(patientState: PatientState){
+            _patientState.value = patientState
+        }
+
 
     }

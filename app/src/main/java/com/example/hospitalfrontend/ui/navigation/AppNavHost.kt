@@ -23,9 +23,13 @@ import com.example.hospitalfrontend.ui.login.LoginScreenAuxiliary
 import com.example.hospitalfrontend.ui.medication.view.MedicationScreen
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import PersonalData
-import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListMedication
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hospitalfrontend.ui.home.view.MenuScreen
 import com.example.hospitalfrontend.ui.medication.viewmodel.MedicationViewModel
+import com.example.hospitalfrontend.ui.patients.view.AssignExistingPatientView
+import com.example.hospitalfrontend.ui.patients.view.CreatePatientData
+import com.example.hospitalfrontend.ui.patients.view.PatientRoomAssignmentView
+import com.example.hospitalfrontend.ui.patients.viewmodel.PatientSharedViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -41,6 +45,7 @@ fun AppNavHost(
     medicationViewModel: MedicationViewModel,
     medicationRemoteViewModel: MedicationRemoteViewModel
 ) {
+    val sharedViewModel: PatientSharedViewModel = viewModel()
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -68,6 +73,7 @@ fun AppNavHost(
                         isError.value = true
                     } else {
                         patientViewModel.loadRooms(message)
+                        sharedViewModel.updateIdsFromRooms(message)
                     }
                 }
 
@@ -82,6 +88,7 @@ fun AppNavHost(
                 navController = navController,
                 patientViewModel = patientViewModel,
                 isError = isError,
+                sharedViewModel = sharedViewModel
             )
         }
 
@@ -195,6 +202,49 @@ fun AppNavHost(
                 patientRemoteViewModel = patientRemoteViewModel,
                 patientId = patientId,
                 auxiliaryViewModel = auxiliaryViewModel,
+            )
+        }
+
+        composable(
+            "assignPatient/{roomId}",
+            arguments = listOf(
+                navArgument("roomId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getInt("patientId") ?: -1
+            val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+            PatientRoomAssignmentView(
+                navController = navController,
+                patientRemoteViewModel = patientRemoteViewModel,
+                patientId = patientId,
+                patientViewModel = patientViewModel,
+                roomId = roomId,
+                idsAsignados = emptyList(),
+                sharedViewModel = sharedViewModel
+            )
+        }
+
+        composable(
+            "searchPatient/{roomId}",
+            arguments = listOf(navArgument("roomId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val roomId = (backStackEntry.arguments?.getString("roomId") ?: -1).toString()
+            AssignExistingPatientView(
+                navController = navController,
+                patientRemoteViewModel = patientRemoteViewModel,
+                patientViewModel = patientViewModel,
+                roomId = roomId,
+                sharedViewModel = sharedViewModel
+            )
+        }
+
+        composable(
+            "createPatient"
+        ) { backStackEntry ->
+            CreatePatientData(
+                navController = navController,
+                patientRemoteViewModel = patientRemoteViewModel,
+                patientViewModel = patientViewModel,
+                patientId = -1,
             )
         }
     }

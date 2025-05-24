@@ -98,4 +98,16 @@ interface ApiService {
     // Discharge a patient
     @PUT("room/discharge")
     suspend fun updatePatientDischarge(@Body patientState: PatientState): Boolean
+
+    @GET("patient/listAll")
+    suspend fun getAllPatients(): List<PatientState>
+
+    // Assign a patient
+    @PUT("room/assign")
+    suspend fun updatePatientAssign(@Body roomDTO: RoomDTO): Boolean
+
+    //Create a patient
+    @POST("patient")
+    suspend fun createPatient(@Body patientState: PatientState): PatientState
+
 }

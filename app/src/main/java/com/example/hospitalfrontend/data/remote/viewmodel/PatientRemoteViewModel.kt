@@ -10,11 +10,13 @@ import com.example.hospitalfrontend.data.api.ApiService
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageBoolean
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageCureDetail
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListCure
+import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListPatient
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListRoom
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageNurse
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessagePatient
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessagePatientUpdate
 import com.example.hospitalfrontend.domain.model.auth.RegisterState
+import com.example.hospitalfrontend.domain.model.facility.RoomDTO
 import com.example.hospitalfrontend.domain.model.patient.PatientState
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import com.example.hospitalfrontend.utils.OffsetDateTimeAdapter
@@ -40,12 +42,15 @@ class PatientRemoteViewModel : ViewModel() {
     var remoteApiUpdatePatient =
         mutableStateOf<RemoteApiMessagePatientUpdate>(RemoteApiMessagePatientUpdate.Loading)
 
+    var remoteApiListMessagePatient =
+        mutableStateOf<RemoteApiMessageListPatient>(RemoteApiMessageListPatient.Loading)
 
     // Clear the API message
     fun clearApiMessage() {
         remoteApiMessage.value = RemoteApiMessagePatient.Loading
         remoteApiListMessageRoom.value = RemoteApiMessageListRoom.Loading
         remoteApiMessageBoolean.value = RemoteApiMessageBoolean.Loading
+        remoteApiUpdatePatient.value = RemoteApiMessagePatientUpdate.Loading
     }
 
     val gsonDate = GsonBuilder().setDateFormat("yyyy-MM-dd").create()
@@ -155,6 +160,47 @@ class PatientRemoteViewModel : ViewModel() {
                 Log.d("Discharge", e.toString())
 
                 remoteApiUpdatePatient.value = RemoteApiMessagePatientUpdate.Error
+            }
+        }
+    }
+
+    fun getAllPatients() {
+        viewModelScope.launch {
+            remoteApiListMessagePatient.value = RemoteApiMessageListPatient.Loading
+            try {
+                val response = apiService.getAllPatients()
+                remoteApiListMessagePatient.value = RemoteApiMessageListPatient.Success(response)
+            } catch (e: Exception) {
+                Log.d("Error list patient", e.toString())
+                remoteApiListMessagePatient.value = RemoteApiMessageListPatient.Error // Error response
+            }
+        }
+    }
+
+    fun updatePatientAssign(roomDTO: RoomDTO){
+        viewModelScope.launch {
+            remoteApiUpdatePatient.value = RemoteApiMessagePatientUpdate.Loading
+            try {
+                Log.d("AssignDatos", roomDTO.toString())
+                val response = apiService.updatePatientAssign(roomDTO)
+                remoteApiUpdatePatient.value = RemoteApiMessagePatientUpdate.Success(response)
+            } catch (e: Exception) {
+                Log.d("Assign", e.toString())
+
+                remoteApiUpdatePatient.value = RemoteApiMessagePatientUpdate.Error
+            }
+        }
+    }
+
+    fun createPatient(patientState: PatientState) {
+        viewModelScope.launch {
+            remoteApiMessage.value = RemoteApiMessagePatient.Loading
+            try {
+                val response = apiService.createPatient(patientState)
+                remoteApiMessage.value = RemoteApiMessagePatient.Success(response)
+            } catch (e: Exception) {
+                Log.d("Error create Patient", e.toString())
+                remoteApiMessage.value = RemoteApiMessagePatient.Error
             }
         }
     }

@@ -5,7 +5,7 @@ import java.util.Date
 
 data class RoomState(
     val roomId: String,
-    val roomNumber: Int,
-    val timeInRoom: Date,
-    val currentPatient: PatientState?
+    val roomNumber: Int? = null,
+    val timeInRoom: Date? = null,
+    val currentPatient: PatientState? = null
 )

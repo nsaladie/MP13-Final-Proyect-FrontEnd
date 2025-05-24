@@ -182,5 +182,21 @@
     <string name="alert_dialog_discharge_text">¿Está seguro de que quiere dar de alta a este paciente?</string>
     <string name="alert_dialog_discharge_cancel">Cancelar</string>
     <string name="alert_dialog_discharge_ok">Sí, dar de alta este paciente</string>
-
+    //MENU ASSIGN PATIENT
+    <string name="menu_assign_title">INGRESO DE PACIENTE</string>
+    <string name="menu_assign_searchPatient">Buscar paciente existente</string>
+    <string name="menu_assign_createPatient">Crear nuevo paciente</string>
+    //SEARCH PATIENT VIEW
+    <string name="assign_search_title">BUSCAR PACIENTE</string>
+    <string name="assign_search_placeholder">Busca un paciente</string>
+    <string name="assign_search_notFoundTitle">No se ha encontrado el paciente</string>
+    <string name="assign_search_notFoundText">Prueba con otro nombre</string>
+    <string name="assign_search_emptyPatients">No hay pacientes disponibles</string>
+    <string name="assign_search_emptyPatientsCreate">Crea un nuevo paciente</string>
+    <string name="assign_search_choose">Seleccionar</string>
+    //CREATE PATIENT VIEW
+    <string name="assign_create_title">CREAR PACIENTE</string>
+    <string name="assign_create_success">Paciente creado con éxito</string>
+    <string name="assign_create_successAlert">Se han cargado los datos del paciente</string>
+    <string name="assign_create_successError">No se han cargado los datos del paciente</string>
 </resources>

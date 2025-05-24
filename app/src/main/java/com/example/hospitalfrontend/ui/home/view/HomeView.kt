@@ -1,5 +1,6 @@
 package com.example.hospitalfrontend.ui.home.view
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +26,7 @@ import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.domain.model.facility.RoomState
 import com.example.hospitalfrontend.domain.model.facility.RoomDTO
 import com.example.hospitalfrontend.ui.login.LanguageSwitcher
+import com.example.hospitalfrontend.ui.patients.viewmodel.PatientSharedViewModel
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -35,37 +37,41 @@ fun HomeScreen(
     navController: NavController,
     patientViewModel: PatientViewModel,
     isError: MutableState<Boolean>,
+    sharedViewModel: PatientSharedViewModel
 ) {
     val rooms by patientViewModel.rooms.collectAsState()
     var isLoading by remember { mutableStateOf(true) }
     val register by patientViewModel.registers.collectAsState()
+    var idsAsignados = rooms.mapNotNull { it.patient?.historialNumber }
 
     LaunchedEffect(rooms) {
         if (rooms.isNotEmpty()) {
             isLoading = false
+            sharedViewModel.updateIdsFromRooms(rooms)
         }
     }
 
+
+    LaunchedEffect(idsAsignados) {
+        idsAsignados = rooms.mapNotNull { it.patient?.historialNumber }
+        sharedViewModel.setIdsAsignados(idsAsignados)
+    }
+
     if (isError.value) {
-        AlertDialog(
-            onDismissRequest = { isError.value = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    isError.value = false
-                    navController.navigate("login") {
-                        popUpTo("home") { inclusive = true }
-                    }
-                }) {
-                    Text(text = stringResource(id = R.string.dialog_ok))
+        AlertDialog(onDismissRequest = { isError.value = false }, confirmButton = {
+            TextButton(onClick = {
+                isError.value = false
+                navController.navigate("login") {
+                    popUpTo("home") { inclusive = true }
                 }
-            },
-            title = {
-                Text(
-                    text = stringResource(id = R.string.error_list_title),
-                    color = Color.Red
-                )
-            },
-            text = { Text(text = stringResource(id = R.string.error_list_text)) })
+            }) {
+                Text(text = stringResource(id = R.string.dialog_ok))
+            }
+        }, title = {
+            Text(
+                text = stringResource(id = R.string.error_list_title), color = Color.Red
+            )
+        }, text = { Text(text = stringResource(id = R.string.error_list_text)) })
     }
 
     val nunitoFont = FontFamily(Font(R.font.nunito_bold))
@@ -102,7 +108,7 @@ fun HomeScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(items = rooms) { room ->
-                            RoomListItem(room, navController)
+                            RoomListItem(room, navController, idsAsignados)
                         }
                     }
                 }
@@ -110,13 +116,15 @@ fun HomeScreen(
         }
     }
 }
+
 @Composable
 fun RoomListItem(
-    room: RoomDTO, navController: NavController
+    room: RoomDTO, navController: NavController, idsAsignados: List<Int>
+
 ) {
     val latoFont = FontFamily(Font(R.font.lato_regular))
     // Specific colors as requested
-    val cardColor = if(room.patient!=null)Color(169, 199, 199)else Color(200,200,200)
+    val cardColor = if (room.patient != null) Color(169, 199, 199) else Color(200, 200, 200)
     var showObservation by remember { mutableStateOf(false) }
 
     // Format date to dd/mm/yyyy if patient exists
@@ -136,16 +144,19 @@ fun RoomListItem(
             )
             .clip(RoundedCornerShape(8.dp))
             .clickable {
-                room.patient?.let { patient ->
-                    navController.navigate("menu/${patient.historialNumber}")
+                Log.d("TEST HOME", room.patient?.historialNumber.toString())
+                if (room.patient != null) {
+                    navController.navigate("menu/${room.patient.historialNumber}")
+                } else {
+                    val idsAsignadosString = idsAsignados.joinToString(",")
+                    navController.navigate("assignPatient/${room.room?.roomId}")
                 }
                 /*
                 if (!room.lastObservation.isNullOrBlank()) {
                     showObservation = true
                 }
                  */
-            },
-        colors = CardDefaults.cardColors(containerColor = cardColor)
+            }, colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Row(
             modifier = Modifier
@@ -159,11 +170,9 @@ fun RoomListItem(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "${stringResource(id = R.string.num_hab)}: ${room.room.roomNumber}",
+                    text = "${stringResource(id = R.string.num_hab)}: ${room.room?.roomNumber}",
                     style = TextStyle(
-                        fontFamily = latoFont,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = latoFont, fontSize = 20.sp, fontWeight = FontWeight.Bold
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -189,8 +198,7 @@ fun RoomListItem(
                         "${stringResource(id = R.string.observation)}: ${room.lastObservation ?: unavailable}"
 
                     Text(
-                        text = text,
-                        style = TextStyle(
+                        text = text, style = TextStyle(
                             fontFamily = latoFont, fontSize = 18.sp, fontWeight = FontWeight.Medium
                         )
                     )
