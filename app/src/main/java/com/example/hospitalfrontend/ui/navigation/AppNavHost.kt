@@ -14,7 +14,6 @@ import androidx.navigation.navArgument
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageListRoom
 import com.example.hospitalfrontend.data.remote.viewmodel.*
 import com.example.hospitalfrontend.ui.auxiliary.viewmodel.AuxiliaryViewModel
-import com.example.hospitalfrontend.ui.configuration.ConfigurationScreen
 import com.example.hospitalfrontend.ui.cure.view.*
 import com.example.hospitalfrontend.ui.diagnosis.view.*
 import com.example.hospitalfrontend.ui.diagnosis.viewmodel.DiagnosisViewModel
@@ -24,7 +23,10 @@ import com.example.hospitalfrontend.ui.medication.view.MedicationScreen
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import PersonalData
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.hospitalfrontend.ui.auxiliary.view.SettingsScreen
 import com.example.hospitalfrontend.ui.home.view.MenuScreen
+import com.example.hospitalfrontend.ui.medication.view.UpdateMedicationScreen
+import com.example.hospitalfrontend.ui.medication.view.CreateMedicationScreen
 import com.example.hospitalfrontend.ui.medication.viewmodel.MedicationViewModel
 import com.example.hospitalfrontend.ui.patients.view.AssignExistingPatientView
 import com.example.hospitalfrontend.ui.patients.view.CreatePatientData
@@ -97,10 +99,44 @@ fun AppNavHost(
         }
 
         composable(BottomNavItem.Configuration.route) {
-            ConfigurationScreen(navController, auxiliaryViewModel)
+            SettingsScreen(navController, auxiliaryViewModel)
         }
 
         // Rest of views of the applications
+        composable(
+            "createMedication",
+        ) {
+            CreateMedicationScreen(
+                navController = navController,
+                medicationRemoteViewModel = medicationRemoteViewModel,
+            )
+        }
+
+        composable(
+            "diagnosis/{patientId}",
+            arguments = listOf(navArgument("patientId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getInt("patientId") ?: -1
+            DiagnosisScreen(
+                navController = navController,
+                diagnosisViewModel = diagnosisViewModel,
+                diagnosisRemoteViewModel = diagnosisRemoteViewModel,
+                patientId = patientId
+            )
+        }
+
+        composable(
+            "medicationUpdate/{medicationId}",
+            arguments = listOf(navArgument("medicationId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val medicationId = backStackEntry.arguments?.getInt("medicationId") ?: -1
+            UpdateMedicationScreen(
+                navController = navController,
+                medicationId = medicationId,
+                medicationRemoteViewModel = medicationRemoteViewModel
+            )
+        }
+
         composable(
             "diagnosis/{patientId}",
             arguments = listOf(navArgument("patientId") { type = NavType.IntType })

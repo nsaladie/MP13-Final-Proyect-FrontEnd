@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hospitalfrontend.R
-import com.example.hospitalfrontend.domain.model.facility.RoomState
 import com.example.hospitalfrontend.domain.model.facility.RoomDTO
 import com.example.hospitalfrontend.ui.login.LanguageSwitcher
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientSharedViewModel
@@ -101,7 +100,6 @@ fun HomeScreen(
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             } else {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    LanguageSwitcher()
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
@@ -144,18 +142,11 @@ fun RoomListItem(
             )
             .clip(RoundedCornerShape(8.dp))
             .clickable {
-                Log.d("TEST HOME", room.patient?.historialNumber.toString())
                 if (room.patient != null) {
                     navController.navigate("menu/${room.patient.historialNumber}")
                 } else {
-                    val idsAsignadosString = idsAsignados.joinToString(",")
                     navController.navigate("assignPatient/${room.room?.roomId}")
                 }
-                /*
-                if (!room.lastObservation.isNullOrBlank()) {
-                    showObservation = true
-                }
-                 */
             }, colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Row(

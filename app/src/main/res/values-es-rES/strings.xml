@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">HealthNest</string>
-    <string name="login_title">Iniciar Sesión</string>
+    <string name="login_title">INICIAR SESIÓN</string>
     <string name="switch_language">Cambiar idioma</string>
+    // BOTTOM BAR
+    <string name="bottom_bar_home">Inicio</string>
+    <string name="bottom_bar_medication">Medicamentos</string>
+    <string name="bottom_bar_configuration">Configuración</string>
     //Login
     <string name="button_login">Acceder</string>
     <string name="dialog_ok">OK</string>
@@ -48,7 +52,7 @@
     //Diagnosis
     <string name="diagnosis_title">DIAGNÓSTICO</string>
     <string name="empty_diagnosis">No hay ningún diagnóstico disponible</string>
-    <string name="create_diagnosis">Puedes crear uno con el botón en la parte superior derecha</string>
+    <string name="create_diagnosis">Puedes crear uno con el botón de la parte inferior a la derecha</string>
     <string name="dependency_level">Grado de dependencia</string>
     <string name="urinary">Vesical</string>
     <string name="rectal">Rectal</string>
@@ -60,6 +64,9 @@
     <string name="data">Fecha</string>
     <string name="auxiliary_name">Auxiliar</string>
     <string name="bolquer">Pañal</string>
+    <string name="diagnosis_title_history">Diagnóstico %1$d</string>
+    <string name="title_history">HISTORIAL</string>
+    <string name="empty_historial_diagnosis">Puedes crear uno yendo en la pantalla de diagnostico</string>
     //Create Diagnosis
     <string name="diagnosis_create_title">CREAR DIAGNÓSTICO</string>
     <string name="diagnosis_create_error_title">Error: Crear diagnóstico</string>
@@ -137,7 +144,7 @@
     <string name="oxygen_saturation_required">Saturación O₂ *</string>
     <string name="additional_measures">Medidas Adicionales</string>
     <string name="drain_type">Tipo de Drenaje *</string>
-    <string name="drain_type_ex">Ej: Penrose, Jackson-Pratt...</string>
+    <string name="drain_type_ex">Ej: Penrose, Jackson-Pratt…</string>
     <string name="debit_quantity">Cantidad de Débito *</string>
     <string name="diet_date_label">Fecha de la dieta *</string>
     <string name="date_format_placeholder">dd-MM-AAAA</string>
@@ -176,7 +183,50 @@
     <string name="observation_title">Observaciones</string>
     <string name="drain">Drenaje</string>
     <string name="tolerance_level">Nivel de tolerancia</string>
+    // LIST MEDICATION
     <string name="empty_medication">No hay medicamentos disponibles</string>
+    <string name="create_medication">Puedes crear un nuevo medicamento utilizando el botón flotante en la esquina inferior derecha</string>
+    <string name="medication_list_title">MEDICAMENTOS</string>
+    <string name="medication_list_search_title">No se encontraron medicamentos</string>
+    <string name="medication_list_search_subtitle">Prueba con otro nombre</string>
+    <string name="medication_list_update">Actualizar</string>
+    <string name="medication_list_dosage">Dosis</string>
+    <string name="medication_list_administration">Vía de administración</string>
+    <string name="medication_list_stock">Stock disponible</string>
+    <string name="medication_list_stock_unity">Unidades</string>
+    <string name="medication_list_search">Buscar medicamentos…</string>
+    <!-- Medication Update Strings -->
+    <string name="medication_update_title">ACTUALIZAR DATOS</string>
+    <string name="medication_update_name">Nombre del Medicamento</string>
+    <string name="medication_dosage">Dosis</string>
+    <string name="medication_administration_route">Vía de Administración</string>
+    <string name="medication_update_stock">Existencias</string>
+    <string name="update_button">Actualizar</string>
+    <string name="dialog_update_medication_title_success">DATOS ACTUALIZADOS</string>
+    <string name="dialog_update_medication_text_success">La información del medicamento se ha actualizado correctamente</string>
+    <string name="dialog_update_medication_title_fail">ERROR AL ACTUALIZAR DATOS</string>
+    <string name="dialog_update_medication_text_fail">Se ha producido un error al actualizar la información del medicamento. Por favor, inténtalo más tarde</string>
+    <string name="close">Cerrar</string>
+    <!-- Administration Routes -->
+    <string name="medication_route_oral">Oral</string>
+    <string name="medication_route_injectable">Inyectable</string>
+    <string name="medication_route_topical">Tópica</string>
+    <string name="medication_route_inhalation">Inhalación</string>
+    <string name="medication_route_sublingual">Sublingual</string>
+    <!-- Placeholder Medication -->
+    <string name="placeholder_medication_name">Ej: Paracetamol</string>
+    <string name="placeholder_medication_dosage">Ej: 500mg</string>
+    <string name="placeholder_medication_stock">Ej: 20</string>
+
+    //create medication
+    <string name="create_medication_title">CREAR MEDICINA</string>
+    <string name="medication_name">Nombre</string>
+    <string name="medication_dossage">Dosis</string>
+    <string name="medication_administration">Vía de administración</string>
+    <string name="medication_stock">Stock</string>
+    <string name="dialog_create_medication_title_success">Éxito</string>
+    <string name="dialog_create_medication_text_success">Medicamento creado exitosamente</string>
+    <string name="dialog_create_medication_text_fail">Hubo un error al crear el medicamento</string>
     //MENU ALERT DIALOG DISCHARGE
     <string name="alert_dialog_discharge_title">Confirmación del alta</string>
     <string name="alert_dialog_discharge_text">¿Está seguro de que quiere dar de alta a este paciente?</string>
@@ -199,4 +249,40 @@
     <string name="assign_create_success">Paciente creado con éxito</string>
     <string name="assign_create_successAlert">Se han cargado los datos del paciente</string>
     <string name="assign_create_successError">No se han cargado los datos del paciente</string>
+    <!-- Settings Screen -->
+    <string name="settings_title">CONFIGURACIÓN</string>
+    <!-- Diet Type/Texture -->
+    <string name="setting_diet_type_title">Tipo de dieta</string>
+    <string name="setting_diet_type_text">Agregar un nuevo tipo de dieta</string>
+    <string name="setting_diet_texture_title">Tipo de textura</string>
+    <string name="setting_diet_texture_text">Agregar un nuevo tipo de textura</string>
+    <!-- Diet Type/Texture INPUT -->
+    <string name="setting_diet_input">Este campo es obligatorio y solo permitir letras</string>
+    <!-- Language Settings -->
+    <string name="settings_language_title">Idioma</string>
+    <string name="settings_language_subtitle">Cambiar el idioma de la aplicación</string>
+    <string name="settings_language_dialog_title">Seleccionar idioma</string>
+    <!-- Language Options -->
+    <string name="language_spanish">Castellano</string>
+    <string name="language_catalan">Catalán</string>
+    <string name="language_english">Inglés</string>
+    <!-- Logout Settings -->
+    <string name="settings_logout_title">Cerrar sesión</string>
+    <string name="settings_logout_subtitle">Salir de tu cuenta actual</string>
+    <string name="settings_logout_dialog_title">¿Cerrar sesión?</string>
+    <string name="settings_logout_dialog_message">¿Estás seguro de que quieres cerrar tu sesión? Tendrás que volver a iniciar sesión para acceder a la aplicación.</string>
+    <string name="settings_logout_confirm">Cerrar sesión</string>
+    <!-- App Info -->
+    <string name="settings_app_version">Versión 1.0.0</string>
+    <!-- Actions ERROR/SUCCESS -->
+    <string name="settings_error_title">Error al agregar</string>
+    <string name="settings_error_text">Por favor, inténtalo de nuevo</string>
+    <string name="setting_success">agregado exitosamente</string>
+    <!-- Dialog Actions -->
+    <string name="dialog_close">Cerrar</string>
+    <string name="dialog_error_title">Error</string>
+    <string name="dialog_success">Éxito</string>
+    <string name="dialog_cancel">Cancelar</string>
+    <string name="dialog_confirm">Confirmar</string>
+    <string name="invalid_auxiliary_number">Número de auxiliar incorrecto</string>
 </resources>

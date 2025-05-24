@@ -95,6 +95,18 @@ interface ApiService {
     @GET("/medication")
     suspend fun getAllMedication(): List<MedicationState>
 
+    // Medication
+    @GET("/medication/{id}")
+    suspend fun getMedication(@Path("id") id: Int): MedicationState
+
+    // Medication
+    @PUT("/medication/{id}")
+    suspend fun updateMedication(@Path("id") id: Int, @Body request: MedicationState): Boolean
+
+    // Create Medication
+    @POST("/medication")
+    suspend fun addMedicine(@Body medicationState: MedicationState): Boolean
+
     // Discharge a patient
     @PUT("room/discharge")
     suspend fun updatePatientDischarge(@Body patientState: PatientState): Boolean
@@ -109,5 +121,13 @@ interface ApiService {
     //Create a patient
     @POST("patient")
     suspend fun createPatient(@Body patientState: PatientState): PatientState
+
+    // Add new Diet Type
+    @POST("/diet/type")
+    suspend fun createNewDietType(@Body type: List<DietTypeState>): Boolean
+
+    // Add new Diet Texture
+    @POST("/diet/texture")
+    suspend fun createNewDietTexture(@Body texture: List<DietTextureTypeState>): Boolean
 
 }

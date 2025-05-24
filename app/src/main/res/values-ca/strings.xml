@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">HealthNest</string>
-    <string name="login_title">Iniciar Sessió</string>
+    <string name="login_title">INICIAR SESSIÓ</string>
     <string name="switch_language">Canvi de llengua</string>
+    // BOTTOM BAR
+    <string name="bottom_bar_home">Inici</string>
+    <string name="bottom_bar_medication">Medicaments</string>
+    <string name="bottom_bar_configuration">Configuració</string>
     //Login
     <string name="button_login">Accedir</string>
     <string name="dialog_ok">OK</string>
@@ -34,7 +38,7 @@
     <string name="medic_info">Informació Mèdica</string>
     <string name="info_caragiver">Informació del Cuidador</string>
     <string name="button_save_changes">Desar canvis</string>
-    <string name="success_title">Dates Modificats</string>
+    <string name="success_title">Dades Modificats</string>
     <string name="error_title">Error</string>
     <string name="success_message">S\'han modificat les dades del pacient</string>
     <string name="error_message">No s\'han modificat les dades del pacient</string>
@@ -49,7 +53,7 @@
     //Diagnosis
     <string name="diagnosis_title">DIAGNÒSTIC</string>
     <string name="empty_diagnosis">No hi ha cap diagnòstic disponible</string>
-    <string name="create_diagnosis">Pots crear-ne un amb el botó a la part superior dreta</string>
+    <string name="create_diagnosis">Pots crear-ne un amb el botó de la part inferior a la dreta</string>
     <string name="dependency_level">Grau de dependència</string>
     <string name="urinary">Vesical</string>
     <string name="rectal">Rectal</string>
@@ -61,6 +65,9 @@
     <string name="data">Data</string>
     <string name="auxiliary_name">Auxiliar</string>
     <string name="bolquer">Bolquer</string>
+    <string name="diagnosis_title_history">Diagnòstic %1$d</string>
+    <string name="title_history">HISTORIAL</string>
+    <string name="empty_historial_diagnosis">Pots crear-ne un anant a la pantalla de diagnòstic</string>
     //Create diagnosis
     <string name="diagnosis_create_title">CREAR DIAGNÓSTIC</string>
     <string name="diagnosis_create_error_title">Error: Create Diagnostic</string>
@@ -116,7 +123,7 @@
     <string name="oxygen_saturation_required">Saturació O₂ *</string>
     <string name="additional_measures">Mesures Addicionals</string>
     <string name="drain_type">Tipus de Drenatge *</string>
-    <string name="drain_type_ex">Ex: Penrose, Jackson-Pratt...</string>
+    <string name="drain_type_ex">Ex: Penrose, Jackson-Pratt…</string>
     <string name="debit_quantity">Quantitat de Dèbit *</string>
     <string name="type_hygiene_required">Tipus d\'higiene *</string>
     <string name="hygiene_option_bedridden">Allitat</string>
@@ -176,8 +183,50 @@
     <string name="observation_title">Observacions</string>
     <string name="drain">Drenatge</string>
     <string name="tolerance_level">Nivell de tolerància</string>
-    //Medication View
+    // LIST MEDICATION
+    <string name="medication_list_title">MEDICAMENTS</string>
     <string name="empty_medication">No hi ha medicaments disponibles</string>
+    <string name="create_medication">Pots crear un nou medicament utilitzant el botó flotant a la cantonada inferior dreta</string>
+    <string name="medication_list_search_title">No s\'han trobat medicaments</string>
+    <string name="medication_list_search_subtitle">Prova amb un altre nom</string>
+    <string name="medication_list_update">Actualitzar</string>
+    <string name="medication_list_dosage">Dosi</string>
+    <string name="medication_list_administration">Via d\'administració</string>
+    <string name="medication_list_stock">Estoc disponible</string>
+    <string name="medication_list_stock_unity">Unitats</string>
+    <string name="medication_list_search">Cerca medicaments…</string>
+    <!-- Medication Update Strings -->
+    <string name="medication_update_title">ACTUALITZAR DADES</string>
+    <string name="medication_update_name">Nom del Medicament</string>
+    <string name="medication_dosage">Dosi</string>
+    <string name="medication_administration_route">Via d\'Administració</string>
+    <string name="medication_update_stock">Existències</string>
+    <string name="update_button">Actualitzar</string>
+    <string name="dialog_update_medication_title_success">DADES ACTUALITZADES</string>
+    <string name="dialog_update_medication_text_success">La informació del medicament s\'ha actualitzat correctament</string>
+    <string name="dialog_update_medication_title_fail">ERROR AL ACTUALIZAR DADES</string>
+    <string name="dialog_update_medication_text_fail">S\'ha produït un error en actualitzar la informació del medicament. Si us plau, intenta-ho més tard</string>
+    <string name="close">Tancar</string>
+    <!-- Administration Routes -->
+    <string name="medication_route_oral">Oral</string>
+    <string name="medication_route_injectable">Injectable</string>
+    <string name="medication_route_topical">Tòpica</string>
+    <string name="medication_route_inhalation">Inhalació</string>
+    <string name="medication_route_sublingual">Sublingual</string>
+    <!-- Placeholder Medication -->
+    <string name="placeholder_medication_name">Ex: Paracetamol</string>
+    <string name="placeholder_medication_dosage">Ex: 500mg</string>
+    <string name="placeholder_medication_stock">Ex: 20</string>
+
+    //create medication
+    <string name="create_medication_title">CREAR MEDICINA</string>
+    <string name="medication_name">Nombre</string>
+    <string name="medication_dossage">Dosi</string>
+    <string name="medication_administration">Via d\'administració</string>
+    <string name="medication_stock">Stock</string>
+    <string name="dialog_create_medication_title_success">Èxit</string>
+    <string name="dialog_create_medication_text_success">Medicament creat amb èxit</string>
+    <string name="dialog_create_medication_text_fail">S\'ha produït un error en crear el medicament</string>
     //MENU ALERT DIALOG DISCHARGE
     <string name="alert_dialog_discharge_title">Confirmació d\'alta</string>
     <string name="alert_dialog_discharge_text">Estàs segur que vols donar d\'alta aquest pacient?</string>
@@ -200,4 +249,40 @@
     <string name="assign_create_success">Pacient creat amb èxit</string>
     <string name="assign_create_successAlert">S\'han carregat les dades del pacient</string>
     <string name="assign_create_successError">No s\'han carregat les dades del pacient</string>
+    <!-- Settings Screen -->
+    <string name="settings_title">CONFIGURACIÓ</string>
+    <!-- Diet Type/Texture -->
+    <string name="setting_diet_type_title">Tipus de dieta</string>
+    <string name="setting_diet_type_text">Afegir un nou tipus de dieta</string>
+    <string name="setting_diet_texture_title">Tipus de textura</string>
+    <string name="setting_diet_texture_text">Afegir un nou tipus de textura</string>
+    <!-- Diet Type/Texture INPUT -->
+    <string name="setting_diet_input">Aquest camp és obligatori i només permetre lletres</string>
+    <!-- Language Settings -->
+    <string name="settings_language_title">Idioma</string>
+    <string name="settings_language_subtitle">Canviar l\'idioma de l\'aplicació</string>
+    <string name="settings_language_dialog_title">Seleccionar idioma</string>
+    <!-- Language Options -->
+    <string name="language_spanish">Castellà</string>
+    <string name="language_catalan">Català</string>
+    <string name="language_english">Anglès</string>
+    <!-- Logout Settings -->
+    <string name="settings_logout_title">Tancar sessió</string>
+    <string name="settings_logout_subtitle">Sortir del teu compte actual</string>
+    <string name="settings_logout_dialog_title">Tancar sessió?</string>
+    <string name="settings_logout_dialog_message">Estàs segur que vols tancar la teva sessió? Hauràs de tornar a iniciar sessió per accedir a l\'aplicació.</string>
+    <string name="settings_logout_confirm">Tancar sessió</string>
+    <!-- App Info -->
+    <string name="settings_app_version">Versió 1.0.0</string>
+    <!-- Actions ERROR/SUCCESS -->
+    <string name="settings_error_title">Error en afegir</string>
+    <string name="settings_error_text">Si us plau, torna-ho a intentar</string>
+    <string name="setting_success">agregat amb èxit</string>
+    <!-- Dialog Actions -->
+    <string name="dialog_close">Tancar</string>
+    <string name="dialog_error_title">Error</string>
+    <string name="dialog_success">Èxit</string>
+    <string name="dialog_cancel">Cancel·lar</string>
+    <string name="dialog_confirm">Confirmar</string>
+    <string name="invalid_auxiliary_number">Número d\'auxiliar incorrecte</string>
 </resources>

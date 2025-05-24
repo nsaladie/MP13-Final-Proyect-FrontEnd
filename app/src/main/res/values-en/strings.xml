@@ -2,8 +2,12 @@
 <resources>
     <string name="app_name">HealthNest</string>
     <string name="switch_language">Switch Language</string>
+    // BOTTOM BAR
+    <string name="bottom_bar_home">Home</string>
+    <string name="bottom_bar_medication">Medicine</string>
+    <string name="bottom_bar_configuration">Configuration</string>
     //Login
-    <string name="login_title">Login</string>
+    <string name="login_title">LOGIN</string>
     <string name="button_login">Sign In</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_error">ERROR: Login</string>
@@ -48,7 +52,7 @@
     //Diagnosis
     <string name="diagnosis_title">DIAGNOSIS</string>
     <string name="empty_diagnosis">No diagnosis available</string>
-    <string name="create_diagnosis">You can create one using the button at the top right</string>
+    <string name="create_diagnosis">You can create one using the button at the bottom right</string>
     <string name="dependency_level">Dependency level</string>
     <string name="urinary">Urinary</string>
     <string name="rectal">Rectal</string>
@@ -60,6 +64,8 @@
     <string name="data">Date</string>
     <string name="auxiliary_name">Auxiliary</string>
     <string name="bolquer">Diaper</string>
+    <string name="title_history">HISTORY</string>
+    <string name="empty_historial_diagnosis">You can create one by going to the diagnostic screen</string>
     //Create Diagnosis
     <string name="diagnosis_create_title">CREATE DIAGNOSIS</string>
     <string name="diagnosis_create_error_title">Error: Create Diagnosis</string>
@@ -77,6 +83,7 @@
     <string name="rectal_probe">Rectal Tube</string>
     <string name="nasogastric_probe">Nasogastric Tube</string>
     <string name="type_here">Type here</string>
+    <string name="diagnosis_title_history">Diagnosis %1$d</string>
     //Create care
     <string name="create_care_title">CREATE NEW CARE</string>
     <string name="success">CREATE NEW CARE</string>
@@ -107,7 +114,6 @@
     <string name="prosthesis">Wears prosthesis</string>
     <string name="shift_remarks">Shift remarks</string>
     <string name="quantity">Quantity</string>
-
     <string name="type_hygiene_required">Type of hygiene *</string>
     <string name="hygiene_option_bedridden">Bedridden</string>
     <string name="hygiene_option_partial_bed">Partial in bed</string>
@@ -138,9 +144,8 @@
     <string name="oxygen_saturation_required">O₂ Saturation *</string>
     <string name="additional_measures">Additional Measures</string>
     <string name="drain_type">Drain Type *</string>
-    <string name="drain_type_ex">Ex: Penrose, Jackson-Pratt...</string>
+    <string name="drain_type_ex">Ex: Penrose, Jackson-Pratt…</string>
     <string name="debit_quantity">Debit Quantity *</string>
-
     <string name="diet_date_label">Diet Date *</string>
     <string name="date_format_placeholder">dd-MM-YYYY</string>
     <string name="select_meal_label">Select meal *</string>
@@ -159,7 +164,6 @@
     <string name="autonomous">Autonomous</string>
     <string name="needs_help">Needs Help</string>
     <string name="prosthesis_carrier_label">Prosthesis Carrier *</string>
-
     //List care
     <string name="list_care_title">CARE LIST</string>
     <string name="care">Care</string>
@@ -179,7 +183,50 @@
     <string name="observation_title">Observations</string>
     <string name="drain">Drainage</string>
     <string name="tolerance_level">Tolerance level</string>
+    // LIST MEDICATION
+    <string name="medication_list_title">MEDICINES</string>
     <string name="empty_medication">No medications available</string>
+    <string name="create_medication">You can create a new medication using the floating button in the bottom right corner</string>
+    <string name="medication_list_search_title">No medications found</string>
+    <string name="medication_list_search_subtitle">Try another name</string>
+    <string name="medication_list_update">Update</string>
+    <string name="medication_list_dosage">Dosage</string>
+    <string name="medication_list_administration">Route of administration</string>
+    <string name="medication_list_stock">Stock available</string>
+    <string name="medication_list_stock_unity">Unity</string>
+    <string name="medication_list_search">Search for medicines…</string>
+    <!-- Medication Update -->
+    <string name="medication_update_title">UPDATE DATA</string>
+    <string name="medication_update_name">Medication Name</string>
+    <string name="medication_dosage">Dosage</string>
+    <string name="medication_administration_route">Administration Route</string>
+    <string name="medication_update_stock">Stock</string>
+    <string name="update_button">Update</string>
+    <string name="dialog_update_medication_title_success">UPDATED DATA</string>
+    <string name="dialog_update_medication_text_success">The medication information has been successfully updated</string>
+    <string name="dialog_update_medication_title_fail">FAIL UPDATING DATA</string>
+    <string name="dialog_update_medication_text_fail">An error occurred while updating the medication information. Please try again later</string>
+    <string name="close">Close</string>
+    <!-- Administration Routes -->
+    <string name="medication_route_oral">Oral</string>
+    <string name="medication_route_injectable">Injectable</string>
+    <string name="medication_route_topical">Topical</string>
+    <string name="medication_route_inhalation">Inhalation</string>
+    <string name="medication_route_sublingual">Sublingual</string>
+    <!-- Placeholder Medication -->
+    <string name="placeholder_medication_name">E.g.: Paracetamol</string>
+    <string name="placeholder_medication_dosage">E.g.: 500mg</string>
+    <string name="placeholder_medication_stock">E.g.: 20</string>
+
+    //Create medication
+    <string name="create_medication_title">CREATE MEDICATION</string>
+    <string name="medication_name">Name</string>
+    <string name="medication_dossage">Dosage</string>
+    <string name="medication_administration">Route of administration</string>
+    <string name="medication_stock">Stock</string>
+    <string name="dialog_create_medication_title_success">Success</string>
+    <string name="dialog_create_medication_text_success">Medication created successfully</string>
+    <string name="dialog_create_medication_text_fail">An error occurred while creating the medication</string>
     //MENU ALERT DIALOG DISCHARGE
     <string name="alert_dialog_discharge_title">Discharge confirmation</string>
     <string name="alert_dialog_discharge_text">Are you sure you want to discharge this patient?</string>
@@ -202,6 +249,42 @@
     <string name="assign_create_success">Patient successfully created</string>
     <string name="assign_create_successAlert">Patient data has been uploaded</string>
     <string name="assign_create_successError">Patient data has not been uploaded</string>
+    <!-- Settings Screen -->
+    <string name="settings_title">SETTINGS</string>
+    <!-- Diet Type/Texture -->
+    <string name="setting_diet_type_title">Diet Type</string>
+    <string name="setting_diet_type_text">Add new diet type</string>
+    <string name="setting_diet_texture_title">Texture Type</string>
+    <string name="setting_diet_texture_text">Add new diet texture type</string>
+    <!-- Diet Type/Texture INPUT -->
+    <string name="setting_diet_input">This field is mandatory and only accepts letters</string>
+    <!-- Language Settings -->
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_subtitle">Change application language</string>
+    <string name="settings_language_dialog_title">Select language</string>
+    <!-- Language Options -->
+    <string name="language_spanish">Spanish</string>
+    <string name="language_catalan">Catalan</string>
+    <string name="language_english">English</string>
+    <!-- Logout Settings -->
+    <string name="settings_logout_title">Log out</string>
+    <string name="settings_logout_subtitle">Sign out of your current account</string>
+    <string name="settings_logout_dialog_title">Log out?</string>
+    <string name="settings_logout_dialog_message">Are you sure you want to log out? You will need to sign in again to access the application.</string>
+    <string name="settings_logout_confirm">Log out</string>
+    <!-- App Info -->
+    <string name="settings_app_version">Version 1.0.0</string>
+    <!-- Actions ERROR/SUCCESS -->
+    <string name="settings_error_title">Error adding</string>
+    <string name="settings_error_text">Please try again</string>
+    <string name="setting_success">added successfully</string>
+    <!-- Dialog Actions -->
+    <string name="dialog_close">Close</string>
+    <string name="dialog_error_title">Error</string>
+    <string name="dialog_success">Success</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="invalid_auxiliary_number">Incorrect auxiliary number</string>
 </resources>
 
 
