@@ -244,6 +244,10 @@
     <string name="assign_search_emptyPatients">No patients available</string>
     <string name="assign_search_emptyPatientsCreate">Create a new patient</string>
     <string name="assign_search_choose">Select</string>
+    <string name="assign_search_dialogTitle">Confirm assignment</string>
+    <string name="assign_search_dialogText">The room will be assigned to the patient: %1$s %2$s</string>
+    <string name="assign_search_DialogCancel">Cancel</string>
+    <string name="assign_search_DialogOk">Confirm</string>
     //CREATE PATIENT VIEW
     <string name="assign_create_title">CREATE PATIENT</string>
     <string name="assign_create_success">Patient successfully created</string>

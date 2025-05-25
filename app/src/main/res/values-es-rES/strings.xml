@@ -244,6 +244,10 @@
     <string name="assign_search_emptyPatients">No hay pacientes disponibles</string>
     <string name="assign_search_emptyPatientsCreate">Crea un nuevo paciente</string>
     <string name="assign_search_choose">Seleccionar</string>
+    <string name="assign_search_dialogTitle">Confirmar asignación</string>
+    <string name="assign_search_dialogText">La bitación se asignará al paciente: %1$s %2$s</string>
+    <string name="assign_search_DialogCancel">Cancelar</string>
+    <string name="assign_search_DialogOk">Confirmar</string>
     //CREATE PATIENT VIEW
     <string name="assign_create_title">CREAR PACIENTE</string>
     <string name="assign_create_success">Paciente creado con éxito</string>

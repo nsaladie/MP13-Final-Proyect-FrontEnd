@@ -33,7 +33,8 @@ import com.example.hospitalfrontend.R.color.colorText
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessagePatient
 import com.example.hospitalfrontend.domain.model.patient.PatientState
 import com.example.hospitalfrontend.data.remote.viewmodel.PatientRemoteViewModel
-import com.example.hospitalfrontend.ui.cure.view.EnhancedSaveButton
+import com.example.hospitalfrontend.domain.model.facility.RoomDTO
+import com.example.hospitalfrontend.domain.model.facility.RoomState
 import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -46,6 +47,7 @@ fun CreatePatientData(
     patientRemoteViewModel: PatientRemoteViewModel,
     patientViewModel: PatientViewModel,
     patientId: Int,
+    roomId: String,
 ) {
     var patientState by remember { mutableStateOf<PatientState?>(null) }
     var updateRequested by remember { mutableStateOf(false) }
@@ -268,12 +270,24 @@ fun CreatePatientData(
                             }
                         }
 
-                        val successMessage = stringResource(id = R.string.assign_create_successAlert)
-                        val errorMessage = stringResource(id = R.string.assign_create_successError)
+                        val successMessage =
+                            stringResource(id = R.string.assign_create_successAlert)
+                        val errorMessage =
+                            stringResource(id = R.string.assign_create_successError)
                         LaunchedEffect(remoteApiMessage, updateRequested) {
                             if (updateRequested) {
                                 when (remoteApiMessage) {
                                     is RemoteApiMessagePatient.Success -> {
+                                        /*
+                                        Log.d("PatientSuccess", "Success message: ${remoteApiMessage.message}")
+                                        val createdPatient = remoteApiMessage.message
+
+                                        val roomDTO = RoomDTO(
+                                            room = RoomState(roomId = roomId),
+                                            patient = PatientState(historialNumber = createdPatient.historialNumber)
+                                        )
+                                        patientRemoteViewModel.updatePatientAssign(roomDTO)
+                                        */
                                         dialogMessage = successMessage
                                         showSuccessDialog = true
                                         updateRequested = false

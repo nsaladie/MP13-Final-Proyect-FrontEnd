@@ -244,6 +244,10 @@
     <string name="assign_search_emptyPatients">No hi ha pacients disponibles</string>
     <string name="assign_search_emptyPatientsCreate">Crea un nou pacient</string>
     <string name="assign_search_choose">Seleccionar</string>
+    <string name="assign_search_dialogTitle">Confirmar assignació</string>
+    <string name="assign_search_dialogText">L\'habitació s\'assignarà al pacient:  %1$s %2$s</string>
+    <string name="assign_search_DialogCancel">Cancel·lar</string>
+    <string name="assign_search_DialogOk">Confirmar</string>
     //CREATE PATIENT VIEW
     <string name="assign_create_title">CREAR PACIENT</string>
     <string name="assign_create_success">Pacient creat amb èxit</string>
