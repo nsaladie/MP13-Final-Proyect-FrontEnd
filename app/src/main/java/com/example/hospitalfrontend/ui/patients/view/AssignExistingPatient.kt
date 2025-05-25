@@ -64,7 +64,6 @@ fun AssignExistingPatientView(
     }
 
     val filteredPatients = remember(patients, searchText, idsAsignados) {
-
         val filteredBySearch = if (searchText.isEmpty()) {
             patients
         } else {
@@ -127,7 +126,8 @@ fun AssignExistingPatientView(
     }
 
     Scaffold(
-        containerColor = customPrimaryColor, topBar = {
+        containerColor = customPrimaryColor,
+        topBar = {
             TopAppBar(
                 title = {
                     Row(
@@ -158,10 +158,12 @@ fun AssignExistingPatientView(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customPrimaryColor, scrolledContainerColor = customPrimaryColor
+                    containerColor = customPrimaryColor,
+                    scrolledContainerColor = customPrimaryColor
                 ),
             )
-        }) { paddingValues ->
+        }
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -176,98 +178,99 @@ fun AssignExistingPatientView(
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
-                        color = Color.White, modifier = Modifier.size(50.dp)
+                        color = Color.White,
+                        modifier = Modifier.size(50.dp)
                     )
-                }
-            }
-
-            if (filteredPatients.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(customPrimaryColor),
-                    contentAlignment = Alignment.Center
-                ) {
-                    NoDataInformation(
-                        labelRes = R.string.assign_search_emptyPatients,
-                        infoRes = R.string.assign_search_emptyPatientsCreate,
-                        icon = Icons.Filled.ContactMail
-                    )
-
-                    FloatingActionButton(
-                        onClick = {
-                            navController.navigate("createPatient")
-                        },
-                        containerColor = Color(0xFF4CAF50),
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(24.dp),
-                        shape = CircleShape
-                    ) {
-                        Icon(Icons.Filled.Add, contentDescription = "Add Patient", tint = Color.White)
-                    }
                 }
             } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .verticalScroll(rememberScrollState())
-                        .padding(16.dp),
-                ) {
-                    // Search Field
-                    SearchField(
-                        value = searchText,
-                        onValueChange = { searchText = it },
+                if (patients.isEmpty()) {
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    )
-                    // Message when there isn't any result of search
-                    if (filteredPatients.isEmpty() && searchText.isNotEmpty()) {
-                        Box(
+                            .fillMaxSize()
+                            .background(customPrimaryColor),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        NoDataInformation(
+                            labelRes = R.string.assign_search_emptyPatients,
+                            infoRes = R.string.assign_search_emptyPatientsCreate,
+                            icon = Icons.Filled.ContactMail
+                        )
+
+                        FloatingActionButton(
+                            onClick = {
+                                navController.navigate("createPatient")
+                            },
+                            containerColor = Color(0xFF4CAF50),
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(24.dp),
+                            shape = CircleShape
+                        ) {
+                            Icon(Icons.Filled.Add, contentDescription = "Add Patient", tint = Color.White)
+                        }
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .verticalScroll(rememberScrollState())
+                            .padding(16.dp),
+                    ) {
+                        // Search Field
+                        SearchField(
+                            value = searchText,
+                            onValueChange = { searchText = it },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                .padding(bottom = 16.dp)
+                        )
+
+                        if (filteredPatients.isEmpty() && searchText.isNotEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 32.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    imageVector = Icons.Filled.SearchOff,
-                                    contentDescription = "No se encontraron resultados",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(48.dp)
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.assign_search_notFoundTitle),
-                                    style = TextStyle(
-                                        fontFamily = NunitoFontFamily,
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.SearchOff,
+                                        contentDescription = "No se encontraron resultados",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(48.dp)
                                     )
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.assign_search_notFoundText),
-                                    style = TextStyle(
-                                        fontFamily = LatoFontFamily,
-                                        fontSize = 16.sp,
-                                        color = Color.White
+                                    Text(
+                                        text = stringResource(id = R.string.assign_search_notFoundTitle),
+                                        style = TextStyle(
+                                            fontFamily = NunitoFontFamily,
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
                                     )
+                                    Text(
+                                        text = stringResource(id = R.string.assign_search_notFoundText),
+                                        style = TextStyle(
+                                            fontFamily = LatoFontFamily,
+                                            fontSize = 16.sp,
+                                            color = Color.White
+                                        )
+                                    )
+                                }
+                            }
+                        } else {
+                            filteredPatients.forEach { patient ->
+                                PatientDetailCard(
+                                    patient, navController, onPatientSelected = { selected ->
+                                        selectedPatient = selected
+                                        showConfirmDialog = true
+                                    }
                                 )
                             }
-                        }
-                    } else {
-                        // Show all the list filtered of medicines
-                        filteredPatients.forEach { patient ->
-                            PatientDetailCard(
-                                patient, navController, onPatientSelected = { selected ->
-                                    selectedPatient = selected
-                                    showConfirmDialog = true
-                                })
                         }
                     }
                 }
@@ -287,7 +290,7 @@ fun AssignExistingPatientView(
             )
         }, title = {
             Text(
-                text = "Confirmar assignació", style = TextStyle(
+                text = stringResource(id = R.string.assign_search_dialogTitle ), style = TextStyle(
                     fontFamily = NunitoFontFamily,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
@@ -295,7 +298,10 @@ fun AssignExistingPatientView(
             )
         }, text = {
             Text(
-                text = "Estàs segur que vols assignar el pacient ${selectedPatient?.name} ${selectedPatient?.surname ?: ""} a aquesta habitació?",
+                text = stringResource(id = R.string.assign_search_dialogText,
+                    selectedPatient?.name ?: "",
+                    selectedPatient?.surname ?: ""
+                    ),
                 style = TextStyle(
                     fontFamily = LatoFontFamily, fontSize = 16.sp
                 )
@@ -313,7 +319,7 @@ fun AssignExistingPatientView(
                     }
                 }) {
                 Text(
-                    "Confirmar", style = TextStyle(
+                    stringResource(id = R.string.assign_search_DialogOk), style = TextStyle(
                         fontFamily = NunitoFontFamily,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFA9C7C7)
@@ -327,7 +333,7 @@ fun AssignExistingPatientView(
                     selectedPatient = null
                 }) {
                 Text(
-                    "Cancel·lar", style = TextStyle(
+                    stringResource(id = R.string.assign_search_DialogCancel), style = TextStyle(
                         fontFamily = NunitoFontFamily,
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray
@@ -347,9 +353,7 @@ fun AssignExistingPatientView(
                 imageVector = Icons.Filled.CheckCircle,
                 contentDescription = "Èxit",
                 tint = Color(0xFF4CAF50),
-                modifier = Modifier.size(
-                    48.dp
-                )
+                modifier = Modifier.size(48.dp)
             )
         }, title = {
             Text(
@@ -393,9 +397,7 @@ fun AssignExistingPatientView(
                 imageVector = Icons.Filled.Error,
                 contentDescription = "Error",
                 tint = Color(0xFFF44336),
-                modifier = Modifier.size(
-                    48.dp
-                )
+                modifier = Modifier.size(48.dp)
             )
         }, title = {
             Text(

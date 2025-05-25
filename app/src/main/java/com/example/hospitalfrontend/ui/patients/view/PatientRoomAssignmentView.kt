@@ -34,7 +34,7 @@ import com.example.hospitalfrontend.ui.patients.viewmodel.PatientViewModel
 
 sealed class Screen(val route: String) {
     data class AssignPatient(val roomId: String) : Screen("searchPatient/$roomId")
-    data class ListRegister(val patientId: Int) : Screen("createPatient")
+    data class ListRegister(val roomId: String) : Screen("createPatient/$roomId")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +57,7 @@ fun PatientRoomAssignmentView(
 
     val menuOptions = listOf(
         Triple(searchPatientText, Screen.AssignPatient(roomId).route, Icons.Outlined.Person),
-        Triple(createPatientText, Screen.ListRegister(patientId).route, Icons.Outlined.ControlPoint)
+        Triple(createPatientText, Screen.ListRegister(roomId).route, Icons.Outlined.ControlPoint)
     )
 
     LaunchedEffect(Unit) {

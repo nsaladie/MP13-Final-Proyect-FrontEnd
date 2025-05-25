@@ -274,13 +274,16 @@ fun AppNavHost(
         }
 
         composable(
-            "createPatient"
+            "createPatient/{roomId}",
+            arguments = listOf(navArgument("roomId") { type = NavType.StringType })
         ) { backStackEntry ->
+            val roomId = (backStackEntry.arguments?.getString("roomId") ?: -1).toString()
             CreatePatientData(
                 navController = navController,
                 patientRemoteViewModel = patientRemoteViewModel,
                 patientViewModel = patientViewModel,
                 patientId = -1,
+                roomId = roomId
             )
         }
     }
