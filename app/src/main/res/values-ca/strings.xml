@@ -289,4 +289,15 @@
     <string name="dialog_cancel">Cancel·lar</string>
     <string name="dialog_confirm">Confirmar</string>
     <string name="invalid_auxiliary_number">Número d\'auxiliar incorrecte</string>
+    <!-- Textos generales -->
+    <string name="unknown">Desconegut</string>
+    <!-- Textos específicos para asistencia al caminar -->
+    <string name="with_assistance">Amb assistència</string>
+    <string name="without_assistance">Sense assistència</string>
+    <!-- Textos específicos para pañales -->
+    <string name="wears">Porta</string>
+    <string name="does_not_wear">No porta</string>
+    <!-- Textos específicos para oxígeno -->
+    <string name="requires">Requereix</string>
+    <string name="does_not_require">No requereix</string>
 </resources>

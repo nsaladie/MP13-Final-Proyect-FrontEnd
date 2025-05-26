@@ -7,6 +7,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -1242,19 +1243,27 @@ fun DietSection(
     onDietStateChange: (DietState) -> Unit,
     dietRemoteViewModel: DietRemoteViewModel = viewModel()
 ) {
+    val isExpanded by remember { mutableStateOf(false) }
+
     // Diet texture state
     var selectedTextureDiet by remember {
         mutableStateOf(
-            dietState.dietTypeTexture?.description ?: ""
+            if (isExpanded) dietState.dietTypeTexture?.description ?: "" else ""
         )
     }
-    var selectedTextureDietId by remember { mutableIntStateOf(dietState.dietTypeTexture?.id ?: 0) }
+    var selectedTextureDietId by remember {
+        mutableIntStateOf(
+            if (isExpanded) dietState.dietTypeTexture?.id ?: 0 else 0
+        )
+    }
     var expandedTextureDiet by remember { mutableStateOf(false) }
 
     // Diet type state
     val selectedTypeDietIds = remember {
         mutableStateMapOf<Int, String>().apply {
-            dietState.dietTypes.forEach { put(it.id, it.description) }
+            if (isExpanded) {
+                dietState.dietTypes.forEach { put(it.id, it.description) }
+            }
         }
     }
     var expandedTypeDiet by remember { mutableStateOf(false) }
@@ -1328,7 +1337,6 @@ fun DietSection(
                 }
             },
             placeholder = stringResource(id = R.string.date_format_placeholder),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -1340,7 +1348,7 @@ fun DietSection(
                 stringResource(id = R.string.lunch),
                 stringResource(id = R.string.dinner)
             ),
-            selectedOption = selectedMeal.toString(),
+            selectedOption = selectedMeal,
             onOptionSelected = { selectedMeal = it })
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -1696,7 +1704,7 @@ fun DietSection(
             ),
             selectedOption = selectedProsthesis,
             onOptionSelected = { selectedProsthesis = it })
-        val needHelp = stringResource(R.string.needs_help)
+        val needHelp = stringResource(id = R.string.needs_help)
         val yes = stringResource(id = R.string.yes)
         // Update state when any relevant field changes
         LaunchedEffect(

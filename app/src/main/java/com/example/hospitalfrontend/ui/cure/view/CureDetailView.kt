@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -25,15 +26,9 @@ import com.example.hospitalfrontend.R
 import com.example.hospitalfrontend.data.remote.response.RemoteApiMessageCureDetail
 import com.example.hospitalfrontend.data.remote.viewmodel.PatientRemoteViewModel
 import com.example.hospitalfrontend.domain.model.auth.RegisterState
-import com.example.hospitalfrontend.domain.model.diet.DietState
-import com.example.hospitalfrontend.domain.model.diet.DietTypeState
-import com.example.hospitalfrontend.domain.model.medical.DrainState
-import com.example.hospitalfrontend.domain.model.medical.HygieneState
-import com.example.hospitalfrontend.domain.model.medical.MobilizationState
-import com.example.hospitalfrontend.domain.model.medical.VitalSignState
-import com.example.hospitalfrontend.ui.diagnosis.view.DetailItemWithIcon
-import com.example.hospitalfrontend.ui.diagnosis.view.LatoFontFamily
-import com.example.hospitalfrontend.ui.diagnosis.view.NunitoFontFamily
+import com.example.hospitalfrontend.domain.model.diet.*
+import com.example.hospitalfrontend.domain.model.medical.*
+import com.example.hospitalfrontend.ui.diagnosis.view.*
 import com.example.hospitalfrontend.utils.*
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -42,7 +37,6 @@ import java.util.Date
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CureDetailsScreen(
     navController: NavHostController,
@@ -339,6 +333,7 @@ fun VitalSignCard(vitalSign: VitalSignState, alertColor: Color, defaultInfoColor
 
 @Composable
 fun MobilizationCard(mobilization: MobilizationState) {
+    val context = LocalContext.current
     CardContent(title = stringResource(R.string.mobilization)) {
         DetailItemWithIcon(
             labelRes = R.string.sedestation,
@@ -349,7 +344,7 @@ fun MobilizationCard(mobilization: MobilizationState) {
         mobilization.walkingAssis?.let {
             DetailItemWithIcon(
                 labelRes = R.string.wander,
-                info = it.toWalkingAssisText(),
+                info = it.toWalkingAssisText(context),
                 icon = Icons.Filled.AssistWalker
             )
             if (it == 1) {
@@ -371,6 +366,7 @@ fun MobilizationCard(mobilization: MobilizationState) {
 
 @Composable
 fun DietCard(diet: DietState) {
+    val context = LocalContext.current
     CardContent(title = stringResource(R.string.diet)) {
         diet.date?.let {
             DetailItemWithIcon(
@@ -401,13 +397,13 @@ fun DietCard(diet: DietState) {
 
         DetailItemWithIcon(
             labelRes = R.string.autonomy,
-            info = diet.independent!!.toIndependentText(),
+            info = diet.independent!!.toIndependentText(context),
             icon = Icons.AutoMirrored.Filled.Help
         )
 
         DetailItemWithIcon(
             labelRes = R.string.prosthesis,
-            info = diet.prosthesis!!.toProsthesisText(),
+            info = diet.prosthesis!!.toProsthesisText(context),
             icon = Icons.Filled.Person
         )
     }
@@ -425,7 +421,7 @@ fun HygieneCard(hygiene: HygieneState) {
 
 @Composable
 fun ObservationCard(observation: String) {
-    CardContent(title =stringResource(R.string.observation_title)) {
+    CardContent(title = stringResource(R.string.observation_title)) {
         DetailItemWithIcon(
             labelRes = R.string.shift_remarks, info = observation, icon = Icons.Filled.Description
         )
@@ -514,7 +510,7 @@ fun DietTypesListItem(dietTypes: Set<DietTypeState>) {
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = stringResource( id = R.string.diet_type),
+                text = stringResource(id = R.string.diet_type),
                 style = TextStyle(
                     fontFamily = NunitoFontFamily,
                     fontSize = labelFontSize,

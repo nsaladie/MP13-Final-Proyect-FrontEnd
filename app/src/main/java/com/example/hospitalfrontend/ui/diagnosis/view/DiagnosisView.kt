@@ -13,6 +13,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.*
@@ -43,7 +44,6 @@ fun DiagnosisScreen(
     diagnosisViewModel: DiagnosisViewModel,
     patientId: Int
 ) {
-
     val customPrimaryColor = Color(0xFFA9C7C7)
     var isLoading by remember { mutableStateOf(true) }
     var diagnosisState by remember { mutableStateOf<DiagnosisState?>(null) }
@@ -160,8 +160,6 @@ fun DiagnosisScreen(
                     containerColor = customPrimaryColor,
                     scrolledContainerColor = customPrimaryColor
                 ),
-                // Removemos el action del TopAppBar ya que ahora está en el FAB
-                actions = {}
             )
         }
     ) { paddingValues ->
@@ -245,30 +243,36 @@ fun DiagnosisDetailsCard(diagnosisState: DiagnosisState?) {
             }
 
             diagnosisState?.urinaryCatheter?.let {
-                DetailItemWithIcon(
-                    labelRes = R.string.urinary,
-                    info = it,
-                    icon = Icons.Filled.Water,
-                    iconColor = customIconColor,
-                )
+                if (it.isNotBlank()) {
+                    DetailItemWithIcon(
+                        labelRes = R.string.urinary,
+                        info = it,
+                        icon = Icons.Filled.Water,
+                        iconColor = customIconColor,
+                    )
+                }
             }
 
             diagnosisState?.rectalCatheter?.let {
-                DetailItemWithIcon(
-                    labelRes = R.string.rectal,
-                    info = it,
-                    icon = Icons.Filled.Medication,
-                    iconColor = customIconColor,
-                )
+                if (it.isNotBlank()) {
+                    DetailItemWithIcon(
+                        labelRes = R.string.rectal,
+                        info = it,
+                        icon = Icons.Filled.Medication,
+                        iconColor = customIconColor,
+                    )
+                }
             }
 
             diagnosisState?.nasogastricTube?.let {
-                DetailItemWithIcon(
-                    labelRes = R.string.nasogastric,
-                    info = it,
-                    icon = Icons.Filled.HealthAndSafety,
-                    iconColor = customIconColor,
-                )
+                if (it.isNotBlank()) {
+                    DetailItemWithIcon(
+                        labelRes = R.string.nasogastric,
+                        info = it,
+                        icon = Icons.Filled.HealthAndSafety,
+                        iconColor = customIconColor,
+                    )
+                }
             }
         }
     }
@@ -276,6 +280,7 @@ fun DiagnosisDetailsCard(diagnosisState: DiagnosisState?) {
 
 @Composable
 fun DiapersSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -301,7 +306,7 @@ fun DiapersSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = diagnosisState!!.diapers.toDiapersText(),
+                text = diagnosisState!!.diapers.toDiapersText(context),
                 color = when (diagnosisState.diapers) {
                     true -> Color(0xFF1EA01E)
                     false -> Color(0xFFE74C3C)
@@ -332,6 +337,7 @@ fun DiapersSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
 
 @Composable
 fun OxygenSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -355,7 +361,7 @@ fun OxygenSection(diagnosisState: DiagnosisState?, primaryColor: Color) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = diagnosisState!!.oxygenLevel.toOxygenLevelText(), color = when {
+                text = diagnosisState!!.oxygenLevel.toOxygenLevelText(context), color = when {
                     diagnosisState.oxygenLevel > 0 -> Color(0xFF1EA01E)
                     else -> Color(0xFFE74C3C)
                 }, fontSize = 18.sp, fontFamily = LatoFontFamily
