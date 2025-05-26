@@ -294,4 +294,15 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_confirm">Confirm</string>
     <string name="invalid_auxiliary_number">Incorrect auxiliary number</string>
+    <!-- Textos generales -->
+    <string name="unknown">Unknown</string>
+    <!-- Textos específicos para asistencia al caminar -->
+    <string name="with_assistance">With assistance</string>
+    <string name="without_assistance">Without assistance</string>
+    <!-- Textos específicos para pañales -->
+    <string name="wears">Wears</string>
+    <string name="does_not_wear">Does not wear</string>
+    <!-- Textos específicos para oxígeno -->
+    <string name="requires">Requires</string>
+    <string name="does_not_require">Does not require</string>
 </resources>
