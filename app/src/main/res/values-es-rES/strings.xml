@@ -162,13 +162,13 @@
     <string name="select_diet_type">Selecciona un tipo de dieta</string>
     <string name="patient_autonomy_label">Autonomía del paciente *</string>
     <string name="autonomous">Autónomo</string>
-    <string name="needs_help">Necesita ayuda</string>
+    <string name="needs_help">Ayuda</string>
     <string name="prosthesis_carrier_label">Portador de prótesis *</string>
     //List care
     <string name="list_care_title">LISTA DE CURAS</string>
     <string name="care">Cura</string>
     <string name="empty_care">No hay curas disponibles</string>
-    <string name="create_care">Puedes crear una con el botón en la parte superior derecha</string>
+    <string name="create_care">Puedes crear una con el botón en la parte inferior derecha</string>
     <string name="blood_pressure">Presión Arterial</string>
     <string name="respiratory_rate">Frecuencia Respiratoria</string>
     <string name="pulse">Pulso</string>

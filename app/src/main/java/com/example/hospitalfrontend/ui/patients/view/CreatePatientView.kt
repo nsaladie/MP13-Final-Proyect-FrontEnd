@@ -56,7 +56,7 @@ fun CreatePatientData(
     val latoFont = FontFamily(Font(R.font.lato_regular))
 
     val backgroundColor = Color(169, 199, 199)
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
     // Form data states
     val nameValue =
@@ -90,6 +90,7 @@ fun CreatePatientData(
     var showErrorDialog by rememberSaveable { mutableStateOf(false) }
     var dialogMessage by rememberSaveable { mutableStateOf("") }
     val remoteApiMessage = patientRemoteViewModel.remoteApiMessage.value
+    val dateRegex = Regex("""^\d{1,2}-\d{1,2}-\d{4}$""") // Formato final válido
     val isFormValid by remember {
         derivedStateOf {
             nameValue.value.isNotBlank() &&
@@ -97,7 +98,8 @@ fun CreatePatientData(
                     addressValue.value.isNotBlank() &&
                     birthdayValue.value.isNotBlank() &&
                     languageValue.value.isNotBlank() &&
-                    birthdayValue.value.matches(Regex("\\d{2}/\\d{2}/\\d{4}"))
+                    birthdayValue.value.matches(dateRegex) &&
+                    isValidDate(birthdayValue.value)
         }
     }
 
@@ -401,79 +403,6 @@ fun SectionHeader(text: String, fontFamily: FontFamily) {
 }
 
 @Composable
-fun EnhancedNumberField(
-    labelValue: String,
-    icon: ImageVector,
-    textValue: MutableState<String>,
-    fontFamily: FontFamily,
-    maxLength: Int = Int.MAX_VALUE
-) {
-    val isError = remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    ) {
-        OutlinedTextField(
-            value = textValue.value,
-            onValueChange = {
-                if (it.matches(Regex("^\\d{0,9}$"))) { // Permite hasta 9 dígitos
-                    textValue.value = it
-                    isError.value = false
-                } else {
-                    isError.value = true
-                }
-            },
-            label = {
-                Text(
-                    text = labelValue,
-                    fontFamily = fontFamily,
-                    fontSize = 14.sp
-                )
-            },
-            shape = RoundedCornerShape(16.dp),
-            leadingIcon = {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = Color.Black,
-                    modifier = Modifier.size(22.dp)
-                )
-            },
-            isError = isError.value,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(250, 250, 250),
-                unfocusedContainerColor = Color(250, 250, 250),
-                focusedIndicatorColor = Color(151, 199, 150),
-                unfocusedIndicatorColor = Color.LightGray,
-                cursorColor = Color(151, 199, 150),
-                focusedLabelColor = Color(151, 199, 150),
-                errorIndicatorColor = Color.Red,
-                errorLabelColor = Color.Red
-            ),
-            textStyle = TextStyle(
-                fontFamily = fontFamily,
-                fontSize = 18.sp,
-                color = Color.DarkGray
-            ),
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-
-        if (isError.value && textValue.value.isNotEmpty()) {
-            Text(
-                text = "Només es permet 9 dígits",
-                color = Color.Red,
-                fontSize = 12.sp,
-                modifier = Modifier.padding(top = 4.dp, start = 16.dp)
-            )
-        }
-
-    }
-}
-
-@Composable
 fun EnhancedTextField(
     @StringRes labelRes: Int,
     icon: ImageVector,
@@ -522,56 +451,6 @@ fun EnhancedTextField(
 }
 
 @Composable
-fun EnhancedMultilineField(
-    @StringRes labelRes: Int,
-    icon: ImageVector,
-    textValue: MutableState<String>,
-    fontFamily: FontFamily,
-    readOnly: Boolean = false
-) {
-    val labelValue = stringResource(id = labelRes)
-    OutlinedTextField(
-        value = textValue.value,
-        onValueChange = { textValue.value = it },
-        readOnly = readOnly,
-        label = {
-            Text(
-                text = labelValue,
-                fontFamily = fontFamily,
-                fontSize = 14.sp
-            )
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 120.dp)
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(16.dp),
-        leadingIcon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Color.Black,
-                modifier = Modifier.size(22.dp)
-            )
-        },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(250, 250, 250),
-            unfocusedContainerColor = Color(250, 250, 250),
-            focusedIndicatorColor = Color(151, 199, 150),
-            unfocusedIndicatorColor = Color.LightGray,
-            cursorColor = Color(151, 199, 150),
-            focusedLabelColor = Color(151, 199, 150),
-        ),
-        textStyle = TextStyle(
-            fontFamily = fontFamily,
-            fontSize = 18.sp,
-            color = Color.DarkGray
-        ),
-        minLines = 3
-    )
-}
-
-@Composable
 fun EnhancedBirthdayField(
     @StringRes labelRes: Int,
     icon: ImageVector,
@@ -582,7 +461,17 @@ fun EnhancedBirthdayField(
     val labelValue = stringResource(id = labelRes)
     OutlinedTextField(
         value = dateValue.value,
-        onValueChange = { dateValue.value = it },
+        onValueChange = { newValue ->
+            if (newValue.isEmpty() ||
+                newValue.matches(Regex("""^\d{1,2}$""")) ||
+                newValue.matches(Regex("""^\d{1,2}-$""")) ||
+                newValue.matches(Regex("""^\d{1,2}-\d{1,2}$""")) ||
+                newValue.matches(Regex("""^\d{1,2}-\d{1,2}-$""")) ||
+                newValue.matches(Regex("""^\d{1,2}-\d{1,2}-\d{1,4}$"""))
+            ) {
+                dateValue.value = newValue
+            }
+        },
         readOnly = readOnly,
         label = {
             Text(
@@ -618,7 +507,7 @@ fun EnhancedBirthdayField(
         ),
         placeholder = {
             Text(
-                text = "dd/mm/yyyy",
+                text = "dd-mm-yyyy",
                 fontFamily = fontFamily,
                 fontSize = 14.sp,
                 color = Color.LightGray
@@ -686,5 +575,17 @@ fun EnhancedSaveButtonWithHelper(
                 textAlign = TextAlign.Center
             )
         }
+    }
+
+}
+
+fun isValidDate(dateString: String): Boolean {
+    return try {
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+        dateFormat.isLenient = false
+        dateFormat.parse(dateString)
+        true
+    } catch (e: Exception) {
+        false
     }
 }

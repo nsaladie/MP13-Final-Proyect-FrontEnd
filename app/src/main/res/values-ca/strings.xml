@@ -162,7 +162,7 @@
     <string name="select_diet_type">Selecciona un tipus de dieta</string>
     <string name="patient_autonomy_label">Autonomia del pacient *</string>
     <string name="autonomous">Autònom</string>
-    <string name="needs_help">Necessita ajuda</string>
+    <string name="needs_help">Ajuda</string>
     <string name="prosthesis_carrier_label">Portador de pròtesi *</string>
     //List care
     <string name="list_care_title">LLISTAT DE CURES</string>
@@ -173,7 +173,7 @@
     <string name="temperature">Temperatura</string>
     <string name="oxygen_saturation">Saturació d\'Oxigen</string>
     <string name="empty_care">No hi ha cures disponibles</string>
-    <string name="create_care">Pots crear-ne un amb el botó a la part superior dreta</string>
+    <string name="create_care">Pots crear-ne un amb el botó a la part inferior dreta</string>
     //Care Detail
     <string name="detail_care_title">DETALLS DE LA CURA</string>
     <string name="vital_signs">Constants Vitals</string>

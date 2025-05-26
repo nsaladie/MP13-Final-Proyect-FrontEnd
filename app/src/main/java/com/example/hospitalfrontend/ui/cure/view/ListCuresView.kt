@@ -161,8 +161,8 @@ fun ListCuresScreen(
                         .padding(16.dp),
 
                     ) {
-                    cures.forEach { cure ->
-                        CureDetailCard(cure, navController)
+                    cures.forEachIndexed { index, cure ->
+                        CureDetailCard(cure, navController, cures.size - index)
                     }
                 }
 
@@ -172,7 +172,7 @@ fun ListCuresScreen(
 }
 
 @Composable
-fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
+fun CureDetailCard(cure: VitalSignState, navController: NavHostController, cureNumber: Int) {
     val customIconColor = Color(0xFF505050)
     val alertColor = Color(0xFFE74C3C)
     val defaultInfoColor = Color(0xFF7F8C8D)
@@ -201,7 +201,7 @@ fun CureDetailCard(cure: VitalSignState, navController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${stringResource(id = R.string.care)} ${cure.id}",
+                    text = "${stringResource(id = R.string.care)} $cureNumber",
                     style = TextStyle(
                         fontFamily = NunitoFontFamily,
                         fontSize = 22.sp,
