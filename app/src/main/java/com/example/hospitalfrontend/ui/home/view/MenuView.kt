@@ -1,6 +1,5 @@
 package com.example.hospitalfrontend.ui.home.view
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import com.example.hospitalfrontend.R
 import androidx.compose.animation.core.*
@@ -79,7 +78,7 @@ fun MenuScreen(
     var isLoading by remember { mutableStateOf(true) }
     var showDischargeDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(patientViewModel.patientState) {
+    LaunchedEffect(patientId) {
         remote.getPatientById(patientId, patientViewModel)
         patientViewModel.patientState.collect { newState ->
             patientState = newState
