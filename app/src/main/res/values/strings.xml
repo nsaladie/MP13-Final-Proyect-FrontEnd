@@ -168,7 +168,7 @@
     <string name="list_care_title">CARE LIST</string>
     <string name="care">Care</string>
     <string name="empty_care">No care entries available</string>
-    <string name="create_care">You can create one using the button at the top right</string>
+    <string name="create_care">You can create one using the button at the bottom right</string>
     <string name="blood_pressure">Blood Pressure</string>
     <string name="respiratory_rate">Respiratory Rate</string>
     <string name="pulse">Pulse</string>
